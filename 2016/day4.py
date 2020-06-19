@@ -5,14 +5,8 @@ def decode(cr):
         if ch == '-':
             r += ' '
         else:
-            rrrr = (((ord(ch) - 96) + offset) % 26) + 96
-            r += chr(rrrr)
+            r += chr((((ord(ch) - 96) + offset) % 26) + 96)
     return r
-
-
-# test = 'qzmt-zixmtkozy-ivhz-343'
-# out = decode(test)
-# print(out)
 
 f = open('data/day4.txt')
 l = f.read()
