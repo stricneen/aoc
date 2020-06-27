@@ -1,16 +1,26 @@
-eedadn
-drvtee
-eandsr
-raavrd
-atevrs
-tsrnev
-sdttsa
-rasrtv
-nssdts
-ntnada
-svetve
-tesnvt
-vntsnd
-vrdear
-dvrsen
-enarar
+rect 3x2
+rotate row y=0 by 2
+rotate row y=0 by 2
+rotate row y=0 by 2
+rotate row y=0 by 2
+rotate row y=0 by 2
+rotate row y=0 by 1
+rotate row y=0 by 1
+rotate row y=0 by 1
+rotate row y=0 by 1
+rotate row y=0 by 1
+rotate row y=0 by 1
+rotate row y=0 by 1
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate row y=0 by 4
+rotate column x=1 by 1
