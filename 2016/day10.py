@@ -4,18 +4,21 @@ lines = l.split('\n')
 
 bots = dict()
 inst = dict()
+outs = dict()
 
 for l in lines:
     if l == '@':
         break
-    print (l)
+   # print (l)
     
     if l.startswith('bot'):
         b,low,high = int(l.split(' ')[1]), int(l.split(' ')[6]), int(l.split(' ')[11])
         if l.split(' ')[5] == 'output':
-            low *= -1
+            outs[low] = []
+            low += 1000
         if l.split(' ')[10] == 'output':
-            high *= -1
+            outs[high] = []
+            high += 1000
         
         inst[b] = low,high
         
@@ -50,16 +53,31 @@ while changed:
             
             ans = sorted(bots[b])
             if ans[0] == 17 and ans[1] == 61:
-                print("Bot", b)
+                print("Part 1","Bot", b)
             
             lwr = inst[b][0]
             hgh = inst[b][1]
             
-            if lwr > -1:
+            if lwr < 1000:
                 bots[lwr].append(sorted(bots[b])[0])
                 changed = True
-            if hgh > -1:
+            if lwr >= 1000:
+                outs[lwr - 1000].append(sorted(bots[b])[0])
+                changed = True                
+            if hgh < 1000:
                 bots[hgh].append(sorted(bots[b])[1])
+                changed = True
+            if hgh >= 1000:
+                outs[hgh - 1000].append(sorted(bots[b])[1])
                 changed = True
             bots[b] = []
 # print(bots)
+print(outs)
+
+print (outs[0])
+print (outs[1])
+print (outs[2])
+
+print (outs[0][0] * outs[1][0] * outs[2][0])
+
+# 44321
