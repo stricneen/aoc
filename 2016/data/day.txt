@@ -1,26 +1,4 @@
-rect 3x2
-rotate row y=0 by 2
-rotate row y=0 by 2
-rotate row y=0 by 2
-rotate row y=0 by 2
-rotate row y=0 by 2
-rotate row y=0 by 1
-rotate row y=0 by 1
-rotate row y=0 by 1
-rotate row y=0 by 1
-rotate row y=0 by 1
-rotate row y=0 by 1
-rotate row y=0 by 1
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate row y=0 by 4
-rotate column x=1 by 1
+The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
+The second floor contains a hydrogen generator.
+The third floor contains a lithium generator.
+The fourth floor contains nothing relevant.

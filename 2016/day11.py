@@ -1,8 +1,14 @@
-f = open('data/day11.txt')
-l = f.read()
-lines = l.split('\n')
+f1 = [('T','G'),('T','M'),('P','G'),('S','G')]
+f2 = [('P','M'),('S','M')]
+f3 = [('PR','G'), ('PR','M'),('R','M'),('R','G')]
+f4 = []
 
-for l in lines:
-    if l == '@':
-        break
-    print (l)
+f1 = [('H','M'), ('L', 'M')]
+f2 = [('H','G')]
+f3 = [('L','G')]
+
+print(f1)
+print(f2)
+print(f3)
+    
+    
