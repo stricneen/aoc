@@ -3,6 +3,10 @@ f3 = ['XG','XM','RM','RG']
 f2 = ['PM','SM']
 f1 = ['TG','TM','PG','SG']
 
+# PART 2
+f1 = f1 + ['EG', 'EM', 'DG', 'DM']
+
+
 # f3 = ['LG']
 # f2 = ['HG']
 # f1 = ['HM', 'LM']
