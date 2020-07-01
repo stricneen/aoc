@@ -19,30 +19,31 @@ def tick(pos, dist):
         x,y,c = p
         
         if x >= 0 and y >= 0:
-            if isEmpty(x-1,y) and notVisited(pos,x-1,y):
+            if isEmpty(x-1,y) and notVisited(pos,x-1,y) and x-1>=0:
                 n.append((x-1,y,c+1))
             if isEmpty(x+1,y) and notVisited(pos,x+1,y):
                 n.append((x+1,y,c+1))
-            if isEmpty(x,y-1) and notVisited(pos,x,y-1):
+            if isEmpty(x,y-1) and notVisited(pos,x,y-1) and y-1>=0:
                 n.append((x,y-1,c+1))
             if isEmpty(x,y+1) and notVisited(pos,x,y+1):
                 n.append((x,y+1,c+1))
     
-    for x,y,c in n:
-        if x == 31 and y == 39:
-        #if x == 7 and y == 4:
-            print(c)
-            return
+    # for x,y,c in n:
+    #     if x == 31 and y == 39:
+    #         print("Part 1", c)
+    #         return
+    
+    if dist == 49:
+        cc = {}
+        for pn in pos + n:
+            cc[pn] = 1
+        print ("Part 2", len(cc))
+        
+        return
     
     tick(pos + n, dist + 1)
     
 start = [(1,1,0)]
 tick(start, 0)
 
-# for x in range(50):
-#     for y in range(50):
-#         r = ' ' if isEmpty(x,y) else '#'
-#         print(r, end='')
-#     print()
-    
-    
+# 162 too high
