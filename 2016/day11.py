@@ -1,11 +1,11 @@
 f4 = []
-# f3 = ['XG','XM','RM','RG')]
-# f2 = [('P','M'),('S','M')]
-# f1 = [('T','G'),('T','M'),('P','G'),('S','G')]
+f3 = ['XG','XM','RM','RG']
+f2 = ['PM','SM']
+f1 = ['TG','TM','PG','SG']
 
-f3 = ['LG']
-f2 = ['HG']
-f1 = ['HM', 'LM']
+# f3 = ['LG']
+# f2 = ['HG']
+# f1 = ['HM', 'LM']
 
 
 # print(f1)
@@ -62,6 +62,34 @@ def canMoveTo(lift, floor):
             r.append(l[0])
     return r
 
+
+def drop(states):
+    s = {}
+    for state in states:
+        floor, moves, objs = state
+        
+        k = []
+        for o in objs:
+            k.append(sorted(o))
+        
+        
+        key = str(k) + str(floor)
+        
+        if key in s:
+            
+            _,m,_ = s[key]
+            if moves < m:
+                s[key] = state
+            
+        else:
+            s[key] = state
+    
+    r = []
+    for k in s:
+        r.append(s[k])
+    
+    return r
+
 def tick(states):
     nextStates = []
     for state in states:
@@ -102,7 +130,7 @@ def tick(states):
     
     
     if done == False:
-        tick(nextStates)
+        tick(drop(nextStates))
     
 # bob = canmove(['TG','TM','PG','SG'])
 
