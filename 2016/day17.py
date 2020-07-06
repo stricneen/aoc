@@ -1,6 +1,5 @@
 import hashlib
 
-inp = 'edjrjqaa'
 op = 'bcdef'
 
 def md5(inp):
@@ -11,7 +10,7 @@ def doors(inp):
     u,d,l,r = h[0] in op, h[1] in op, h[2] in op, h[3] in op
     return (u,d,l,r)
 
-def run(states):
+def run(states, mx):
     next = []
     for x,y,code in states:
        u, d, l, r = doors(code)
@@ -26,26 +25,28 @@ def run(states):
            next.append((x,y+1,'{}{}'.format(code, 'D')))
            
     #print(next)
-    
+    n = []
     for x,y,code in next:
         if x == 3 and y == 3:
-            print ("Part 1", code[8:])
-            return
-           
+            path = len(code[8:])
+            if path > mx:
+                mx = path
+                print(mx)
+        else:
+            n.append((x,y,code))
 
     
-    if len(next) > 0:
-        run(next)
+    if len(n) > 0:
+        run(n, mx)
       
 
 # start = [(0, 0, 'hijkl')]
 # run(start)
 
-t1 = 'ihgpwlah' # DDRRRD
-t2 = 'kglvqrro' # DDUDRLRRUDRD
-                # DDUDRLRRUDRD
-t3 = 'ulqzkmiv' # DRURDRUDDLLDLUURRDULRLDUUDDDRR
-                # DRURDRUDDLLDLUURRDULRLDUUDDDRR
-
+t1 = 'ihgpwlah' # 370
+t2 = 'kglvqrro' # 492
+t3 = 'ulqzkmiv' # 830
+                
+inp = 'edjrjqaa'
 start = [(0, 0, inp)]
-run(start)
+run(start,0)
