@@ -90,31 +90,39 @@ print("Part 1 : ", c, c == '10011010010010010')
 
 #create(start, 80, 3)
 
-def times(start,req):
-    c = start
-    t = 0
-    while c <= req:
-        t += 1
-        c = (c*2) + 1
-    return t
-    
-t1 = times(len(start), 272)
-t2 = times(len(start), 27356515842)
+# def times(start,req):
+#     c = start
+#     t = 0
+#     while c <= req:
+#         t += 1
+#         c = (c*2) + 1
+#     return t
 
-print(t1)
-print(t2)
+# def hashtimes(size):
+#     c = 0
+#     while(size % 2 == 0):
+#         c += 1
+#         size = size / 2
+#     return c
+  
+# 35651584
+# t = times(len(start), 272)
+# ht = hashtimes(272)
+# print(t, ht)
 
+# 10011010010010010
 
+# print(t2)
 
-f1 = inter(t1)
-f2 = inter(t2)
+# c = start
+# r = ''
 
-print(f1)
-print(f2)
+# c1 = step(start)
 
+# h = ''
+# t = ''
 
-
-
+# '00 11 11 01   11 11 01 00    0 0 1    11 01 00 00   01 00 00 11'
 
 
 
