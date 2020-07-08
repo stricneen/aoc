@@ -1,8 +1,11 @@
-f = open('data/day12.txt')
+f = open('data/day20.txt')
 l = f.read()
 lines = l.split('\n')
 
+ranges = {}
+
 for l in lines:
-    if l = '@':
+    if l == '@':
         break
-    print (l)
+
+    
