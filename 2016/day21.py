@@ -74,8 +74,9 @@ def scramble(lines, password):
     return ''.join(chars) 
     
 def descramble(lines, password):
-    chars = [char for char in password]  
-    for l in lines:
+    chars = [char for char in password]
+    rlines = reversed(lines)
+    for l in rlines:
         if l == '@':
             break
         # print(l)
