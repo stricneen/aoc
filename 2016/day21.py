@@ -7,6 +7,7 @@ password = 'abcdefgh'
 
 def scramble(lines, password):
     chars = [char for char in password]  
+    steps = [password]
     for l in lines:
         if l == '@':
             break
@@ -70,18 +71,19 @@ def scramble(lines, password):
         
         if not f:
             print(l)
+            
+        steps.append(''.join(chars))
     
-    return ''.join(chars) 
+    return ''.join(chars), steps
     
 def descramble(lines, password):
     chars = [char for char in password]
     rlines = reversed(lines)
+    steps = [password]
     for l in rlines:
         if l == '@':
             break
-        # print(l)
-        
-        # l = 'rotate right 1 steps'
+
         f = False
         p = l.split(' ')
         if l.startswith("swap position"): # swap position 2 with position 3
@@ -99,14 +101,16 @@ def descramble(lines, password):
             chars[yi] = x
             f=True
     
-        if l.startswith("rotate left"):
+        # if l.startswith("rotate left"):
+        if l.startswith("rotate right"):
             x = int(p[2])
             s = chars[:x]
             e = chars[x:]
             chars = e + s
             f=True
 
-        if l.startswith("rotate right"):
+        # if l.startswith("rotate right"):
+        if l.startswith("rotate left"):
             x = int(p[2])
             s = chars[-x:]
             e = chars[0:len(chars) - len(s)]
@@ -118,16 +122,16 @@ def descramble(lines, password):
             if x >= 5:
                 x+=1
             for _ in range(x):
-                s = chars[:-1]
-                e = [chars[-1]]
+                s = chars[:1]
+                e = chars[1:]
                 chars = e + s
             f=True
 
         if l.startswith("move position"): # move position 6 to position 0
-            i = int(p[2])
+            i = int(p[5])
             c = chars[i]
             chars.remove(c)
-            chars.insert(int(p[5]), c)
+            chars.insert(int(p[2]), c)
             f=True
 
         if l.startswith("reverse positions"): # reverse positions 2 through 6
@@ -140,11 +144,33 @@ def descramble(lines, password):
         if not f:
             print(l)
     
-    return ''.join(chars) 
+        steps.append(''.join(chars))
+    
+    return ''.join(chars), steps
 
-s = scramble(lines, password)
+def pt(colour, text):
+    if colour == 'red':
+        return '\033[91m' + text
+    if colour == 'grn':
+        return '\033[92m' + text
+    return text
+
+
+s, s1 = scramble(lines, password)
 print("Part 1", s, s == 'dgfaehcb')
 
 
-d = descramble(lines, s)
+d, s2 = descramble(lines, s)
 print("Part 2", d, d == password) # edgbcfah
+
+s2 = s2[::-1]
+
+for i in range(len(s1)):
+    
+    if s1[i] == s2[i]:
+        print(pt('grn', ''))
+    else:
+        print(pt('red', ''))
+    
+    text = str(s1[i] == s2[i])
+    print(s1[i], s2[i], text)
