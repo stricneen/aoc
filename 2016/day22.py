@@ -7,8 +7,7 @@ for l in lines:
     if l == '@':
         break
     
-    # Filesystem              Size  Used  Avail  Use%
-    # /dev/grid/node-x0-y0     85T   69T    16T   81%
+
     
     if l.startswith('/dev/'):
         s = [x for x in l.split(' ') if x]
@@ -16,4 +15,20 @@ for l in lines:
         x = (s[0], tn(s[1]), tn(s[2]), tn(s[3]), tn(s[4]))
         nodes.append(x)
 
-print(nodes[0])
+viable = 0
+for a in nodes:
+    
+    for b in nodes:
+        
+        if a[0] == b[0] or a[2] == 0:
+            continue
+        
+        # Filesystem              Size  Used  Avail  Use%
+        # /dev/grid/node-x0-y0     85T   69T    16T   81%
+        if a[2] <= b[3]:
+            viable += 1
+
+
+print("Part 1", viable)
+
+# 918729
