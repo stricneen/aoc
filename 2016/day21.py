@@ -118,10 +118,33 @@ def descramble(lines, password):
             f=True
             
         if l.startswith("rotate based"): # rotate based on position of letter e
-            x = chars.index(p[6]) + 1
-            if x >= 5:
-                x-=1
-            for _ in range(x-1):
+            x = chars.index(p[6])
+            
+            if x == 7:
+                x = 4
+            elif x == 6:
+                x = 0
+            elif x == 2:
+                x = 6
+            elif x == 4:
+                x = 7
+            elif x == 0:
+                x = 1
+            elif x == 5:
+                x = 3
+                  
+            # x-------  -x------
+            # -x------  ---x----
+            # --x-----  -----x--
+            # ---x----  -------x
+            # 01234567
+            # ----x---  -x------
+            # -----x--  ---x----
+            # ------x-  -----x--
+            # -------x  -------x
+            
+                
+            for _ in range(x):
                 s = chars[:1]
                 e = chars[1:]
                 chars = e + s
