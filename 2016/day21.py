@@ -187,7 +187,7 @@ print("Part 1", s)
 
 
 d, s2 = descramble(lines, part2)
-print("Part 2", d) # edgbcfah
+print("Part 2", d) # edgbcfah  fdhgacbe
 
 # s2 = s2[::-1]
 # for i in range(len(s1)):
