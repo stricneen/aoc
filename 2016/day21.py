@@ -132,6 +132,8 @@ def descramble(lines, password):
                 x = 1
             elif x == 5:
                 x = 3
+            elif x == 3:
+                x = 2
                   
             # x-------  -x------
             # -x------  ---x----
@@ -178,24 +180,23 @@ def pt(colour, text):
         return '\033[92m' + text
     return text
 
+part2 = 'fbgdceah'
 
-s, s1 = scramble(lines, password)
-print("Part 1", s, s == 'dgfaehcb')
+s, s1 = scramble(lines, part2)
+print("Part 1", s)
 
 
-d, s2 = descramble(lines, s)
-print("Part 2", d, d == password) # edgbcfah
+d, s2 = descramble(lines, part2)
+print("Part 2", d) # edgbcfah
 
-s2 = s2[::-1]
-
-for i in range(len(s1)):
+# s2 = s2[::-1]
+# for i in range(len(s1)):
+#     if s1[i] == s2[i]:
+#         print(pt('grn', ''))
+#     else:
+#         print(pt('red', ''))
+#     eq = str(s1[i] == s2[i])
+#     print(s1[i], s2[i], eq)
     
-    if s1[i] == s2[i]:
-        print(pt('grn', ''))
-    else:
-        print(pt('red', ''))
-    eq = str(s1[i] == s2[i])
-    print(s1[i], s2[i], eq)
-    
-    if i <= len(lines) - 1:
-        print(lines[i])
+#     if i <= len(lines) - 1:
+#         print(lines[i])
