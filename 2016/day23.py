@@ -5,6 +5,8 @@ lines = l.split('\n')
 a,b,c,d = 7,0,0,0
 prog = []
 counter = 0
+
+
 for l in lines:
     if l == '@':
         break
@@ -26,7 +28,6 @@ def decide(a,b,c,d,inst):
 while counter < len(prog):
     inc = 1
     inst = prog[counter].split(' ')
-    
     
     if inst[0] == 'jnz':
         if inst[2] == 'a' and a != 0:
