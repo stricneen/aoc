@@ -24,7 +24,7 @@ def tomatrix(nodes):
     
     return matrix
 
-f = open('data/day.txt')
+f = open('data/day22.txt')
 l = f.read()
 lines = l.split('\n')
 
