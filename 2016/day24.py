@@ -1,7 +1,7 @@
 from os import name
 
 
-f = open('data/day.txt')
+f = open('data/day24.txt')
 l = f.read()
 lines = l.split('\n')
 
@@ -53,9 +53,48 @@ for start in pos:
     for i,_,_,d in visited:
         if i.isnumeric(): # and not any(i == x for x,_ in dists[start]):
             dists[start].append((i,d))
-            
-    print(dists)
-    print()
-  
-print (dists)
-# { 0:  [(1,4), (2,3), (3,4), (4,5)}    
+              
+
+start = dists['0']
+
+def tick(states):
+    nextstate = []
+    for path, dist in states:
+        nxt = dists[path[-1]]
+        
+        for key, ndist in nxt:
+            if key not in path:
+                
+                step = (path + key, dist + ndist)
+                
+                if len(step[0]) < len(dists):
+                    nextstate += tick([step])
+                else :
+                    nextstate.append(step)
+        
+    return nextstate
+                
+        
+        
+
+
+nxt = tick([('0', 0)])
+
+shortest = sorted(nxt, key=lambda tup: tup[1])
+
+print (shortest)
+
+# ('0', 0)
+# ('4', 2)
+# ('1', 2)
+# ('2', 8)
+# ('3', 10)
+
+# '0', 0
+
+# 04, 2
+# 01, 3
+# 02, 8
+# 03, 10
+
+
