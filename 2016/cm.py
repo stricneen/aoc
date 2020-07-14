@@ -3,11 +3,35 @@ import time
 import curses
 
 stdscr = curses.initscr()
+curses.start_color()
+curses.use_default_colors()
+for i in range(0, curses.COLORS):
+    curses.init_pair(i + 1, i, -1)
 
 def ptm(matrix):
+    
+    movsize = 0
+    # find empty
     for i in range(len(matrix[0])):
         for j in range(len(matrix)):
-            pt2(matrix[j][i][0], i , j*6)
+            node = matrix[j][i]
+            if node[1][2] == 0:
+                movsize = node[1][3]
+    
+    
+    
+    for i in range(len(matrix[0])):
+        for j in range(len(matrix)):
+            
+            node = matrix[j][i]
+            
+            col = 2
+            if node[1][2] <= movsize:
+                col = 3
+            if node[1][2] == 0:
+                col = 5
+            
+            pt2(node[0], i , j*6, col)
     print()
 
 def pr(col):
@@ -16,8 +40,9 @@ def pr(col):
 def pt(txt):
     print(txt)
     
-def pt2(txt, x, y):
-    stdscr.addstr(x, y, txt)
+def pt2(txt, x, y, col):
+    curses.color_pair(30)
+    stdscr.addstr(x, y, txt, curses.color_pair(col))
     stdscr.refresh()
     # for i in ran§§e(100):
     #     time.sleep(0.1)
