@@ -29,7 +29,7 @@ def ptm(matrix):
             if node[1][2] <= movsize:
                 col = 3
             if node[1][2] == 0:
-                col = 5
+                col = 4
             
             pt2(node[0], i , j*6, col)
     print()
