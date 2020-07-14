@@ -70,3 +70,6 @@ print("Part 2")
 # print("Part 1", viable)
 
 
+# 185  184
+
+# 131
