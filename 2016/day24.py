@@ -82,7 +82,20 @@ nxt = tick([('0', 0)])
 
 shortest = sorted(nxt, key=lambda tup: tup[1])
 
-print (shortest)
+print ("Part 1 : " + str(shortest[0]))
+
+ret = []
+for path, d in shortest:
+    x = dists[path[-1]]
+    zy = 0
+    for p, dd in x:
+        if p == '0':
+            zy = dd
+            ret.append((path + '0', d + zy))
+               
+shortest2 = sorted(ret, key=lambda tup: tup[1])
+print ("Part 2 : " + str(shortest2[0])  )         
+
 
 # ('0', 0)
 # ('4', 2)
