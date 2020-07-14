@@ -15,7 +15,7 @@ for l in lines:
     
 
     
-def execute(prog, reg):  
+def execute(prog, reg, halt):  
     
     def decide(a,b,c,d,inst):
         if inst == 'a':
@@ -28,9 +28,15 @@ def execute(prog, reg):
             return d
         return int(inst)
     
+    output = ''
     a ,b, c, d = reg
-    counter = 0      
+    counter = 0   
+     
     while counter < len(prog):
+        
+        if len(output) >= halt:
+            return output
+        
         inc = 1
         inst = prog[counter].split(' ')
         
@@ -107,21 +113,27 @@ def execute(prog, reg):
             
         if inst[0] == 'out':
             if inst[1].isnumeric():
-                print(inst[1])
+                output += str(inst[1])
             if inst[1] == 'a':
-                print(a)
+                output += str(a)
             if inst[1] == 'b':
-                print(b)
+                output += str(b)
             if inst[1] == 'c':
-                print(c)
+                output += str(c)
             if inst[1] == 'd':
-                print(d)
-                    
-                
+                output += str(d)
+                                
         counter += inc
-        
-execute(prog, (7,0,0,0))
-        
 
 
-    
+out = execute(prog, (182,0,0,0), 1000)
+print(182, out)   
+        
+# for i in range(10000000):
+#     out = execute(prog, (i,0,0,0), 6)
+#     print(i, out)  
+#     if out == '010101':
+#         out2 = execute(prog, (i,0,0,0), 20)
+#         print(i, out2)  
+#         if out2 == '01010101010101010101':
+#             break;
