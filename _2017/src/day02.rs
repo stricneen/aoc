@@ -1,9 +1,8 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+// use itertools::Itertools; 
 
 pub fn day2() {
-
-    println!("day 2");
 
     let filename = "data/day02.txt";
     // Open the file in read-only mode (ignoring errors).
@@ -11,26 +10,30 @@ pub fn day2() {
     let reader = BufReader::new(file);
 
     let mut total = 0;
-    // Read the file line by line using the lines() iterator from std::io::BufRead.
+    let mut total2 = 0;
+
     for (_, line) in reader.lines().enumerate() {
-        let line = line.unwrap(); // Ignore errors.
-        // Show the line and its number.
-        let mut min = 100000;
-        let mut max = 0;
+        let line = line.unwrap(); 
 
-        for nums in line.split("\t"){
+        let mut nums:Vec<i32> = line
+                            .split_whitespace()
+                            .map(|s| s.parse().expect("parse error"))
+                            .collect();
+        nums.sort();
+        nums.reverse();                                        
+        
+        total += nums.iter().max().unwrap() - nums.iter().min().unwrap();   
 
-            let n = nums.parse::<i32>().unwrap();
-            if n > max {
-                max = n
-            }
-            if n < min {
-                min = n
+        for i in 0 .. nums.iter().len() {
+            for j in (i + 1) .. nums.iter().len() {
+                if nums[i] % nums[j] == 0  {
+                    total2 += nums[i] / nums[j];
+                }
             }
         }
-
-        total += max - min
-
+       
     }
+
     println!("Part 1 :  {}", total);
+    println!("Part 2 :  {}", total2);
 }
