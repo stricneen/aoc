@@ -3,30 +3,12 @@ pub fn day3() {
     
     let input: i32 = 361527;
 
-    let (d,y) = dist(input);
+    let (n,d) = dist(input);
 
-    println!("Part 1 : {}\t{}", d, y);
-    // let v: Vec<i32> = Vec::new();
-    // 1     9    17   25  33  
+    let p1 = d + (input - n); // add north
 
-    // let mut e = vec![1, 2];
-    // for i in 1..10000 {
-
-    //     let east =  e.last().unwrap() + (i * 8) + 1;
-
-    //     e.push(east);
-    //     // println!("{}\t {}", i + 1,  east);
-    //     if east > input { //why?
-    //         // println!("{} : {}", e.last().unwrap() , &input);
-    //         break;
-    //     }
-    // }
-
-// 1   2   11   28    53   86
-
-//     1    9   17    25
-
-   // pv(e);
+//     361502
+    println!("Part 1 : {}", p1);
 }
 
 fn dist(to: i32) -> (i32, i32) {
@@ -35,10 +17,7 @@ fn dist(to: i32) -> (i32, i32) {
     let mut r = 0;
     for i in 1..10000 {
         let east =  e.last().unwrap() + (i * 8) + 1;
-        
-        // println!("{}\t {}", i + 1,  east);
-        if east > to { //why?
-            // println!("{} : {}", e.last().unwrap() , &input);
+        if east > to {
             r = *e.last().unwrap();
             d = i;
             break;
