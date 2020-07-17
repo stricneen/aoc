@@ -7,7 +7,6 @@ pub fn day3() {
 
     let p1 = d + (input - n); // add north
 
-//     361502
     println!("Part 1 : {}", p1);
 }
 
@@ -28,6 +27,14 @@ fn dist(to: i32) -> (i32, i32) {
     return (r,d);
     // let east =  e.last().unwrap() + (i * 8) + 1;
     // return 34;
+}
+
+3.16
+0.0316
+
+fn dist2(to: i32) -> i32 {
+
+    return 0;
 }
 
 
