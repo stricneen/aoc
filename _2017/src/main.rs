@@ -5,7 +5,7 @@ mod day04;
 
 fn main() {
     
-    // day01::day1();
+    //day01::day1();
     //day02::day2();
     //day03::day3();
     day04::day4();
