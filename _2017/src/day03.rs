@@ -29,8 +29,6 @@ fn dist(to: i32) -> (i32, i32) {
     }
 
     return (r,d);
-    // let east =  e.last().unwrap() + (i * 8) + 1;
-    // return 34;
 }
 
 
