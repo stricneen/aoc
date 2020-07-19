@@ -1,6 +1,6 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-// use itertools::Itertools; 
+use itertools::Itertools;
 
 pub fn day2() {
 
