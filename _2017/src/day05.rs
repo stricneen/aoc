@@ -13,16 +13,16 @@ pub fn day5() {
 
     while pointer < inst.len()  {
         total1 += 1;
-
         let jmp = inst[pointer];
-
-        inst[pointer] = inst[pointer] + 1;
-
+        if jmp >= 3 {
+            inst[pointer] = inst[pointer] - 1; // added for part 2
+        } else {
+            inst[pointer] = inst[pointer] + 1;
+        }
         pointer = (pointer as i32 + jmp) as usize;
-        println!("{}", pointer);
     }
 
-    println!("Part 1 : {}", total1);
+    println!("Part 2 : {}", total1);
         
 
 }
