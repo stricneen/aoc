@@ -36,12 +36,11 @@ pub mod common {
             return None;        
         }
     }
-
-
-    // mod maths {
-
-    //     pub fn add(x: i32, y: i32) -> i32 {
-    //         return x + y;
-    //     }
-    // }
+    
+    pub fn split_to_int(line: &str) -> Vec<i32>  {
+        return line
+            .split_whitespace()
+            .map(|s| s.parse().expect("parse error"))
+            .collect();
+    }
 }
