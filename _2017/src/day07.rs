@@ -26,9 +26,9 @@ pub fn day7() {
         weights.insert(words[0].to_string(), (words[1].replace("(","").replace(")","").parse::<i32>().unwrap(), o));
     }
 
-    for (k,v) in &weights {
-        println!("{} : {:?}", k,v );
-    }
+    // for (k,v) in &weights {
+    //     println!("{} : {:?}", k,v );
+    // }
 
     for w in under.iter() {
         if over.contains(w) == false {
@@ -37,6 +37,22 @@ pub fn day7() {
     }
 
 
-    // println!("{:?}", under);
-    // println!("{:?}", over);
+    let mut holds = HashMap::new();
+
+    for w in weights.keys() {
+
+        let bob = calc(0, w, &weights);
+        holds.insert(w, bob);
+    }
+   
+     println!("Part 1 : {:?}", holds);
 }
+
+fn calc (acc: i32, disc: &String, weights: &HashMap<String, (i32, Vec<std::string::String>)>) -> i32 {
+    // let mut total = 0;
+    for over in &weights[disc].1 {
+        return acc + calc(acc, &over, &weights);
+    }
+    return weights[disc].0;
+}
+
