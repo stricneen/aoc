@@ -51,8 +51,8 @@ pub fn day7() {
 fn calc (acc: i32, disc: &String, weights: &HashMap<String, (i32, Vec<std::string::String>)>) -> i32 {
     // let mut total = 0;
     for over in &weights[disc].1 {
-        return acc + calc(acc, &over, &weights);
+        return calc(acc + weights[disc].0, &over, &weights);
     }
-    return weights[disc].0;
+    return acc + weights[disc].0;
 }
 
