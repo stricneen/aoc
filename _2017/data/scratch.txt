@@ -18,8 +18,8 @@ tknk (41)- padx (45) - havc (66)
               \     
                 xhth (57)
 
-  Part 1 : {"jptl": 61, "ktlj": 57, "cntj": 57, "xhth": 57, "ugml": 61, 
-  "ebii": 61, "padx": 66, "pbga": 66, "qoyq": 66, "gyxo": 61, "havc": 66, 
-  "tknk": 61, "fwft": 57}
+Weights : {"ebii": 61, "tknk": 170, "fwft": 129, "padx": 111,
+ "ktlj": 57, "ugml": 129, "cntj": 57, "gyxo": 61, "jptl": 61, 
+ "qoyq": 66, "pbga": 66, "xhth": 57, "havc": 66}
 
 
