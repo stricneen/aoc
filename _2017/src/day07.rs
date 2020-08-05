@@ -43,9 +43,8 @@ pub fn day7() {
 
     println!("Weights : {:?}", holds);
 
-
-    println!("padx : {:?}", holds[&"padx".to_string()])
-
+    println!("padx : {:?}", holds[&"padx".to_string()]);
+    println!("tknk : {:?}", holds[&"tknk".to_string()]);
 
 }
 
@@ -56,11 +55,11 @@ fn calc (mut acc: i32, disc: &String, weights: &HashMap<String, (i32, Vec<std::s
     if &weights[disc].1.len() > &0 {
         acc += weights[disc].0;
         for over in &weights[disc].1 {
-            acc += calc(acc, &over, &weights);
+            acc = calc(acc, &over, &weights);
         }    
     }
     else {
-        acc = weights[disc].0;
+        acc += weights[disc].0;
     }
 
     // for over in &weights[disc].1 {
