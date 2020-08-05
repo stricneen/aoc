@@ -54,12 +54,19 @@ pub fn day7() {
 
     for l in 0..4 {
         let x = level(l, vec![base.to_string()], &weights);
+        println!("{:?}", x);
 
-        let xx:Vec<_> = x.into_iter().map(|x| &holds[&x]).collect();
+        // let xxx:Vec<_> = x.into_iter().map(|x| (&weights[&x].0,&holds[&x])).collect();
+    
+        // //        println!("{:?}", &x);
+        //   //      println!("{:?}", xx);
+        //         println!("{:?}", xxx);
+
+//        let xx:Vec<_> = x.into_iter().map(|x| &holds[&x]).collect();
     
 //        println!("{:?}", &x);
   //      println!("{:?}", xx);
-        println!("{:?}", xx);
+     //   println!("{:?}", xx);
     }
    
     // println!("{:?}", level(1, vec![base.to_string()], &weights));
@@ -69,8 +76,13 @@ pub fn day7() {
     // println!("{:?}", level(5, vec![base.to_string()], &weights));
     // println!("{:?}", level(6, vec![base.to_string()], &weights));
 
+    // smaygo : (4616, ["hmgrlpj", "fbnbt", "nfdvsc"])
 
-
+    // ["avpklqy", "tytbgx", "bdohoaa", "smaygo", "pvvbn", "hgizeb", "tchfafn"]
+    // [48284,      48284,     48284,     48292,    48284, 48284, 48284]
+    // >>> 4616 - (48292 - 48284)
+    // 4153 th
+    // 4628 th
 
 }
 
@@ -78,10 +90,14 @@ fn level(lev: i32, base:  Vec<String>, weights: &HashMap<String, (i32, Vec<Strin
 
     if lev == 0 { return  base; }
     let mut r = Vec::<String>::new();
+
+    let mut t = Vec::<String>::new();
+
     for w in base {
         for x in &weights[&w].1 {
-            r.push(x.to_string());
+            t.push(x.to_string());
         }
+        r.append(&mut t);
     }
    return level(lev-1, r, &weights);
 }
