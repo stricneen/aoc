@@ -27,7 +27,7 @@ pub fn day8() {
             chktype: words[5].to_string(),
             chk_val: words[6].parse::<i32>().unwrap(),
         };
-        // println!("{:?}", i);
+        println!("{:?}", i);
 
         if reg.contains_key(&i.chkreg) == false {
             reg.insert(i.chkreg.to_string(), 0);
@@ -37,11 +37,11 @@ pub fn day8() {
         }
 
         if check_if(&i, &reg) {
-            let c = reg[&i.chkreg];
+            let c = reg[&i.reg];
             if i.cmd == "inc" {
-                reg.insert(i.chkreg, c + i.cmda);
+                reg.insert(i.reg, c + i.cmda);
             } else {
-                reg.insert(i.chkreg, c - i.cmda);
+                reg.insert(i.reg, c - i.cmda);
             }
 
         }
@@ -63,7 +63,7 @@ pub fn day8() {
 
 fn check_if(inst: &Inst, reg: &HashMap<String, i32>) -> bool{
 
-    let reg_val = reg[&inst.reg];
+    let reg_val = reg[&inst.chkreg];
 
     if inst.chktype == "==" {
         return reg_val == inst.chk_val;
