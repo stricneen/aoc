@@ -12,6 +12,8 @@ struct Inst {
 
 pub fn day8() {
     let filename = "data/day08.txt";
+    let mut max1 = 0;
+    let mut max2 = 0;
 
     let mut reg = HashMap::new();
     for line in common::common::FileLines::new(filename.to_string()) {
@@ -46,19 +48,26 @@ pub fn day8() {
 
         }
      
+        for k in reg.keys() {
+            if reg[k] > max2 {
+                max2 = reg[k];
+            }
+        }
 
     }
-    println!("{:?}", reg);
+    // println!("{:?}", reg);
 
-    let mut max = 0;
+    
 
     for k in reg.keys() {
-        if reg[k] > max {
-            max = reg[k];
+        if reg[k] > max1 {
+            max1 = reg[k];
         }
     }
 
-    println!("Part 1 : {}", max);
+    println!("Part 1 : {}", max1);
+    println!("Part 2 : {}", max2);
+    
 }
 
 fn check_if(inst: &Inst, reg: &HashMap<String, i32>) -> bool{
