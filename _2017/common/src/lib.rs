@@ -44,6 +44,16 @@ pub mod common {
             .collect();
     }
 
+    pub fn count_regex(text: &str, reg: &str) -> usize {
+        let re = Regex::new(reg).unwrap(); 
+        let mut count = 0;
+        for cap in re.captures_iter(text) {
+            //println!("{}", &cap[0]);
+            count += cap[0].len() - 2;
+        }
+        return count;    
+    }
+
     pub fn remove_regex(text: &str, reg: &str) -> String {
         let re = Regex::new(reg).unwrap(); 
         let result = re.replace_all(text, "");

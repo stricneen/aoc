@@ -4,7 +4,8 @@ pub fn day9() {
     let filename = "data/day09.txt";
     for line in common::common::FileLines::new(filename.to_string()) {
 
-        println!("{:?}",  count_groups((0,0), &remove_garbage(&line)));
+        let p1 = count_groups((0,0), &remove_garbage(&line));
+        println!("Part 1 : {}",  p1.1);
         
 
         assert_eq!("{{}}", remove_garbage("{{<!>},{<!>},{<!>},{<a>}}"));
@@ -15,6 +16,10 @@ pub fn day9() {
         assert_eq!((0,6), count_groups((0,0), &remove_garbage("{{{}}}")));
         assert_eq!((0,16), count_groups((0,0), &remove_garbage("{{{},{},{{}}}}")));
         assert_eq!((0,9), count_groups((0,0), &remove_garbage("{{<!!>},{<!!>},{<!!>},{<!!>}}")));
+    
+        
+        let x = common::common::count_regex(&common::common::remove_regex(&line, r"!."), "<.*?>");
+        println!("Part 2 : {}", x); 
     }
 }
 
