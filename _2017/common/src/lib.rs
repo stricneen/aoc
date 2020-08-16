@@ -1,7 +1,7 @@
 pub mod common {
     use std::fs::File;
     use std::io::{BufRead, BufReader};
-
+    use regex::Regex;
 
     // Our struct will only iterator over odd numbers.
     pub struct FileLines {
@@ -42,5 +42,11 @@ pub mod common {
             .split_whitespace()
             .map(|s| s.parse().expect("parse error"))
             .collect();
+    }
+
+    pub fn remove_regex(text: &str, reg: &str) -> String {
+        let re = Regex::new(reg).unwrap(); 
+        let result = re.replace_all(text, "");
+        return result.to_string();
     }
 }
