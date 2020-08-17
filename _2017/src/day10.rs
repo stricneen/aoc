@@ -5,29 +5,51 @@ pub fn day10() {
     let lens: Vec<usize> =  input.split(',')
         .map(|s| s.parse().expect("parse error"))
         .collect();
-    // println!("{:?}", nums);
-    
-    // let mut list = [0, 1, 2, 3, 4];
-    //let lens = [3, 4, 1, 5];
-    let mut list: Vec<u32> = (0..256).collect();
-    // let mut list = vec!(0..255).iter().map(i32::from).collect::<i32>();
-    
+
+        // let mut list = [0, 1, 2, 3, 4];
+        //let lens = [3, 4, 1, 5];
+        let list: Vec<u32> = (0..256).collect();
+        
+        let p1 = round(list, lens);
+
+        
+        println!("Part 1 : {:?}", p1[0] * p1[1]);
+        assert_eq!(40132, p1[0] * p1[1]);
+    // let len = list.len();
+    // let mut skip = 0;
+    // let mut total = 0;
+
+    // for l in lens.iter() { 
+    //     &list[0..*l].reverse();
+    //     &list.rotate_left((l + skip) % len);
+    //     total += l + skip;
+    //     skip += 1;
+    //     // println!("{} {:?}",l, list);
+    // }
+    // &list.rotate_right(total % len);
+
+
+    // let i = "1,2,3";
+    // let mut conv: Vec<u32> = input.chars().map(|x| x as u32).collect();
+    // let mut stnd = vec![17, 31, 73, 47, 23];
+    // conv.append(&mut stnd);
+
+    // println!("{:?}", conv);
+}
+
+fn round(mut list: Vec<u32>, lens: Vec<usize>) -> Vec<u32> {
+
     let len = list.len();
     let mut skip = 0;
     let mut total = 0;
 
     for l in lens.iter() { 
-
         &list[0..*l].reverse();
-        // println!("{}", l);        
         &list.rotate_left((l + skip) % len);
-        
         total += l + skip;
         skip += 1;
-
         // println!("{} {:?}",l, list);
     }
     &list.rotate_right(total % len);
-
-    println!("Part 1 : {:?}", list[0] * list[1]);
+    return list;
 }
