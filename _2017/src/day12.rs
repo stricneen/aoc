@@ -7,9 +7,47 @@ pub fn day12() {
     for line in common::common::FileLines::new(filename.to_string()) {
         parse(&line, &mut pipes);
     }
-
     println!("{:?}", pipes);
+
+    let mpipes = pipes;
+
+    struct Count<'s> { f: &'s dyn Fn(&Count, Vec<usize>) -> usize }
+
+    let func = Count {
+        f: &|func, x| {
+
+            let mut nodes: Vec<usize> = vec![];
+            nodes.extend(&x);
+
+            for c in &x {
+                let pipes = mpipes.get(&c).unwrap();
+                nodes.extend(pipes);
+            }
+
+
+            if &x.len() != &nodes.len() {
+                return (func.f)(func, vec![]); 
+            } else {
+                return nodes.len();
+            }
+
+
+            //return nodes.len() as u32;
+        }
+    };
+    
+    let c = (func.f)(&func, vec![5]);
+
+    // struct Fact<'s> { f: &'s Fn(&Fact, u32) -> u32 }
+
+    // let fact = Fact {
+    //     f: &|fact, x| if x == 0 {1} else {x * (fact.f)(fact, x - 1)}
+    // };
+
+    println!("{:?}", c);
 }
+
+
 
 
 fn parse(line : &str, map: &mut HashMap<usize, Vec<usize>>)  {
