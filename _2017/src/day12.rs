@@ -11,7 +11,7 @@ pub fn day12() {
 
     let mpipes = pipes;
 
-    struct Count<'s> { f: &'s dyn Fn(&Count, Vec<usize>) -> usize }
+    struct Count<'s> { f: &'s dyn Fn(&Count, Vec<usize>) -> (usize, usize) }
 
     let func = Count {
         f: &|func, x| {
@@ -26,30 +26,28 @@ pub fn day12() {
             nodes.sort();
             nodes.dedup();
 
-
             if &x.len() != &nodes.len() {
-                //println!("{:?}", &nodes);
                 return (func.f)(func, nodes); 
             } else {
-                return nodes.len();
+                //return nodes.len();
+                nodes.sort();
+                return (nodes.len(), *nodes.first().unwrap());
             }
-
-
-            //return nodes.len() as u32;
         }
     };
     
     let c = (func.f)(&func, vec![0]);
+    println!("Part 1 : {:?}", c.0);
 
-    // struct Fact<'s> { f: &'s Fn(&Fact, u32) -> u32 }
-
-    // let fact = Fact {
-    //     f: &|fact, x| if x == 0 {1} else {x * (fact.f)(fact, x - 1)}
-    // };
-
-    println!("{:?}", c);
+    let mut sizes = vec![];
+    for x in mpipes.keys() {
+        let c = (func.f)(&func, vec![*x]);
+        sizes.push(c);
+        sizes.sort();
+        sizes.dedup();
+    }
+    println!("Part 2 : {}", sizes.len());
 }
-
 
 
 
