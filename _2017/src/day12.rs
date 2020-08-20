@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 pub fn day12() {
-    let filename = "data/day.txt";
+    let filename = "data/day12.txt";
     
     let mut pipes = HashMap::new();
     for line in common::common::FileLines::new(filename.to_string()) {
         parse(&line, &mut pipes);
     }
-    println!("{:?}", pipes);
+    //println!("{:?}", pipes); // 33
 
     let mpipes = pipes;
 
@@ -23,10 +23,13 @@ pub fn day12() {
                 let pipes = mpipes.get(&c).unwrap();
                 nodes.extend(pipes);
             }
+            nodes.sort();
+            nodes.dedup();
 
 
             if &x.len() != &nodes.len() {
-                return (func.f)(func, vec![]); 
+                //println!("{:?}", &nodes);
+                return (func.f)(func, nodes); 
             } else {
                 return nodes.len();
             }
@@ -36,7 +39,7 @@ pub fn day12() {
         }
     };
     
-    let c = (func.f)(&func, vec![5]);
+    let c = (func.f)(&func, vec![0]);
 
     // struct Fact<'s> { f: &'s Fn(&Fact, u32) -> u32 }
 
