@@ -20,7 +20,6 @@ pub fn day() {
         if x.0 <= &1 {
             return acc
         }
-
         if  x.0 % ((x.1 -1 ) * 2) == 0 {
             acc + (x.0 * x.1)
         } else {
@@ -30,4 +29,27 @@ pub fn day() {
     
 
     println!("Part 1 : {:?}", p1);
+
+
+    let mut delay = 0;
+
+    loop {
+        let p1 = firewall.iter().fold(0, |acc, x| {
+            if x.0 + delay <= 1 {
+                return acc
+            }
+            if  (x.0 + delay) % ((x.1 -1 ) * 2) == 0 {
+                acc + ((x.0 + delay) * x.1)
+            } else {
+                acc
+            }
+        });
+
+       // println!("{}  :  {:?}", delay, p1);
+
+        if p1 == 0 { break };
+        delay += 1;
+    }
+
+    println!("Part 2 : {:?}", delay);
 }
