@@ -30,7 +30,7 @@ pub fn day10() {
 }
 
 
-fn knot_hash(input: &str) -> String {
+pub fn knot_hash(input: &str) -> String {
     let len2 = parse_ascii(&input);
     let t2 = round(len2, 64);
     let t3 = to_dense(t2);
