@@ -59,4 +59,8 @@ pub mod common {
         let result = re.replace_all(text, "");
         return result.to_string();
     }
+
+    pub fn to_binary(i: u64, l: usize) -> String{
+        return format!("{:01$b}", i, l);
+    }
 }
