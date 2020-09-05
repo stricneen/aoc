@@ -5,7 +5,7 @@ use crate::day18::Arg::Register;
 #[derive(Debug)]
 pub enum Arg {
     Register(char),
-    Value(i32)
+    Value(i64)
 }
 
 pub struct Instruction {
@@ -30,7 +30,7 @@ pub fn day18() {
         
         let arg = match iter.next() {
             Some(x) => {
-                let try_int = x.parse::<i32>();
+                let try_int = x.parse::<i64>();
                 if try_int.is_err() { Register(x.to_string().chars().nth(0).unwrap()) }
                 else { Value(try_int.unwrap()) } 
             },
@@ -54,9 +54,11 @@ pub fn day18() {
     loop {
 
         let curr = &program[&c];
+        println!("{}  {}\t{}\t{:?}", c, curr.command, curr.register, curr.argument);
+
+
         c += 1;
 
-        println!("{}\t{}\t{:?}", curr.command, curr.register, curr.argument);
 
         match curr.command.as_ref() {
 
