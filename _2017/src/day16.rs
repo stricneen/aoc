@@ -5,7 +5,8 @@ pub fn day16() {
         
         let words: Vec::<&str> = line.split(',').collect();
         let o_row = String::from("abcdefghijklmnop");      
-        let mut row = String::from("abcdefghijklmnop");      
+        let mut row = String::from("abcdefghijklmnop");   
+        let mut p1 = String::from("");   
         // 33 dmokfibagnjplhec
         // 34 nligokdebfcmjhpa
         // 35 ljfgibhcmpdaenko
@@ -59,14 +60,17 @@ pub fn day16() {
             }        
         }
       
-        println!("{} {}",i, row);
+       // println!("{} {}",i, row);
+        if i == 0 {
+            p1 = row.clone();
+        }
         if row == o_row {
             break;
         }
     }
     //println!("Insts : {}", instructions.len());
-    println!("Part 1 : {}", row);
-    assert_eq!("hmefajngplkidocb", row);
+    println!("Part 1 : {}", p1);
+    assert_eq!("hmefajngplkidocb", p1);
         // x3/15
         // pc/l
         // x13/9
