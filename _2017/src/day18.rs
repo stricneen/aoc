@@ -57,7 +57,7 @@ pub fn day18() {
         if registers.contains_key(&curr.register) == false {
             registers.insert(curr.register, 0);
         }
-        println!("{}  {}\t{}\t{:?}", c, curr.command, curr.register, curr.argument);
+        // println!("{}  {}\t{}\t{:?}", c, curr.command, curr.register, curr.argument);
 
 
         c += 1;
@@ -67,8 +67,8 @@ pub fn day18() {
 
             "snd" => {
                 match curr.argument {
-                    Arg::Value(v) => &registers.insert('_', registers[&curr.register]),
-                    Arg::Register(v) => &registers.insert('_', registers[&curr.register])
+                    Arg::Value(_) => &registers.insert('_', registers[&curr.register]),
+                    Arg::Register(_) => &registers.insert('_', registers[&curr.register])
                 };
             },
 
@@ -132,14 +132,14 @@ pub fn day18() {
         // jgz X Y jumps with an offset of the value of Y, but only if the value of X is greater than zero. (An offset of 2 skips the next instruction, an offset of -1 jumps to the previous instruction, and so on.)
 
 
+        //
 
-
-        println!("{:?}\n", registers);
+        // println!("{:?}\n", registers);
         
 
     }
 
-
+    println!("Part 1 : {:?}", registers[&'_']);
     
 }
 
