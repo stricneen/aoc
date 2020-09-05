@@ -54,6 +54,9 @@ pub fn day18() {
     loop {
 
         let curr = &program[&c];
+        if registers.contains_key(&curr.register) == false {
+            registers.insert(curr.register, 0);
+        }
         println!("{}  {}\t{}\t{:?}", c, curr.command, curr.register, curr.argument);
 
 
@@ -62,7 +65,12 @@ pub fn day18() {
 
         match curr.command.as_ref() {
 
-            "snd" => {},
+            "snd" => {
+                match curr.argument {
+                    Arg::Value(v) => &registers.insert('_', registers[&curr.register]),
+                    Arg::Register(v) => &registers.insert('_', registers[&curr.register])
+                };
+            },
 
             "set" => {
                 match curr.argument {
@@ -72,9 +80,6 @@ pub fn day18() {
             },
 
             "add" => {
-                if registers.contains_key(&curr.register) == false {
-                    registers.insert(curr.register, 0);
-                }
                 match curr.argument {
                     Arg::Value(v) => &registers.insert(curr.register, registers[&curr.register] + v),
                     Arg::Register(v) => &registers.insert(curr.register, registers[&curr.register] + registers[&v]),
@@ -82,26 +87,24 @@ pub fn day18() {
             },
 
             "mul" => {
-                if registers.contains_key(&curr.register) == false {
-                    registers.insert(curr.register, 0);
-                }
                 match curr.argument {
                     Arg::Value(v) => &registers.insert(curr.register, registers[&curr.register] * v),
                     Arg::Register(v) => &registers.insert(curr.register, registers[&curr.register] * registers[&v]),
                 };
             },
 
-            "mod" =>  {
-                if registers.contains_key(&curr.register) == false {
-                    registers.insert(curr.register, 0);
-                }
+            "mod" =>  {    
                 match curr.argument {
                     Arg::Value(v) => &registers.insert(curr.register, registers[&curr.register] % v),
                     Arg::Register(v) => &registers.insert(curr.register, registers[&curr.register] % registers[&v]),
                 };
             },
 
-            "rcv" => {},
+            "rcv" => {
+                if registers[&curr.register] > 0{
+                    break;
+                }
+            },
 
             "jgz" => {
                 match curr.argument {
