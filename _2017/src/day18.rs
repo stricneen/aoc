@@ -14,11 +14,18 @@ pub struct Instruction {
     argument: Arg
 }
 
+pub struct State {
+    registers: HashMap<char, i64>,
+    pointer: i64,
+    input: Vec<i64>,
+    output: Vec<i64>
+}
+
 pub fn day18() {
     let filename = "data/day18.txt";
     
     let mut program = HashMap::new();
-    let mut c = 0;
+    let mut c: i64 = 0;
 
     // Parse program
     for line in common::common::FileLines::new(filename.to_string()) {
@@ -48,60 +55,72 @@ pub fn day18() {
     }
 
     // Execute program
-    c = 0;
-    let mut registers = HashMap::new();
+    let mut state0 = State {
+        registers:  [('p', 0)].iter().cloned().collect(),
+        pointer: 0,
+        input: vec![],
+        output: vec![]
+    };
+    
+    cycle(&mut state0, program);
+
+    println!("Part 1 : {:?}", state0.output);
+    
+}
+
+fn cycle(state: &mut State, program: HashMap<i64, Instruction>) {
+
+    let mut output = Vec::new();
 
     loop {
 
-        let curr = &program[&c];
-        if registers.contains_key(&curr.register) == false {
-            registers.insert(curr.register, 0);
+        let curr = &program[&state.pointer];
+        if state.registers.contains_key(&curr.register) == false {
+            state.registers.insert(curr.register, 0);
         }
         // println!("{}  {}\t{}\t{:?}", c, curr.command, curr.register, curr.argument);
 
-
-        c += 1;
-
+        state.pointer += 1;
 
         match curr.command.as_ref() {
 
             "snd" => {
                 match curr.argument {
-                    Arg::Value(_) => &registers.insert('_', registers[&curr.register]),
-                    Arg::Register(_) => &registers.insert('_', registers[&curr.register])
+                    Arg::Value(v) => &output.push(v),
+                    Arg::Register(v) => &output.push(state.registers[&v])
                 };
             },
 
             "set" => {
                 match curr.argument {
-                    Arg::Value(v) => &registers.insert(curr.register, v),
-                    Arg::Register(v) => &registers.insert(curr.register, registers[&v])
+                    Arg::Value(v) => &state.registers.insert(curr.register, v),
+                    Arg::Register(v) => &state.registers.insert(curr.register, state.registers[&v])
                 };
             },
 
             "add" => {
                 match curr.argument {
-                    Arg::Value(v) => &registers.insert(curr.register, registers[&curr.register] + v),
-                    Arg::Register(v) => &registers.insert(curr.register, registers[&curr.register] + registers[&v]),
+                    Arg::Value(v) => &state.registers.insert(curr.register, state.registers[&curr.register] + v),
+                    Arg::Register(v) => &state.registers.insert(curr.register, state.registers[&curr.register] + state.registers[&v]),
                 };
             },
 
             "mul" => {
                 match curr.argument {
-                    Arg::Value(v) => &registers.insert(curr.register, registers[&curr.register] * v),
-                    Arg::Register(v) => &registers.insert(curr.register, registers[&curr.register] * registers[&v]),
+                    Arg::Value(v) => &state.registers.insert(curr.register, state.registers[&curr.register] * v),
+                    Arg::Register(v) => &state.registers.insert(curr.register, state.registers[&curr.register] * state.registers[&v]),
                 };
             },
 
             "mod" =>  {    
                 match curr.argument {
-                    Arg::Value(v) => &registers.insert(curr.register, registers[&curr.register] % v),
-                    Arg::Register(v) => &registers.insert(curr.register, registers[&curr.register] % registers[&v]),
+                    Arg::Value(v) => &state.registers.insert(curr.register, state.registers[&curr.register] % v),
+                    Arg::Register(v) => &state.registers.insert(curr.register, state.registers[&curr.register] % state.registers[&v]),
                 };
             },
 
             "rcv" => {
-                if registers[&curr.register] > 0{
+                if state.registers[&curr.register] > 0{
                     break;
                 }
             },
@@ -110,10 +129,10 @@ pub fn day18() {
                 match curr.argument {
                     Arg::Value(v) => {
                         if curr.register == '1' {
-                            c += v - 1;
+                            state.pointer += v - 1;
                         } else {
-                            if registers[&curr.register] > 0 {
-                                c += v - 1;
+                            if state.registers[&curr.register] > 0 {
+                                state.pointer += v - 1;
                             }
                         }
                     },
@@ -123,23 +142,9 @@ pub fn day18() {
 
             &_ => ()
         }
-        // snd X plays a sound with a frequency equal to the value of X.
-        // set X Y sets register X to the value of Y.
-        // add X Y increases register X by the value of Y.
-        // mul X Y sets register X to the result of multiplying the value contained in register X by the value of Y.
-        // mod X Y sets register X to the remainder of dividing the value contained in register X by the value of Y (that is, it sets X to the result of X modulo Y).
-        // rcv X recovers the frequency of the last sound played, but only when the value of X is not zero. (If it is zero, the command does nothing.)
-        // jgz X Y jumps with an offset of the value of Y, but only if the value of X is greater than zero. (An offset of 2 skips the next instruction, an offset of -1 jumps to the previous instruction, and so on.)
-
-
-        //
-
-        // println!("{:?}\n", registers);
-        
-
     }
 
-    println!("Part 1 : {:?}", registers[&'_']);
-    
+    state.output = output;
+
 }
 
