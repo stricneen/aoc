@@ -64,7 +64,7 @@ pub fn day18() {
     
     cycle(&mut state0, program);
 
-    println!("Part 1 : {:?}", state0.output);
+    println!("Part 1 : {:?}", state0.output.last().unwrap());
     
 }
 
@@ -78,17 +78,14 @@ fn cycle(state: &mut State, program: HashMap<i64, Instruction>) {
         if state.registers.contains_key(&curr.register) == false {
             state.registers.insert(curr.register, 0);
         }
-        // println!("{}  {}\t{}\t{:?}", c, curr.command, curr.register, curr.argument);
-
+        // println!("{}  {}\t{}\t{:?}", state.pointer, curr.command, curr.register, curr.argument);
+        
         state.pointer += 1;
 
         match curr.command.as_ref() {
 
-            "snd" => {
-                match curr.argument {
-                    Arg::Value(v) => &output.push(v),
-                    Arg::Register(v) => &output.push(state.registers[&v])
-                };
+            "snd" => { // snd and recieve only deal in registers
+                &output.push(state.registers[&curr.register]);
             },
 
             "set" => {
@@ -142,6 +139,7 @@ fn cycle(state: &mut State, program: HashMap<i64, Instruction>) {
 
             &_ => ()
         }
+        // println!("{:?}", state.registers);
     }
 
     state.output = output;
