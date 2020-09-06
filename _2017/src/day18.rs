@@ -54,38 +54,83 @@ pub fn day18() {
         c += 1;
     }
 
-    // Execute program
-    let mut state0 = State {
+    // Part 1 : Execute program
+    let mut state_p1 = State {
+        registers:  [].iter().cloned().collect(),
+        pointer: 0,
+        input: vec![],
+        output: vec![]
+    };
+    cycle(&mut state_p1, &program);
+    println!("Part 1 : {:?}", state_p1.output.last().unwrap());
+    
+
+    // Part 2
+    let mut state_p2_1 = State {
         registers:  [('p', 0)].iter().cloned().collect(),
         pointer: 0,
         input: vec![],
         output: vec![]
     };
-    
-    cycle(&mut state0, program);
 
-    println!("Part 1 : {:?}", state0.output.last().unwrap());
-    
+    let mut state_p2_2 = State {
+        registers:  [('p', 1)].iter().cloned().collect(),
+        pointer: 0,
+        input: vec![],
+        output: vec![]
+    };
+
+    let mut r1 = 1;
+    let mut r2 = 1;
+
+    let mut prog1_sends = 0;
+
+
+    while r1 != 0 && r2 != 0 {
+
+        cycle(&mut state_p2_1, &program);
+        r1 = state_p2_1.output.len();
+        state_p2_2.input.append(&mut state_p2_1.output.clone());
+        state_p2_1.output.clear();
+
+        cycle(&mut state_p2_2, &program);
+        r2 = state_p2_2.output.len();
+        state_p2_1.input.append(&mut state_p2_2.output.clone());
+        state_p2_2.output.clear();
+
+        prog1_sends += r2;
+    }
+
+    //println!("{:?}", state_p2_1.registers);
+    //println!("{:?}", state_p2_2.registers);
+
+    println!("Part 2 : {}", prog1_sends);
 }
 
-fn cycle(state: &mut State, program: HashMap<i64, Instruction>) {
-
-    let mut output = Vec::new();
+fn cycle(state: &mut State, program: &HashMap<i64, Instruction>) {
 
     loop {
 
+        let mut inc = 1;
+        if state.pointer >= program.len() as i64{
+            break;
+        }
+
         let curr = &program[&state.pointer];
-        if state.registers.contains_key(&curr.register) == false {
+        if curr.register.is_alphabetic() && state.registers.contains_key(&curr.register) == false {
             state.registers.insert(curr.register, 0);
         }
         // println!("{}  {}\t{}\t{:?}", state.pointer, curr.command, curr.register, curr.argument);
         
-        state.pointer += 1;
-
         match curr.command.as_ref() {
 
-            "snd" => { // snd and recieve only deal in registers
-                &output.push(state.registers[&curr.register]);
+            "snd" => { 
+                let try_int = curr.register.to_string().parse::<i64>();
+                if try_int.is_err() { 
+                    &state.output.push(state.registers[&curr.register]);
+                } else {
+                    &state.output.push(try_int.unwrap());
+                }
             },
 
             "set" => {
@@ -117,8 +162,12 @@ fn cycle(state: &mut State, program: HashMap<i64, Instruction>) {
             },
 
             "rcv" => {
-                if state.registers[&curr.register] > 0{
-                    break;
+                if state.input.len() > 0 {
+                    let inp = state.input.remove(0);
+                    state.registers.insert(curr.register, inp);
+                } else {
+                  //  println!("Insts  : {}", counter);
+                    break; // no more input
                 }
             },
 
@@ -126,23 +175,26 @@ fn cycle(state: &mut State, program: HashMap<i64, Instruction>) {
                 match curr.argument {
                     Arg::Value(v) => {
                         if curr.register == '1' {
-                            state.pointer += v - 1;
+                            inc = v;
                         } else {
                             if state.registers[&curr.register] > 0 {
-                                state.pointer += v - 1;
+                                inc = v;
                             }
                         }
                     },
-                    Arg::Register(_) => (),
+                    Arg::Register(v) => {
+                        if state.registers[&curr.register] > 0 {
+                            inc = state.registers[&v]
+                        }
+                    },
                 };
             },
 
             &_ => ()
         }
         // println!("{:?}", state.registers);
+        state.pointer += inc;
     }
-
-    state.output = output;
-
 }
+
 
