@@ -16,9 +16,11 @@
 //mod day16;
 //mod day17;
 //mod day18;
-mod day19;
+//mod day19;
+mod day20;
 fn main() {
-    day19::day19();
+    day20::day20();
+    //day19::day19();
     //day18::day18();
     //day17::day17();
     //day16::day16();

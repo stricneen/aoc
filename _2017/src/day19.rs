@@ -54,7 +54,7 @@ pub fn day19() {
             }
         }
 
-        steps +=1;
+        steps += 1;
 
         if x == 'Y' || x == 'F'{
             break;
