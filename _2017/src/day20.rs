@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+
+#[derive(Copy, Clone)]
 #[derive(Debug)]
 struct Position {
     x: i32,
@@ -5,6 +8,7 @@ struct Position {
     z: i32
 }
 
+#[derive(Copy, Clone)]
 #[derive(Debug)]
 struct Particle {
     number: i32,
@@ -48,10 +52,11 @@ pub fn day20() {
 
     }
 
-    for i in 0..1000 {
+    let mut p2 = particles.len();
+
+    for _ in 0..500 {
 
         particles = particles.into_iter().map(|p| {
-
             return Particle {
                 number: p.number,
                 position: Position {
@@ -66,8 +71,46 @@ pub fn day20() {
                 },
                 acceleration: p.acceleration
             };
-
         }).collect();
+
+        // Part 2
+        let count = particles.iter().fold(HashMap::new(), |mut acc , x| {
+            let key = (x.position.x, x.position.y, x.position.z);
+            let mut c = 1;
+            if acc.contains_key(&key) {
+                c = acc[&key] + 1;
+            }
+            acc.insert(key, c);
+            return acc;
+        });
+
+        let dupes = count.iter().fold(vec![], |mut acc , x| {
+            if x.1 > &1 {
+                acc.push(x.0);
+            }
+            return acc;
+        });
+
+        particles = particles.iter().fold(vec![], |mut acc , x| {
+            let mut found = false;
+            for i in &dupes {
+                if x.position.x == i.0 &&
+                    x.position.y == i.1 &&
+                    x.position.z == i.2 {
+                    found = true;
+                    break;
+                }
+            };
+            if found == false {
+                acc.push(*x);
+            }
+            return acc;
+        });
+        // Part 2
+
+        
+
+        p2 = particles.len();    
     }
 
     let mut distances: Vec<(i32,i32)>= particles.into_iter().map(|p| {
@@ -76,8 +119,9 @@ pub fn day20() {
 
     distances.sort_by(|a, b| a.1.cmp(&b.1));
 
-    println!("Part 1 : {:?}", distances.first());
+    println!("Part 1 : {:?}", distances.first().unwrap().0);
+    println!("Part 2 : {:?}", p2);
     
+    
+
 }
-
-
