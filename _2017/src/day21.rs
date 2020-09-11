@@ -26,16 +26,21 @@ pub fn day21() {
     }
 
     
-    let mut state2 = "#..#..../......../......../.#.....#/.#.....#/##..####/.#.....#/##..####";
-    //let mut state2 = "#..#/..../..../#..#";
-    //let mut state2 = "#./..";
-   // let mut state2 = ".#./..#/###/.#./..#/###/.#./..#/###/.#./..#/###";
-  //  let mut state2 = ".#...#.#./.#..#...#/..##.#.##/.#..#...#/.#..#...#/#...##.##/.#...#.#./.#....#.#/#...##.##";
-    
+    let state3 = "#..#..../......../......../.#.....#/.#.....#/##..####/.#.....#/##..####";
+    let split3 = split(state3);
+    let combine3 = combine(split3);
+    assert_eq!(state3, combine3);
+
+    let state2 = "#..#..#../....#..../.....#.../.##.....#/.#....#.#/##.#.####/.#..#...#/###..####/###..####";
     let split2 = split(state2);
     let combine2 = combine(split2);
-
     assert_eq!(state2, combine2);
+    //let mut state2 = "#..#/..../..../#..#";
+    //let mut state2 = "#./..";
+   // 
+  //  let mut state2 = ".#...#.#./.#..#...#/..##.#.##/.#..#...#/.#..#...#/#...##.##/.#...#.#./.#....#.#/#...##.##";
+    
+
 
     println!("{:?}", rules);
 }
@@ -58,12 +63,16 @@ fn combine(transformed: Vec<String>) -> String {
         return r.iter().join("/");
 
     } else {
-        let rows = transformed.len() / 3;
+        let rows = transformed.len();
         let mut r = vec!["".to_string(); rows];
         for (i ,t) in transformed.into_iter().enumerate() {
-            r[i % rows].push_str(&t[0..3]);
+            let index = (i / 3) * 3;
+            r[index].push_str(&t[0..=2]);
+            r[index + 1].push_str(&t[4..=6]);
+            r[index + 2].push_str(&t[8..=10]);
         }
         return r.iter().join("/");
+
     }
 }
 
