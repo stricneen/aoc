@@ -40,14 +40,23 @@ pub fn day21() {
     println!("{:?}", rules);
 }
 
+// 0,1,2,3 -> 0
+                        // 4,5,6,7 -> 1
+// 8.9.10.11 -> 2
+
+
 fn combine(transformed: Vec<String>) -> String {
     if transformed.len() % 4 == 0 {
-        let rows = transformed.len() / 4;
+
+        let rows = transformed.len() / 2;
         let mut r = vec!["".to_string(); rows];
         for (i ,t) in transformed.into_iter().enumerate() {
-            r[i % rows].push_str(&t[0..2]);
+            let index = (i / 4) * 2;
+            r[index].push_str(&t[0..=1]);
+            r[index + 1].push_str(&t[3..=4]);
         }
         return r.iter().join("/");
+
     } else {
         let rows = transformed.len() / 3;
         let mut r = vec!["".to_string(); rows];
