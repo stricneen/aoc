@@ -13,7 +13,7 @@ struct Rule {
 
 
 pub fn day21() {
-    let filename = "data/day.txt";
+    let filename = "data/day21.txt";
     let mut rules = vec![];
     for line in common::common::FileLines::new(filename.to_string()) {
         let words: Vec::<&str> = line.split(" => ").collect();
@@ -47,15 +47,16 @@ pub fn day21() {
 
 
     let mut state = ".#./..#/###".to_string();
-    for _ in 0..4 {
+    for _ in 0..5 {
 
         let split = split(&state);
-        let apply = apply(split);
+        let apply = apply(split, &rules);
         let combine = combine(apply);
         let cpy = combine.clone();
         state = cpy;
         
         print(&state);
+        
     }
     println!("Part 1 : {:?}", state);
 }
@@ -64,34 +65,35 @@ fn print(rows: &String) {
     for r in rows.split('/') {
         println!("{}", r);
     }
+    println!("{}", rows.matches('#').count());
     println!();
-
 }
 
-fn apply(rows: Vec<String>) -> Vec<String> {
+fn apply(rows: Vec<String>, rules: &Vec<Rule>) -> Vec<String> {
     let mut r = vec![];
+
+
+   
 
 //          ../.# => ##./#../...
 //    .#./..#/### => #..#/..../..../#..#
-
     for i in rows.iter() {
-        if i.len() == 5 {
-            r.push("##./#../...".to_string());
+
+        let poss= rules.iter().filter(|&x| {
+            x.from.len() == i.len() && x.from.matches('.').count() == i.matches('.').count()
+        }).collect::<Vec<_>>();
+
+        if poss.len() == 1 {
+            r.push(poss.first().unwrap().to.clone());
         } else {
-            r.push("#..#/..../..../#..#".to_string());
+
+           // let mut trans = rules.iter().filter(|&x| &x.from == i);
+          //  let rule = trans.next().unwrap();
+            r.push(poss.first().unwrap().to.clone());
         }
     }
     return r;
 }
-
-// x x x
-// x x x
-// x x x
-
-// x x x x 
-// x x x x
-// x x x x 
-// x x x x 
 
 fn combine(transformed: Vec<String>) -> String {
 
@@ -103,7 +105,7 @@ fn combine(transformed: Vec<String>) -> String {
     //let rows = (transformed.len() as f32).sqrt()  as usize * sub;
 
     let mut ix = 0;
-    for (i ,t) in transformed.into_iter().enumerate() {
+    for (_ ,t) in transformed.into_iter().enumerate() {
 
         let mut x = t.split('/');
         for j in 0..sub {
@@ -113,16 +115,9 @@ fn combine(transformed: Vec<String>) -> String {
         if r[ix].len() == rows {
             ix += sub;
         }
-
-
     }
     return r.iter().join("/");
-
-
-        }
-
-
-
+}
 
 fn split(grid: &str) -> Vec<String>
 {
@@ -153,3 +148,33 @@ fn split(grid: &str) -> Vec<String>
     }
     return ret;
 }
+
+//##
+// .. 
+
+// ../..   ../..
+
+// ../.#   ../.#   
+//         ../#.   
+//         .#/..   
+//         #./..
+        
+// ##/..   ##/..
+//         #./#.
+//         .#/.#.
+//         ../##
+ 
+// .#/#.   .#/#.
+//         #./.#
+
+// .#
+// #.    
+
+
+//        ../.. => ..#/#.#/###
+//        #./.. => .#./#../###
+//        ##/.. => #.#/#.#/..#
+//        .#/#. => .##/..#/#..
+//        ##/#. => #../#.#/#..
+//        ##/## => #.#/.#./#..
+
