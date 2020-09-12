@@ -11,6 +11,58 @@ struct Rule {
     to: String
 }
 
+fn perms(from: String) -> Vec<String> {
+    let mut r = vec![];
+
+//    123 / 456 / 789
+//    123      741
+//    456      852
+//    789      963
+
+//    123 / 456 / 789
+//    123      321
+//    456      654
+//    789      987
+
+    let rotate = |x: &String| {
+        let flat = x.replace('/', "");
+        let b = flat.as_bytes();
+        return format!("{}{}{}/{}{}{}/{}{}{}",
+            b[6] as char, b[3] as char, b[0] as char, 
+            b[7] as char, b[4] as char, b[1] as char, 
+            b[8] as char, b[5] as char, b[2] as char) ;
+    };
+    let flip = |x: &String| {
+        let flat = x.replace('/', "");
+        let b = flat.as_bytes();
+        return format!("{}{}{}/{}{}{}/{}{}{}",
+            b[2] as char, b[1] as char, b[0] as char, 
+            b[5] as char, b[4] as char, b[3] as char, 
+            b[8] as char, b[7] as char, b[6] as char) 
+    };
+ 
+    let r1 = rotate(&from);
+    let r2 = rotate(&r1);
+    let r3 = rotate(&r2);
+    let f1 = flip(&from);
+    let f2 = flip(&r1);
+    let f3 = flip(&r2);
+    let f4 = flip(&r3);
+
+    r.push(r1.clone());
+    r.push(r2);
+    r.push(r3);
+
+    r.push(f1);
+    r.push(f2);
+    r.push(f3);
+    r.push(f4);
+    
+    r.sort();
+    r.dedup();
+
+    return r;
+}
 
 pub fn day21() {
     let filename = "data/day21.txt";
@@ -22,6 +74,16 @@ pub fn day21() {
             from: words[0].to_string(),
             to: words[1].to_string()
         });
+
+        if words[0].len() > 5 {
+        for ps in perms(words[0].to_string()) {
+                rules.push(Rule {
+                    from: ps,
+                    to: words[1].to_string()
+                });
+            }
+        }
+
     }
 
     
@@ -79,18 +141,23 @@ fn apply(rows: Vec<String>, rules: &Vec<Rule>) -> Vec<String> {
 //    .#./..#/### => #..#/..../..../#..#
     for i in rows.iter() {
 
-        let poss= rules.iter().filter(|&x| {
-            x.from.len() == i.len() && x.from.matches('.').count() == i.matches('.').count()
-        }).collect::<Vec<_>>();
+        let mtch = rules.iter().filter(|&x| { &x.from == i }).collect::<Vec<_>>();
+        println!("{}", i);
+        r.push(mtch.first().unwrap().to.clone());
+        
 
-        if poss.len() == 1 {
-            r.push(poss.first().unwrap().to.clone());
-        } else {
+        // let poss= rules.iter().filter(|&x| {
+        //     x.from.len() == i.len() && x.from.matches('.').count() == i.matches('.').count()
+        // }).collect::<Vec<_>>();
 
-           // let mut trans = rules.iter().filter(|&x| &x.from == i);
-          //  let rule = trans.next().unwrap();
-            r.push(poss.first().unwrap().to.clone());
-        }
+        // if poss.len() == 1 {
+        //     r.push(poss.first().unwrap().to.clone());
+        // } else {
+
+        //    // let mut trans = rules.iter().filter(|&x| &x.from == i);
+        //   //  let rule = trans.next().unwrap();
+        //     r.push(poss.first().unwrap().to.clone());
+        // }
     }
     return r;
 }
