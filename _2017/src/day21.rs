@@ -4,8 +4,7 @@ use itertools::Itertools;
 // ..#
 // ###
 
-//          ../.# => ##./#../...
-//    .#./..#/### => #..#/..../..../#..#
+
 #[derive(Debug)]
 struct Rule {
     from: String,
@@ -26,55 +25,104 @@ pub fn day21() {
     }
 
     
-    let state3 = "#..#..../......../......../.#.....#/.#.....#/##..####/.#.....#/##..####";
-    let split3 = split(state3);
-    let combine3 = combine(split3);
-    assert_eq!(state3, combine3);
+    // let state3 = "#..#..../......../......../.#.....#/.#.....#/##..####/.#.....#/##..####";
+    // let split3 = split(state3);
+    // let combine3 = combine(split3);
+    // assert_eq!(state3, combine3);
 
-    let state2 = "#..#..#../....#..../.....#.../.##.....#/.#....#.#/##.#.####/.#..#...#/###..####/###..####";
-    let split2 = split(state2);
-    let combine2 = combine(split2);
-    assert_eq!(state2, combine2);
-    //let mut state2 = "#..#/..../..../#..#";
-    //let mut state2 = "#./..";
-   // 
-  //  let mut state2 = ".#...#.#./.#..#...#/..##.#.##/.#..#...#/.#..#...#/#...##.##/.#...#.#./.#....#.#/#...##.##";
-    
+    // let state2 = "#..#..#../....#..../.....#.../.##.....#/.#....#.#/##.#.####/.#..#...#/###..####/###..####";
+    // let split2 = split(state2);
+    // let combine2 = combine(split2);
+    // assert_eq!(state2, combine2);
+
+    // let sparse = vec!["##./#../...".to_owned(), "##./#../...".to_owned(), "##./#../...".to_owned(),"##./#../...".to_owned()];
+    // let com = combine(sparse);
+    // assert_eq!("##.##./#..#../....../##.##./#..#../......", com);
+
+    // let spare2 = vec!["##./#../...".to_string(); 9];
+    // let com2 = combine(spare2);
+    // assert_eq!("##.##./#..#../....../##.##./#..#../......", com);
 
 
-    println!("{:?}", rules);
+
+
+    let mut state = ".#./..#/###".to_string();
+    for _ in 0..4 {
+
+        let split = split(&state);
+        let apply = apply(split);
+        let combine = combine(apply);
+        let cpy = combine.clone();
+        state = cpy;
+        
+        print(&state);
+    }
+    println!("Part 1 : {:?}", state);
 }
 
-// 0,1,2,3 -> 0
-                        // 4,5,6,7 -> 1
-// 8.9.10.11 -> 2
+fn print(rows: &String) {
+    for r in rows.split('/') {
+        println!("{}", r);
+    }
+    println!();
 
+}
+
+fn apply(rows: Vec<String>) -> Vec<String> {
+    let mut r = vec![];
+
+//          ../.# => ##./#../...
+//    .#./..#/### => #..#/..../..../#..#
+
+    for i in rows.iter() {
+        if i.len() == 5 {
+            r.push("##./#../...".to_string());
+        } else {
+            r.push("#..#/..../..../#..#".to_string());
+        }
+    }
+    return r;
+}
+
+// x x x
+// x x x
+// x x x
+
+// x x x x 
+// x x x x
+// x x x x 
+// x x x x 
 
 fn combine(transformed: Vec<String>) -> String {
-    if transformed.len() % 4 == 0 {
 
-        let rows = transformed.len() / 2;
-        let mut r = vec!["".to_string(); rows];
-        for (i ,t) in transformed.into_iter().enumerate() {
-            let index = (i / 4) * 2;
-            r[index].push_str(&t[0..=1]);
-            r[index + 1].push_str(&t[3..=4]);
-        }
-        return r.iter().join("/");
+    let l = transformed.first().unwrap().chars().fold(0, |acc, x| {if x == '/' {acc} else {acc + 1}});
+    let rows = ((transformed.len() as f32 * l as f32).sqrt()) as usize;
 
-    } else {
-        let rows = transformed.len();
-        let mut r = vec!["".to_string(); rows];
-        for (i ,t) in transformed.into_iter().enumerate() {
-            let index = (i / 3) * 3;
-            r[index].push_str(&t[0..=2]);
-            r[index + 1].push_str(&t[4..=6]);
-            r[index + 2].push_str(&t[8..=10]);
+    let mut r = vec!["".to_string(); rows];
+    let sub = transformed.first().unwrap().split('/').next().unwrap().len();
+    //let rows = (transformed.len() as f32).sqrt()  as usize * sub;
+
+    let mut ix = 0;
+    for (i ,t) in transformed.into_iter().enumerate() {
+
+        let mut x = t.split('/');
+        for j in 0..sub {
+            r[ix+j].push_str(x.next().unwrap());
         }
-        return r.iter().join("/");
+
+        if r[ix].len() == rows {
+            ix += sub;
+        }
+
 
     }
-}
+    return r.iter().join("/");
+
+
+        }
+
+
+
 
 fn split(grid: &str) -> Vec<String>
 {
