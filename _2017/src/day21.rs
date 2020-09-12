@@ -109,7 +109,7 @@ pub fn day21() {
 
 
     let mut state = ".#./..#/###".to_string();
-    for _ in 0..5 {
+    for _ in 0..18 {
 
         let split = split(&state);
         let apply = apply(split, &rules);
@@ -120,13 +120,13 @@ pub fn day21() {
         print(&state);
         
     }
-    println!("Part 1 : {:?}", state);
+    // println!("Part 1 : {:?}", state);
 }
 
 fn print(rows: &String) {
-    for r in rows.split('/') {
-        println!("{}", r);
-    }
+    // for r in rows.split('/') {
+    //     println!("{}", r);
+    // }
     println!("{}", rows.matches('#').count());
     println!();
 }
@@ -142,7 +142,7 @@ fn apply(rows: Vec<String>, rules: &Vec<Rule>) -> Vec<String> {
     for i in rows.iter() {
 
         let mtch = rules.iter().filter(|&x| { &x.from == i }).collect::<Vec<_>>();
-        println!("{}", i);
+       // println!("{}", i);
         r.push(mtch.first().unwrap().to.clone());
         
 
