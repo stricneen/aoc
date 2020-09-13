@@ -3,6 +3,10 @@ use std::collections::HashSet;
 pub fn day22() {
     let filename = "data/day22.txt";
     let mut infected: HashSet<(i32,i32)>= HashSet::new();
+    let mut weakened: HashSet<(i32,i32)>= HashSet::new();
+    let mut flagged: HashSet<(i32,i32)>= HashSet::new();
+
+
     let mut map = vec![];
     let mut y = 0;
     for line in common::common::FileLines::new(filename.to_string()) {
@@ -26,25 +30,41 @@ pub fn day22() {
 
     let mut infection_count = 0;
 
-    // Part 1
-    for _ in 0..10000 {
+    // Part 2
+    for _ in 0..10000000 {
 
         // Turn 
-        if infected.contains(&position) {
+        if weakened.contains(&position) {
+            // do nothing
+        } else if infected.contains(&position) {
             facing = (facing + 1) % 4;
-        } else {
+        } else if flagged.contains(&position) {
+            facing = (facing + 2) % 4;
+        } 
+        else {
             facing -=1;
             if facing == -1 {
                 facing = 3;
             }
         }
 
+        // Clean nodes become weakened.
+        // Weakened nodes become infected.
+        // Infected nodes become flagged.
+        // Flagged nodes become clean.
         // Clean / infect
-        if infected.contains(&position) {
-            infected.remove(&position);
-        } else {
+
+        if weakened.contains(&position) {
+            weakened.remove(&position);
             infected.insert(position);
-            infection_count += 1;
+            infection_count +=1;
+        } else if infected.contains(&position) {
+            infected.remove(&position);
+            flagged.insert(position);
+        } else if flagged.contains(&position) {
+            flagged.remove(&position);
+        } else {
+            weakened.insert(position);
         }
 
         // Move 
@@ -56,5 +76,8 @@ pub fn day22() {
             _ => panic!()
         };
     }
-    println!("Part 1: {:?}", infection_count);
+
+
+    // see commit for p1
+    println!("Part 2: {:?}", infection_count);
 }
