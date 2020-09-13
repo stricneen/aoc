@@ -120,7 +120,8 @@ pub fn day21() {
         print(&state);
         
     }
-    // println!("Part 1 : {:?}", state);
+    // ga .
+    println!("Part 1 : {:?}", state);
 }
 
 fn print(rows: &String) {
