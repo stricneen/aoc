@@ -1,25 +1,40 @@
+set b 57
+set c b
+jnz a 2
+jnz 1 5
+mul b 100
+sub b -100000
+set c b                        b = 105_700
+sub c -17000                   c = 122_700 
 
+            for b in 105_700 .. 17 .. 122_700
 
-                gyxo (61)
-              /     
-         ugml (68) * - ebii (61)
-       /      \     
-      |         jptl (61)
-      |        
-      |         pbga (66)
-     /        /
-tknk (41)- padx (45) - havc (66)
-     \        \
-      |         qoyq (66)
-      |             
-      |         ktlj (57)
-       \      /     
-         fwft (72) - cntj (57)
-              \     
-                xhth (57)
+set f 1                         f = 1
+set d 2                         d = 2
 
-Weights : {"ebii": 61, "tknk": 170, "fwft": 129, "padx": 111,
- "ktlj": 57, "ugml": 129, "cntj": 57, "gyxo": 61, "jptl": 61, 
- "qoyq": 66, "pbga": 66, "xhth": 57, "havc": 66}
+                do 
+set e 2              e = 2
 
+set g d              do
+mul g e
+sub g b                 if ( d * e - b != 0)       
+jnz g 2           **       f = 0                   <- stops inc
+set f 0
+sub e -1                  e = e + 1
+set g e
+sub g b               
+jnz g -8              while   e - b != 0          2 - 105_700   
+
+sub d -1              d  = d + 1
+set g d         
+sub g b
+jnz g -13       while d - b != 0
+jnz f 2         if f != 0
+sub h -1            h = h + 1
+set g b         
+sub g c           
+jnz g 2         if b - c = 0 QUIT
+jnz 1 3
+sub b -17      b = b + 17  (1000)
+jnz 1 -23       restart
 

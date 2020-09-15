@@ -12,8 +12,9 @@ set e 2
 set g d
 mul g e
 sub g b
-jnz g 2
+jnz g 3 c
 set f 0
+jnz 1 9 *
 sub e -1
 set g e
 sub g b

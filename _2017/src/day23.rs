@@ -56,7 +56,7 @@ pub fn day23() {
 
     // Part 1 : Execute program
     let mut state_p1 = State {
-        registers:  [(('!', 0))].iter().cloned().collect(),
+        registers:  [('!', 0), ('a', 1)].iter().cloned().collect(),
         pointer: 0,
         input: vec![],
         output: vec![]
@@ -134,8 +134,14 @@ fn cycle(state: &mut State, program: &HashMap<i64, Instruction>) {
             },
 
             "sub" => {
+
                 match curr.argument {
-                    Arg::Value(v) => &state.registers.insert(curr.register, state.registers[&curr.register] - v),
+                    Arg::Value(v) => { 
+                        if v == -17 {
+                            println!("{:?}", state.registers);
+                        }
+                        &state.registers.insert(curr.register, state.registers[&curr.register] - v)
+                    },
                     Arg::Register(v) => &state.registers.insert(curr.register, state.registers[&curr.register] - state.registers[&v]),
                 };
             },
@@ -152,74 +158,24 @@ fn cycle(state: &mut State, program: &HashMap<i64, Instruction>) {
                 match curr.argument {
                     Arg::Value(v) => {
                         if curr.register == '1' {
+                            println!("< {} {} >", curr.register, v);
                             inc = v;
                         } else {
                             if state.registers[&curr.register] != 0 {
+                                println!("< {} {} >", curr.register, v);
                                 inc = v;
                             }
                         }
                     },
                     Arg::Register(v) => {
                         if state.registers[&curr.register] != 0 {
+                            println!("< {} {} >", curr.register, &v);
                             inc = state.registers[&v]
                         }
                     },
                 };
             },
 
-            // "snd" => { 
-            //     let try_int = curr.register.to_string().parse::<i64>();
-            //     if try_int.is_err() { 
-            //         &state.output.push(state.registers[&curr.register]);
-            //     } else {
-            //         &state.output.push(try_int.unwrap());
-            //     }
-            // },
-
-            // "add" => {
-            //     match curr.argument {
-            //         Arg::Value(v) => &state.registers.insert(curr.register, state.registers[&curr.register] + v),
-            //         Arg::Register(v) => &state.registers.insert(curr.register, state.registers[&curr.register] + state.registers[&v]),
-            //     };
-            // },
-
-            // "mod" =>  {    
-            //     match curr.argument {
-            //         Arg::Value(v) => &state.registers.insert(curr.register, state.registers[&curr.register] % v),
-            //         Arg::Register(v) => &state.registers.insert(curr.register, state.registers[&curr.register] % state.registers[&v]),
-            //     };
-            // },
-
-            // "rcv" => {
-            //     if state.input.len() > 0 {
-            //         let inp = state.input.remove(0);
-            //         state.registers.insert(curr.register, inp);
-            //     } else {
-            //       //  println!("Insts  : {}", counter);
-            //         break; // no more input
-            //     }
-            // },
-
-            // "jgz" => {
-            //     match curr.argument {
-            //         Arg::Value(v) => {
-            //             if curr.register == '1' {
-            //                 inc = v;
-            //             } else {
-            //                 if state.registers[&curr.register] > 0 {
-            //                     inc = v;
-            //                 }
-            //             }
-            //         },
-            //         Arg::Register(v) => {
-            //             if state.registers[&curr.register] > 0 {
-            //                 inc = state.registers[&v]
-            //             }
-            //         },
-            //     };
-            // },
-
-            
 
             &_ => panic!()
         }
