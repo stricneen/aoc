@@ -56,15 +56,28 @@ pub fn day23() {
 
     // Part 1 : Execute program
     let mut state_p1 = State {
-        registers:  [('!', 0), ('a', 1)].iter().cloned().collect(),
+        registers:  [('!', 0), ('a', 0)].iter().cloned().collect(),
         pointer: 0,
         input: vec![],
         output: vec![]
     };
-    cycle(&mut state_p1, &program);
+    //cycle(&mut state_p1, &program);
     println!("Part 1 : {:?}", state_p1.registers);
     
 
+    // Part 2
+    // 914 tl
+
+    let mut non_primes = 0;
+    for c in (105_700..=122_700).step_by(17) {
+        //println!("{}", c);
+         if is_prime(c) == false{
+             non_primes += 1;
+            // println!("{} {} ", primes, c);
+         }
+
+    }
+    println!("Part 2 : {}", non_primes);
     // // Part 2
     // let mut state_p2_1 = State {
     //     registers:  [('p', 0)].iter().cloned().collect(),
@@ -105,6 +118,18 @@ pub fn day23() {
     // //println!("{:?}", state_p2_2.registers);
 
     // println!("Part 2 : {}", prog1_sends);
+}
+
+fn is_prime(n: u32) -> bool {
+    if n <= 1 {
+        return false;
+    }
+    for a in 2..n {
+        if n % a == 0 {
+            return false; 
+        }
+    }
+    true 
 }
 
 fn cycle(state: &mut State, program: &HashMap<i64, Instruction>) {
@@ -158,18 +183,18 @@ fn cycle(state: &mut State, program: &HashMap<i64, Instruction>) {
                 match curr.argument {
                     Arg::Value(v) => {
                         if curr.register == '1' {
-                            println!("< {} {} >", curr.register, v);
+                            //println!("< {} {} >", curr.register, v);
                             inc = v;
                         } else {
                             if state.registers[&curr.register] != 0 {
-                                println!("< {} {} >", curr.register, v);
+                                //println!("< {} {} >", curr.register, v);
                                 inc = v;
                             }
                         }
                     },
                     Arg::Register(v) => {
                         if state.registers[&curr.register] != 0 {
-                            println!("< {} {} >", curr.register, &v);
+                            //println!("< {} {} >", curr.register, &v);
                             inc = state.registers[&v]
                         }
                     },

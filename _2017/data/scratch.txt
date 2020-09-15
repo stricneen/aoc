@@ -12,23 +12,23 @@ sub c -17000                   c = 122_700
 set f 1                         f = 1
 set d 2                         d = 2
 
-                do 
-set e 2              e = 2
+                 d in 2 .. b
+set e 2              
 
-set g d              do
+set g d              e in 2 .. b
 mul g e
-sub g b                 if ( d * e - b != 0)       
+sub g b                 if ( d * e - b == 0)       
 jnz g 2           **       f = 0                   <- stops inc
 set f 0
-sub e -1                  e = e + 1
+sub e -1                  
 set g e
 sub g b               
-jnz g -8              while   e - b != 0          2 - 105_700   
+jnz g -8              
 
-sub d -1              d  = d + 1
+sub d -1              
 set g d         
 sub g b
-jnz g -13       while d - b != 0
+jnz g -13       
 jnz f 2         if f != 0
 sub h -1            h = h + 1
 set g b         
@@ -37,4 +37,23 @@ jnz g 2         if b - c = 0 QUIT
 jnz 1 3
 sub b -17      b = b + 17  (1000)
 jnz 1 -23       restart
+
+
+
+for b in 105_700 .. 17 .. 122_700
+
+        d in 2 .. b
+
+                e in 2 .. b
+
+                        if (d * e) - b == 0       
+                **              dont inc                   <- stops inc
+
+                2 * 2   ==  105_700
+                2 * 3   ==
+                2 * 105   ==
+
+
+how many primes ?
+105_700 .. 17 .. 122_700
 
