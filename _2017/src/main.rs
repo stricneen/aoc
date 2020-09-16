@@ -20,10 +20,10 @@
 //mod day20;
 //mod day21;
 //mod day23;
-mod day24;
-
+//mod day24;
+mod day25;
 fn main() {
-    day24::day24();
+    day25::xmas();
     //day23::day23();
     //day21::day21();
     // day20::day20();
