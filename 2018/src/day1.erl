@@ -10,11 +10,13 @@ day2() ->
     % io:format("Day 1 ~n"),
     Lines = readlines("../data/day1.txt"),
 
-    Lines2 = lists:map(fun(N) -> list_to_integer(N) + 100 end, Lines),
+    Lines2 = lists:map(fun(N) -> N2 = N--"\n", list_to_integer(N2) end, Lines),
+
+    Total = lists:foldl(fun(A, N) -> A + N end, 0, Lines2),
     
 
 
-    io:format(Lines2).
+    io:format(Total).
 
 readlines(FileName) ->
     {ok, Device} = file:open(FileName, [read]),
@@ -25,18 +27,3 @@ get_all_lines(Device, Accum) ->
         eof  -> file:close(Device), Accum;
         Line -> get_all_lines(Device, Accum ++ [Line])
     end.
-
-file(FName) ->  % a variable must start by an Upper case character, otherwise it is an atom
-    % {ok,IoDevice} = file:open(FName, [read]), % file:open/2 returns the tuple {ok,IoDevice} if it succeeds.
-    {ok, Binary} = file:read_file(FName),
-    io:format(Binary).                                         % IoDevice is the file descriptor you will use for further accesses
-    %string:tokens(io:get_line(IoDevice,""), ". "). % you must use the file descriptor to read a new line, get_line
-                                               % is expecting 2 arguments, the second one is a prompt, not used here
-                                               % this code will split the first line of the file FName using
-                                               % the dot and the white space as separators. It will then returns
-                                               % the results letting the file open, but with the file descriptor
-                                               % lost! so no chance to continue to read the lines like this.
-
-% readfile(FileName) ->
-%     {ok, Binary} = file:read_file(FileName),
-%     Lines = string:tokens(erlang:binary_to_list(Binary), "\n").
