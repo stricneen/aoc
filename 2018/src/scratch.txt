@@ -1,0 +1,13 @@
+L = [a,b,c,d,e,f,g],
+Function = fun(Elem) -> atom_to_binary(Elem, utf8) end,
+lists:foreach(Function, L).
+
+
+
+
+func([]) -> ok;
+func([H|T]) ->
+    otherFunction(H),
+    func(T).
+
+[otherFunction(H) || H <- L].
