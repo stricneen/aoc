@@ -8,5 +8,5 @@ readlines(FileName) ->
 get_all_lines(Device, Accum) ->
     case io:get_line(Device, "") of
         eof  -> file:close(Device), Accum;
-        Line -> get_all_lines(Device, Accum ++ [Line])
+        Line -> get_all_lines(Device, Accum ++ [string:trim(Line)])
     end.
