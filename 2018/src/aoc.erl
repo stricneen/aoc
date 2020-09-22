@@ -1,6 +1,7 @@
 -module(aoc).
 -export([readlines/1]).
 -export([aggregate_list/2]).
+-export([print_list/1]).
 
 readlines(FileName) ->
     {ok, Device} = file:open(FileName, [read]),
@@ -20,3 +21,8 @@ aggregate_list([H|T], Counts) ->
     aggregate_list(T, NewCounts);
 
 aggregate_list([], Counts) -> Counts.
+
+print_list(L) ->
+    lists:foreach(fun(X) -> 
+        io:format("~p~n", [X])
+        end, L).
