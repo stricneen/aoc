@@ -12,19 +12,19 @@ run() ->
         {D, list_to_integer(S), Event}
         end, SortedInput),
 
-    Times = lists:foldl(fun(X,A) -> A end, [], Parsed),
+    Time = lists:foldl(fun({D,M,A}, Acc) -> 
+        B = case A of 
+            " G" ++ _ -> guard;
+            " f" ++ _ -> sleep;
+            " w" ++ _ -> wake
+        end,
+        [B] ++ Acc
+    end, [], Parsed),
+
+    aoc:print_list(Time).
 
 
-
-    aoc:print_list(Parsed).
-
-
-
-
-% dict : 
-
-
-
+    % Times = lists:foldl(fun(X,A) -> A end, [], Time),
 
 % {"[1518-11-19 23:58"," Guard #821 begins shift"}
 % {"[1518-11-21 00:03"," Guard #1447 begins shift"}
