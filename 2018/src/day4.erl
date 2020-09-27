@@ -60,8 +60,8 @@ run() ->
     
     SleepyJoined = lists:flatten(SleepyExpanded),
 
-    % io:format("~p~n", [SleepyTimes]),
-    % io:format("~p~n", [SleepyJoined]),
+% io:format("~p~n", [SleepyTimes]),
+% io:format("~p~n", [SleepyJoined]),
 
     SleepyCount = lists:foldl(fun (X, Acc) -> 
         NewCounts = case dict:is_key(X, Acc) of
@@ -73,38 +73,65 @@ run() ->
     
     % io:format("~p~n", [SleepyCount]),
 
-    MaxMin  = dict:fold(fun(K,V,{Curr,Max}) -> 
+    MaxMinute  = dict:fold(fun(K,V,{Curr,Max}) -> 
         if V > Max -> {K,V};
             true -> {Curr,Max}
         end
         
          end, {0,0} , SleepyCount),
-    io:format("Max min = ~p~n", [MaxMin]).
+    io:format("Max min = ~p~n", [MaxMinute]),
 
-
-
-    %print(Mins),
-    % io:format("~p~n", [Sleepy]).
-   
-   
-   
-   
-   % print(Sleepy),
-
-
-    % Shifts = length(dict:fetch_keys(Sleepy)),
-    % io:format("~p~n", [Shifts]),
-
+    % Part 2
     
-    % MostSleep = dict:fold(fun(K,V,A) -> 
-    %         %{C,S} = A,
-    %         % R = if V > S -> {K,V};
-    %         %     true -> {C,S}
-    %         % end,
-    %         % R
-    %         A
-    %     end, {"",0}, TotalTimes),
-     %aoc:print_list(MS).
+    Exp = lists:map(fun ({G,T,_}) ->
+        {G, pair(fun(X,Y,A) -> lists:seq(X,Y-1) ++ A end, [], T)}
+        end, Lines),
+
+
+    AllMins = lists:foldl(fun({G,T}, A) -> 
+        NewAcc = case lists:search(fun({Gu,_})  -> Gu == G end, A) of
+            {_,{GuardFound,Times}} -> lists:keyreplace(GuardFound, 1, A, {GuardFound, T ++ Times}); %[{G, T ++ Times}] ++ A;
+            false -> [{G,T}] ++ A
+                end,
+        NewAcc
+        end, [], Exp),
+
+    CountMins = lists:map(fun({G,T}) -> 
+         
+        Agg = lists:foldl(fun (X, Acc) -> 
+                NewCounts = case dict:is_key(X, Acc) of
+                    true -> dict:update(X, fun(Value) -> Value + 1 end, Acc);
+                    false -> dict:store(X, 1, Acc)
+                    end,
+                NewCounts
+                end, dict:new(), T),
+
+        Max = dict:fold(fun(K,V,{B,C}) -> 
+            R = if V > C -> {K,V};
+                true -> {B,C}
+            end,
+            R
+            end, {0,0}, Agg),
+        {G,Max}
+        end, AllMins),
+
+    print(""),
+    io:format("~p~n", [CountMins]),
+
+    Part2 = lists:foldl(fun({G,{M,L}}, {G2,{M2,L2}}) -> 
+        R = if L > L2 -> {G,{M,L}};
+                true -> {G2,{M2,L2}}
+        end,
+        R
+     end, {"",{0,0}}, CountMins),
+
+
+    io:format("Part 2 : ~p~n", [Part2])
+
+.
+
+
+
 
 
 pair(_,A,[]) -> A;
@@ -117,7 +144,7 @@ pair(F,A,L) ->
 
 
 print(I) ->
-    io:format("~p~n", I).
+    io:format("~p~n", [I]).
 
 
     % Times = lists:foldl(fun(X,A) -> A end, [], Time),
