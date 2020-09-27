@@ -3,7 +3,7 @@
 
 run() ->
 
-    Input = aoc:readlines("../data/day.txt"),
+    Input = aoc:readlines("../data/day4.txt"),
     SortedInput = lists:sort(Input),
     Parsed = lists:map(fun (X) -> 
         [Time, Event] = string:lexemes(X, "]"),
@@ -39,16 +39,63 @@ run() ->
         end, dict:new(), Lines),
 
 
-    MS = dict:fold(fun(K,V,A) -> 
+
+    {Guard, Mins} = dict:fold(fun(K,V,A) -> 
         {_,M} = A,
         if 
            V > M -> {K,V};
            true -> A
         end
-    
         end, {"",0}, TotalTimes),
     
+    
+    io:format("Guard ~p slept for ~p mins~n", [Guard,Mins]),
 
+    Sleepy = lists:filter(fun({G,_,_}) -> G == Guard  end, Lines),
+    SleepyTimes = lists:map(fun({_,T,_}) -> T end, Sleepy),
+
+    SleepyExpanded = lists:map(fun(L) -> 
+        pair(fun(X,Y,A) -> lists:seq(X,Y-1) ++ A end, [], L)
+        end, SleepyTimes),
+    
+    SleepyJoined = lists:flatten(SleepyExpanded),
+
+    % io:format("~p~n", [SleepyTimes]),
+    % io:format("~p~n", [SleepyJoined]),
+
+    SleepyCount = lists:foldl(fun (X, Acc) -> 
+        NewCounts = case dict:is_key(X, Acc) of
+            true -> dict:update(X, fun(Value) -> Value + 1 end, Acc);
+            false -> dict:store(X, 1, Acc)
+            end,
+        NewCounts
+        end, dict:new(), SleepyJoined),
+    
+    % io:format("~p~n", [SleepyCount]),
+
+    MaxMin  = dict:fold(fun(K,V,{Curr,Max}) -> 
+        if V > Max -> {K,V};
+            true -> {Curr,Max}
+        end
+        
+         end, {0,0} , SleepyCount),
+    io:format("Max min = ~p~n", [MaxMin]).
+
+
+
+    %print(Mins),
+    % io:format("~p~n", [Sleepy]).
+   
+   
+   
+   
+   % print(Sleepy),
+
+
+    % Shifts = length(dict:fetch_keys(Sleepy)),
+    % io:format("~p~n", [Shifts]),
+
+    
     % MostSleep = dict:fold(fun(K,V,A) -> 
     %         %{C,S} = A,
     %         % R = if V > S -> {K,V};
@@ -57,14 +104,9 @@ run() ->
     %         % R
     %         A
     %     end, {"",0}, TotalTimes),
-
-     io:format("~p~n", [MS]).
      %aoc:print_list(MS).
 
-% ,[5,25,30,55]}
 
-
-% love this
 pair(_,A,[]) -> A;
 
 pair(F,A,L) ->
@@ -73,6 +115,9 @@ pair(F,A,L) ->
     pair(F,A2,T).
 
 
+
+print(I) ->
+    io:format("~p~n", I).
 
 
     % Times = lists:foldl(fun(X,A) -> A end, [], Time),
