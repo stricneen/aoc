@@ -6,15 +6,29 @@
 run() ->
     Input = lists:nth(1, aoc:readlines("../data/day5.txt")),
    % Input = "dabAcCaCBAcCcaDA",
-   % Input = "dabCBAcaDA",
-    
+   % Input = "dabCBAcaDA",    
 
-    P1 = react(Input),
-   % io:format("Part 1 : ~p~n", [P1]),
+    L1 = [ [X] || X <- lists:seq(65,90)] ,
+    L2 = [ [X] || X <- lists:seq(97,122)] ,
+    Lc = lists:zip(L1,L2),
 
-    io:format("Part 1 : ~p~n", [length(P1)]).
+    K = re:replace(re:replace(Input, "K", "", [global, {return,list}]), "k", "", [global,{return,list}]),
+    KK = react(K),
+    io:format("Part 1mmm : ~p~n", [KK])
 
+    % io:format("Part 1 : ~p~n", [Lc]),
 
+    % Answers = lists:map(fun ({X,Y}) -> 
+    %     Contracted = re:replace(re:replace(Input, X, "", [global, {return,list}]), Y, "", [global,{return,list}]),
+    %     Ins = react(Contracted),
+    %     io:format("~p ~n", [length(Ins)]),
+    %     {X,Y,length(Ins)}
+    %     end, Lc),
+
+    % io:format("Part 2 : ~p~n", [lists:sort(Answers)])
+    .
+
+% 6396
 
 react(Polymer) ->
     Index = find_reaction(Polymer, 0),
@@ -23,7 +37,6 @@ react(Polymer) ->
      end,
     R.
 
-
 split(Polymer, Index) ->
     % 3io:format("~p~n", [Polymer]),
     After = lists:sublist(Polymer, Index) ++ lists:sublist(Polymer, Index + 3, length(Polymer)),
@@ -31,10 +44,9 @@ split(Polymer, Index) ->
         true -> react(After)
     end,
     R.
-
         
 find_reaction([], _) -> [];
-find_reaction([_,_], _) -> none;
+find_reaction([_,_], []) -> none;
 find_reaction(Polymer, I) ->
     [A,B|T] = Polymer,
     R = if 
@@ -43,3 +55,8 @@ find_reaction(Polymer, I) ->
     end,
     R.
     
+% A-Z   65 - 90
+% a-z   97 - 122
+% Pr = [ [X,X+32] || X <- lists:seq(65,90) ]. 
+
+
