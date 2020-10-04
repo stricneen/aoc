@@ -22,17 +22,25 @@ run() ->
     Single = lists:filter(fun({_,O}) -> length(O) == 1 end, Closest),
     Unbound = lists:filter(fun({{X,Y},_}) -> (X == X1) or (X == X2) or (Y ==Y1) or (Y == Y2) end, Single),
     UnboundC = dedup(lists:sort(lists:map(fun({_,D}) -> element(1,hd(D)) end, Unbound))),
-
+    
     Bound = lists:filter(fun({_,L}) -> not lists:member(element(1,hd(L)), UnboundC) end, Single),
-    %  {  {1,1} ,  [{{1,1},0}]  }
-
     Areas = count(fun({_, L}) -> element(1,hd(L)) end, Bound),
-
     A = dict:to_list(Areas),
+    io:format("Part 1 : ~p~n", [A]),
+
+
+
+    Totals = lists:map(fun(S) -> 
+        lists:sum(lists:map(fun(P) -> distance(S,P) end, Coords))
+        end, Map),
+
+    S = length(lists:filter(fun(X) -> X < 10000 end, Totals)),
+
+    io:format("Part 2 : ~p~n", [S])
+
 
     % io:format("TL : ~p~n", [{X1, Y1}]),
     % io:format("BR : ~p~n", [{X2, Y2}]),
-    io:format("Part 1 : ~p~n", [A]) 
     .
 
 %    1,1      Map [ - 1,1 - 1,2 - 1,3 - ]
