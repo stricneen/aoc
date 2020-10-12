@@ -1,6 +1,6 @@
 -module(day8).
 -export([run/0]).
--record(node, {childCount, metaCount, children, metadata}).
+%-record(node, {childCount, metaCount, children, metadata}).
 
 
 run() ->
@@ -8,36 +8,56 @@ run() ->
     Input = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2",
     L = lists:map(fun(X) -> 
         list_to_integer(X)
-        end, string:tokens(Input2, " ")),
-    %io:format("~p~n", [L]),
+        end, string:tokens(Input, " ")),
 
     %Part 1
     Remaing = rev(L, 0),
-    io:format("~nPart 1 : ~p~n", [Remaing])
+    io:format("Part 1 : ~p~n", [Remaing]),
 
+    Tree = tree(0, L),
+    io:format("Part 2 : ~w~n", [Tree]),
 
-
-
-
-    % Tree = tree(L),
-    % io:format("Part 2 : ~p~n", [Tree])
+    Tree2 = tree(1, Tree),
+    io:format("Part 2 : ~w~n", [Tree2])
+%     c(day8), day8:run().
 .
 
-
 % "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2",
+tree(I, [H|T]) when is_list(H) -> H ++ tree(I, T);
+tree(I, L) ->
+io:format("~p ~n", [L]),
+    Zeros = lists:any(fun(X) -> X == I end, L),
+    Add = if Zeros ->
+            [ChildrenCount | [MetaCount|T]] = L,
+            % io:format("~p~n", [ChildrenCount]),
 
-% tree(L) ->
+            % {Children, Remain} = lists:split(ChildrenCount, T),
+            % io:format("~p~n", [Remain]),
 
-%     io:format("~p~n", [L]),
+   % [2,3,  [0,3,10,11,12] , [1,1,[0,1,99],2] ,1,1,2]
 
-%     [ChildrenCount | [MetaCount|T]] = L,
+            Next = case ChildrenCount of 
+                I -> 
+                    {Children, Remain} = lists:split(ChildrenCount, T),
+                    io:format("~p ~p~n", [Children, Remain]),
 
-%     Add = case ChildrenCount of 
-%         0 -> lists:sublist(MetaCount, T);
-        
-%     end,
+                    {_,R} = lists:split(MetaCount, Remain), 
+                     
+                    [[ChildrenCount] ++ [MetaCount] ++ Children ++ lists:sublist(T, MetaCount)] ++ tree(I, R);
+             
+             
+             
+                _ -> [ChildrenCount] ++ [MetaCount] ++ tree(I, T)
+            end,
+            Next;
 
-%     Add.
+        true -> L
+        end,
+   Add.
+
+    %io:format("~w~n", [L]),
+
+   
 
    
 
