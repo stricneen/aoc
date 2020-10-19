@@ -14,57 +14,23 @@ run() ->
     Remaing = rev(L, 0),
     io:format("Part 1 : ~p~n", [Remaing]),
 
-    Tree = tree(0, L),
-    io:format("Part 2 : ~w~n", [Tree]),
+    % Tree = tree(0, L),
+    % io:format("Part 2 A : ~w~n", [Tree]),
 
-    Tree2 = tree(1, Tree),
-    io:format("Part 2 : ~w~n", [Tree2])
+    % Tree2 = tree(1, Tree),
+    % io:format("Part 2 B : ~w~n", [Tree2])
 %     c(day8), day8:run().
+
+    io:format("")
 .
 
-% "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2",
-tree(I, [H|T]) when is_list(H) -> H ++ tree(I, T);
-tree(I, L) ->
-io:format("~p ~n", [L]),
-    Zeros = lists:any(fun(X) -> X == I end, L),
-    Add = if Zeros ->
-            [ChildrenCount | [MetaCount|T]] = L,
-            % io:format("~p~n", [ChildrenCount]),
 
-            % {Children, Remain} = lists:split(ChildrenCount, T),
-            % io:format("~p~n", [Remain]),
 
-   % [2,3,  [0,3,10,11,12] , [1,1,[0,1,99],2] ,1,1,2]
 
-            Next = case ChildrenCount of 
-                I -> 
-                    {Children, Remain} = lists:split(ChildrenCount, T),
-                    io:format("~p ~p~n", [Children, Remain]),
 
-                    {_,R} = lists:split(MetaCount, Remain), 
-                     
-                    [[ChildrenCount] ++ [MetaCount] ++ Children ++ lists:sublist(T, MetaCount)] ++ tree(I, R);
-             
-             
-             
-                _ -> [ChildrenCount] ++ [MetaCount] ++ tree(I, T)
-            end,
-            Next;
 
-        true -> L
-        end,
-   Add.
 
-    %io:format("~w~n", [L]),
 
-   
-
-   
-
-    % #node{childCount=ChildrenCount, 
-    %     metaCount=MetaCount, 
-    %     children = tree(ChildrenCount, Children),
-    %     metadata = Meta}.
 
 
 
@@ -84,7 +50,7 @@ rev(L,Acc) ->
     end,
     Ret.
 
-%  Input = "     2 3      0 3    10 11 12   1 1 0 1 99 2     1 1 2"
+%  Input = "     2 3     0 3  10 11 12     1 1   0 1 99   2     1 1 2"
 remove_first([], 0) ->  0;
 remove_first(_, [0,[]]) -> {0,0};
 remove_first(H, L) ->
@@ -102,3 +68,42 @@ remove_first(H, L) ->
     Re.
 
 % c(day8), day8:run().
+
+
+
+
+
+
+
+% "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2",
+% tree(I, [H|T]) when is_list(H) -> H ++ tree(I, T);
+% tree(I, L) ->
+% io:format("~p ~n", [L]),
+%     Level = lists:any(fun(X) -> X == I end, L),
+%     Add = if Level ->
+%             [ChildrenCount | [MetaCount|T]] = L,
+%             % [2,3,  [0,3,10,11,12], 1,1,[0,1,99],2,   1,1,2]
+%             % [2,3,  [0,3,10,11,12] , [1,1,[0,1,99],2] ,1,1,2]
+%             Next = case ChildrenCount of 
+%                 I -> 
+
+%                     {Children, Remain} = lists:split(ChildrenCount, T),
+%                     io:format("Children : ~p ~n", [Children]),
+%                     AllLists = lists:all(fun(X) -> is_list(X) end, Children),
+%                      {_,R} = lists:split(MetaCount, Remain),         
+%                    Bob = if AllLists ->
+%                             [[ChildrenCount] ++ [MetaCount] ++ [Children] 
+%                                 ++ lists:sublist(T, MetaCount)] ++ tree(I, R);
+%                         true ->
+%                             [[ChildrenCount] ++ [MetaCount] ++ Children 
+%                                 ++ lists:sublist(T, MetaCount)] ++ tree(I, R)
+%                     end,
+%                     Bob;
+%                     %io:format("~p ~p~n", [Children, Remain]),
+%                 _ -> [ChildrenCount] ++ [MetaCount] ++ tree(I, T)
+%             end,
+%             Next;
+
+%         true -> L
+%         end,
+%    Add.
