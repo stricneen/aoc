@@ -13,7 +13,7 @@ run() ->
 
     {R,N} = find_text(Parsed, 1000000000,1000000000,0),
 
-    %print(R),
+    print(R),
 
     % io:format("~nPart 1 : ~p~n", [R]),
 
@@ -53,7 +53,7 @@ turn(L, C) ->
 print(L) ->
     io:format(os:cmd(clear)), % clear screen
     lists:foreach(fun({Y,X,_,_}) -> 
-        print_at(X-100, Y-100, "*")
+        print_at(X-140, Y-100, "*")
     end, L).
     
 print_at(X, Y, T) ->
