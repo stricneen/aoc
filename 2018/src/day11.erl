@@ -2,10 +2,10 @@
 -export([run/0]).
 
 run() ->
-    Serial = 18,
+    Serial = 4172,
     GridSize = 300,
 
-    Grid = [{X,Y} || X <-lists:seq(1,GridSize+3), Y<-lists:seq(1,GridSize+3)],
+    Grid = [{X,Y} || X <-lists:seq(1,GridSize-2), Y<-lists:seq(1,GridSize-2)],
 
     Cells = lists:map(fun({X,Y}) -> 
         Quads = [{X1,Y1} || X1 <- lists:seq(X, X+2), Y1 <- lists:seq(Y, Y+2) ],
@@ -19,48 +19,31 @@ run() ->
 
     io:format("~nPart 1 : ~p~n", [Highest]),
 
-
-    CellGrid = dict:from_list(lists:map(fun({X,Y}) -> {{X,Y}, power({X,Y}, Serial)} end, Grid)),
-
-
     S = lists:map(fun({X,Y}) -> 
-        io:format("~p~n", [{X,Y}]),
+        %io:format("~p~n", [{X,Y}]),
 
-        Sizes = lists:seq(3, max(3,GridSize + 3 - max(X,Y))), % all the sizes
-        Squares = lists:map(fun(S) -> {X,Y,S,square(X,Y,S,Serial, CellGrid)} end, Sizes),
-
+        Sizes = lists:seq(10, 20),
+        Squares = lists:map(fun(S) -> {X,Y,S,square(X,Y,S,Serial)} end, Sizes),
         PowerList = lists:map(fun({_,_,_,Z}) -> Z end, Squares),
 
         MaxPower = lists:max(PowerList),
         Biggest = lists:filter(fun({_,_,_,P}) -> P == MaxPower end, Squares),
-        io:format("~p~n", [{X,Y,Biggest}]),
+        %io:format("~p~n", [{X,Y,Biggest}]),
         hd(Biggest)
 
     end, Grid),
 
-    %MHighest = 0,
-    io:format("~nPart 2 : ~p~n", [S])
+     P2PowerList = lists:map(fun({_,_,_,Z}) -> Z end, S),
+     P2MaxPower = lists:max(P2PowerList),
+     P2Biggest = lists:filter(fun({_,_,_,P}) -> P == P2MaxPower end, S),
 
-
-
-    % Squares = [{X,Y,L} || {X,Y} <- Grid, L <- lists:seq(3, max(3,303 - max(X,Y)))],
-
-    % MCells = lists:map(fun({X,Y,S}) -> 
-    %     Quads = [{X1,Y1} || X1 <- lists:seq(X, X+S-1), Y1 <- lists:seq(Y, Y+S-1) ],
-    %     Power = lists:map(fun({QX,QY}) -> {_,_,P} = power({QX,QY}, Serial), P end, Quads),
-    %     {X,Y,S,lists:sum(Power)}
-    %     end, Squares),
-
-    % MPowers = lists:map(fun({_,_,_,P}) -> P end, MCells),
-    % MMax = lists:max(MPowers),
-    % MHighest = lists:keyfind(MMax, 3, MCells),
-
+    io:format("~nPart 2 : ~p~n", [P2Biggest])
 .
 
-square(X,Y,L,Serial, CellGrid) ->
+square(X,Y,L,Serial) ->
     Grid = [ {X1,Y1} || X1 <- lists:seq(X,X+L-1), Y1 <- lists:seq(Y,Y+L-1)], 
     Vals = lists:map(fun(Coords) -> 
-        {_,_,V} = dict:fetch(Coords ,CellGrid), 
+        {_,_,V} = power(Coords,Serial), 
         V end, Grid),     
     lists:sum(Vals).
 
