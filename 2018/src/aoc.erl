@@ -1,5 +1,6 @@
 -module(aoc).
 -export([readlines/1]).
+-export([readlines_no_trim/1]).
 -export([aggregate_list/2]).
 -export([print_list/1]).
 -export([dedup/1]).
@@ -30,6 +31,16 @@ get_all_lines(Device, Accum) ->
     case io:get_line(Device, "") of
         eof  -> file:close(Device), Accum;
         Line -> get_all_lines(Device, Accum ++ [string:trim(Line)])
+    end.
+
+readlines_no_trim(FileName) ->
+    {ok, Device} = file:open(FileName, [read]),
+    get_all_lines_no_trim(Device, []).
+
+get_all_lines_no_trim(Device, Accum) ->
+    case io:get_line(Device, "") of
+        eof  -> file:close(Device), Accum;
+        Line -> get_all_lines_no_trim(Device, Accum ++ [Line])
     end.
 
 aggregate_list([H|T], Counts) ->
