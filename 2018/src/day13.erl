@@ -32,6 +32,8 @@ run() ->
 	%     fun({X,Y}, V, ok) -> aoc:print(X,Y,V)
 	% end, ok, Grid),
 
+    io:format("~p~n", [Grid]),
+
     One = tick(Trucks,Grid,0),
     
     io:format("~n~n~nPart 1 : ~p~n", [One]).
@@ -54,7 +56,10 @@ tick(Trucks, Grid, C) ->
             west -> {X-1,Y-1}
         end,
 
-        MovingTo = dict:find(NextCoord, Grid),
+        io:format("~p~n", [NextCoord]),
+
+        {ok, MovingTo} = dict:find(NextCoord, Grid),
+        io:format("Moving to : ~p~n", [MovingTo]),
 
         {NextDirection, NextTurn} = case MovingTo of
             92 when Direction == north -> {west, Turn};
@@ -83,7 +88,7 @@ tick(Trucks, Grid, C) ->
             43 when (Direction == west) and (Turn == straight) -> {west, right};
             43 when (Direction == west) and (Turn == right) -> {north, left};
             
-            _ -> none
+            _ -> {Direction, Turn}
             end,
         {NextCoord, NextDirection, NextTurn}
         end, Trucks),
