@@ -3,7 +3,7 @@
 
 
 run() ->
-    Input = aoc:readlines_no_trim("../data/day.txt"),
+    Input = aoc:readlines_no_trim("../data/day13.txt"),
 
     Folder = fun(NLine, Acc) -> 
         Line = lists:nth(NLine, Input),
@@ -14,7 +14,7 @@ run() ->
         end,
     Grid = lists:foldl(Folder, dict:new(), lists:seq(1, length(Input))),
     
-
+%73,87.)
     % where are the trucks
     %Trucks = find_trucks(Grid),
 
@@ -34,9 +34,9 @@ run() ->
 
     io:format("~p~n", [Grid]),
 
-    One = tick(Trucks,Grid,0),
+    One = tick(Trucks,Grid,16),
     
-    io:format("~n~n~nPart 1 : ~p~n", [One]).
+    io:format("~n~n~nPart 1 : ~p~n", [lists:sort(One)]).
 
 
 
@@ -53,7 +53,7 @@ tick(Trucks, Grid, C) ->
             north -> {X,Y-1};
             south -> {X,Y+1};
             east -> {X+1,Y};
-            west -> {X-1,Y-1}
+            west -> {X-1,Y}
         end,
 
         io:format("~p~n", [NextCoord]),
@@ -93,9 +93,13 @@ tick(Trucks, Grid, C) ->
         {NextCoord, NextDirection, NextTurn}
         end, Trucks),
     
-    case C of 
-        0 -> Tick;
-        _ -> tick(Tick, Grid, C-1)
+    % Check for duplicate
+    OldPositions =lists:map(fun({X,_,_}) -> X end, Trucks),
+    Positions = lists:map(fun({X,_,_}) -> X end, Tick),
+
+    case length(Positions ++ OldPositions) == sets:size(sets:from_list(Positions ++ OldPositions))  of 
+        false -> Tick ++ Trucks;
+        true -> tick(Tick, Grid, C-1)
     end.
     
 
