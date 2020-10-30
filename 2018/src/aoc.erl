@@ -3,6 +3,24 @@
 -export([aggregate_list/2]).
 -export([print_list/1]).
 -export([dedup/1]).
+-export([print/1]).
+-export([print/3]).
+-export([clear_screen/0]).
+
+
+
+print(L) ->
+    io:format(os:cmd(clear)), % clear screen
+    lists:foreach(fun({Y,X,_,_}) -> 
+        print(X-140, Y-100, "*")
+    end, L).
+
+clear_screen() ->
+     io:format(os:cmd(clear)).
+    
+print(X, Y, T) ->
+    io:format("\033[" ++ integer_to_list(Y) ++ ";" ++ integer_to_list(X) ++ "H"),
+    io:format("~s", [[T]]).   
 
 readlines(FileName) ->
     {ok, Device} = file:open(FileName, [read]),
