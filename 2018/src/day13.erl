@@ -2,6 +2,15 @@
 -export([run/0]).
 
 
+    % 121,105
+    % 122,105
+    % 122,106
+    % 123,106
+
+
+    % 84, 90
+
+
 run() ->
     Input = aoc:readlines_no_trim("../data/day13.txt"),
 
@@ -16,10 +25,6 @@ run() ->
     
     Trucks = find_trucks(Grid),
 
-    % 121,105
-    % 122,105
-    % 122,106
-    % 123,106
     
     io:format("Trucks found : ~p~n", [length(Trucks)]),
 
@@ -33,14 +38,16 @@ tick(Trucks, Grid, C) ->
     %o:format("~p~n", [C]),
     %io:format("~p~n", [Trucks]),
     %io:format("~p~n", [C]),
-    
+
+    R = lists:map(fun({{X,Y},Direction, Turn}) -> {{Y,X},Direction, Turn} end , Trucks),
+    R2 = lists:keysort(1, R),
+    Sorted = lists:map(fun({{X,Y},Direction, Turn}) -> {{Y,X},Direction, Turn} end , R2),
 
 
-    %Sorted = lists:sort(fun({{X1,Y1},_,_}, {{X2,Y2},_,_}) -> {Y1,X1} > {Y2,X2} end,Trucks),
-
+ %io:format("~p~n", [Sorted]), 
     Next = lists:foldl(fun(I,Acc) -> 
 
-        Truck = lists:nth(I, Trucks),
+        Truck = lists:nth(I, Sorted),
 %io:format("~p~n", [Truck]),
         {{X,Y},Direction, Turn} = move(Truck, Grid),
 
@@ -50,19 +57,18 @@ tick(Trucks, Grid, C) ->
                 {value, Hit, Remainder} = lists:keytake({X,Y}, 1, Acc),
                 io:format("~p   Truck : ~p  Moved to: ~p~n   Hit : ~p~n~n", [C, Truck, {{X,Y},Direction, Turn}, Hit]),
                 Remainder
-                
         end,
 
         NAcc
-        end, [], lists:seq(1, length(Trucks))),
+        end, [], lists:seq(1, length(Sorted))),
 
-    case length(Next) of
-        1 -> Next;
+    case C of
+        36 -> io:format("~p", [Next]), 
+            Next;
         _ -> tick(Next, Grid, C+1)
     end.
-  
-    %io:format("~p ~p~n", [C, RemovedCrash]),
-    
+
+
 
 move({{X,Y},Direction, Turn}, Grid) -> 
     
@@ -103,26 +109,9 @@ move({{X,Y},Direction, Turn}, Grid) ->
         43 when (Direction == west) and (Turn == right) -> {north, left};
         
         _ -> {Direction, Turn}
-        end,
-      
+        end,      
     {NextCoord, NextDirection, NextTurn}.
 
-
-% 92 : \
-% 47 : /
-% 43 : +
-% left - straight - right
-
-count(L) ->
-    lists:foldl(fun(X,Acc)-> 
-        R = case dict:is_key(X, Acc) of
-            true -> dict:store(X, element(2,dict:find(X, Acc)) + 1, Acc);
-            false -> dict:store(X, 1, Acc)
-        end,        
-        R end, dict:new(), L).
-
-unique(L) ->
-    sets:to_list(sets:from_list(L)).
 
 find_trucks(Grid) ->
     lists:filter(fun(X) -> X =/= [] end, dict:fold(fun(K,V,Acc) -> 
@@ -140,41 +129,13 @@ find_trucks(Grid) ->
 
 
 
-        %io:format("~p~n", [NextCoord]),
+% count(L) ->
+%     lists:foldl(fun(X,Acc)-> 
+%         R = case dict:is_key(X, Acc) of
+%             true -> dict:store(X, element(2,dict:find(X, Acc)) + 1, Acc);
+%             false -> dict:store(X, 1, Acc)
+%         end,        
+%         R end, dict:new(), L).
 
-        
-        %io:format("Moving to : ~p~n", [MovingTo]),
-
-        
-    
-    % Check for duplicate
-    % OldPositions =lists:map(fun({X,_,_}) -> X end, Trucks),
-    % Positions = lists:map(fun({X,_,_}) -> X end, Tick),
-
-    % % Remove crashed trucks ...
-
-    % Count = count(Positions),
-
-    
-    % RemovedPass = lists:foldl(fun({Co,A,B}, Acc) ->
-    %     Old = lists:member(Co, OldPositions),
-    %     R = case Old of
-    %         false -> [{Co,A,B}] ++ Acc;
-    %         _ -> Acc
-    %     end,
-    %     R end, [], Tick),
-
-    % RemovedCrash = lists:foldl(fun({Co,A,B}, Acc) ->
-    %     {_,Num} = dict:find(Co, Count),
-    %     R = case Num of
-    %         1 -> [{Co,A,B}] ++ Acc;
-    %         _ -> Acc
-    %     end,
-    %     R end, [], RemovedPass),
-
-
-    %  65,39.
-
-
-    % io:format("~p~n", [Count]),
-    % io:format("~p~n", [Positions]),
+% unique(L) ->
+%     sets:to_list(sets:from_list(L)).
