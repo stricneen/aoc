@@ -68,13 +68,17 @@ path(Ty, Pos ,Board, Dist) ->
         {{X-1, Y}, dict:find({X-1, Y}, Board), Dist},
         {{X+1, Y}, dict:find({X+1, Y}, Board), Dist}] ++ Acc
          end, [], Pos),
-         
 
-    Boundary = lists:foldl(fun({{X,Y}, {_,{Ty,S}}, D}, Acc) -> 
+        
+
+    Boundary2 = lists:foldl(fun({{X,Y}, {_,{Ty,S}}, D}, Acc) -> 
                 R = case (Ty =:= wal) or (lists:any(fun({X1,Y1}) -> (X1==X) and (Y1==Y) end, Pos) ) of
                     true -> Acc;
                     false -> [{{X,Y},{Ty,S},D}] ++ Acc
                 end, R end, [] ,Spread),
+    Boundary = aoc:dedup(Boundary2),
+
+    %io:format("Boundary : ~p~n ", [Boundary]),
 
     Enemy = case Ty of 
         gob -> elf;
