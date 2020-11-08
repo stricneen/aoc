@@ -76,16 +76,17 @@ path(Ty, Pos ,Board, Dist) ->
                     false -> [{{X,Y},{Ty,S},D}] ++ Acc
                 end, R end, [] ,Spread),
 
-    
-
     Enemy = case Ty of 
         gob -> elf;
         _ -> gob
     end,
+
+    CanMove = lists:filter(fun({{X,Y}, {Ty,S}, D}) ->  Ty =:= spc end, Boundary),
     
-     case lists:any(fun({_,{Ty,_},_}) -> Ty =:= Enemy end, Boundary) or (Dist > 20) of
-         true -> Boundary;
-         false -> path(Ty, lists:map(fun ({{X,Y}, {Ty,S}, D}) -> {X,Y} end, Boundary), Board, Dist+1)
+     case lists:any(fun({_,{Ty,_},_}) -> Ty =:= Enemy end, Boundary) or (Dist > 100) of
+        true -> lists:filter(fun(({{X,Y}, {Ty,S}, D})) -> (D < 100) and (Ty =:= Enemy) end, aoc:dedup(Boundary));
+             
+        false -> path(Ty, lists:map(fun ({{X,Y}, {Ty,S}, D}) -> {X,Y} end, CanMove), Board, Dist+1)
      end.
 
 %    Boundary.
