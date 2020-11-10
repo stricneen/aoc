@@ -26,7 +26,7 @@ run() ->
         end
         end, Grid),
 
-    Players = dict:filter(fun(_,{X, _}) -> (X =:= elf) or (X =:= gob) end, Board),
+    %Players = dict:filter(fun(_,{X, _}) -> (X =:= elf) or (X =:= gob) end, Board),
    
    % determine move
 
@@ -34,7 +34,7 @@ run() ->
 
    First = play_round(Board),
 
- io:format("~nPart 1 : ~p~n", ["First"]).
+ io:format("~nPart 1 : ~p~n", [First]).
 
 
 
@@ -47,18 +47,42 @@ play_round(Board) ->
     Players = dict:filter(fun(_,{X, _}) -> (X =:= elf) or (X =:= gob) end, Board),
     PlayersL = lists:sort(dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players)),
     io:format("~n Players : ~p~n", [PlayersL]),
-    Tick = lists:map(fun(X) -> turn(X, Board) end, PlayersL),
+
+    Tick = dict:fold(fun(K,V,B) -> 
+        turn({K,V}, B)
+        end,
+        Board, Players),
+    
+
+    % Tick = lists:map(fun(X) -> turn(X, Board) end, PlayersL),
     Tick.
 
 turn(Player, Board) ->
     io:format("~n Player : ~p~n", [Player]),
     {{X,Y}, {Ty,_}} = Player,
 
-    Boundary = path(Ty, [{X,Y}] ,Board, 1),
-    io:format("  Moves : ~p~n", [Boundary]),
-    Boundary.
+    Boundary = opts(Ty, [{X,Y}] ,Board, 1),
 
-path(Ty, Pos ,Board, Dist) ->
+    InRange = lists:any(fun({_,_,D}) -> D =:= 1 end, Boundary),
+
+    Turn = case Boundary of
+        [] -> Board;
+        _ when InRange -> 
+            ToAttack = lists:sort(lists:map(fun({{X1,Y1},{Type,HP},_}) -> {-HP,X1,Y1,Type} end, Boundary)),
+            {DHP,MX,MY,Att} = hd(ToAttack),
+            case -DHP > 3 of
+                true -> dict:store({MX,MY},{Att, (-DHP)-3} ,Board);
+                false -> dict:store({MX,MY},{spc, 0} ,Board)
+            end;
+
+        L -> Board      %Where to move
+    end,
+
+
+    io:format("  Turn : ~p~n", [Turn]),
+    Turn.
+
+opts(Ty, Pos ,Board, Dist) ->
 
     % {{X,Y}, {T,_}} = Player,
 
@@ -89,7 +113,7 @@ path(Ty, Pos ,Board, Dist) ->
     
      case lists:any(fun({_,{Typ,_},_}) -> Typ =:= Enemy end, Boundary) or (Dist > 100) of
         true -> lists:filter(fun(({_, {Typ,_}, D})) -> (D < 100) and (Typ =:= Enemy) end, aoc:dedup(Boundary));
-        false -> path(Ty, lists:map(fun ({{X,Y}, _, _}) -> {X,Y} end, CanMove), Board, Dist+1)
+        false -> opts(Ty, lists:map(fun ({{X,Y}, _, _}) -> {X,Y} end, CanMove), Board, Dist+1)
      end.
 
    
