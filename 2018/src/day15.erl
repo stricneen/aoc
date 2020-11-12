@@ -32,9 +32,15 @@ run() ->
 
  io:format("~nPart 1 : ~p~n", [Board]),
 
-   First = play_round(Board),
+    Final = lists:foldl(fun(I, Acc) ->  
+        Next = play_round(Acc),
+        Next
+        end,
+        Board, lists:seq(1,70)),
 
- io:format("~nPart 1 : ~p~n", [First]).
+%    First = play_round(Board),
+
+ io:format("~nPart 1 : ~p~n", [Final]).
 
 
 
@@ -48,17 +54,29 @@ play_round(Board) ->
     PlayersL = lists:sort(dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players)),
     io:format("~n Players : ~p~n", [PlayersL]),
 
-    Tick = dict:fold(fun(K,V,B) -> 
-        turn({K,V}, B)
+    Tick = lists:foldl(fun(P,B) -> 
+        {K,V} = P,
+
+        % get the player
+        {ok, {T,S}} = dict:find(K, B),
+
+        % io:format("~n Turn  : ~p~n", [{T,S}] ),
+
+        R = case T of 
+            spc -> B;
+            _ -> turn({K,V}, B)
         end,
-        Board, Players),
+        R
+        end,
+
+        Board, PlayersL),
     
 
     % Tick = lists:map(fun(X) -> turn(X, Board) end, PlayersL),
     Tick.
 
 turn(Player, Board) ->
-    io:format("~n Player : ~p~n", [Player]),
+    % io:format("~n Player : ~p~n", [Player]),
     {{X,Y}, {Ty,_}} = Player,
 
     Boundary = opts(Ty, [{X,Y}] ,Board, 1),
@@ -78,8 +96,7 @@ turn(Player, Board) ->
         L -> Board      %Where to move
     end,
 
-
-    io:format("  Turn : ~p~n", [Turn]),
+    % io:format("  Turn : ~p~n", [Turn]),
     Turn.
 
 opts(Ty, Pos ,Board, Dist) ->
@@ -95,11 +112,12 @@ opts(Ty, Pos ,Board, Dist) ->
 
         
 
-    Boundary2 = lists:foldl(fun({{X,Y}, {_,{Ty,S}}, D}, Acc) -> 
-                R = case (Ty =:= wal) or (lists:any(fun({X1,Y1}) -> (X1==X) and (Y1==Y) end, Pos) ) of
+    Boundary2 = lists:foldl(fun({{X,Y}, {_,{Typ,S}}, D}, Acc) -> 
+                R = case (Typ =:= wal) or (lists:any(fun({X1,Y1}) -> (X1==X) and (Y1==Y) end, Pos) ) of
                     true -> Acc;
-                    false -> [{{X,Y},{Ty,S},D}] ++ Acc
+                    false -> [{{X,Y},{Typ,S},D}] ++ Acc
                 end, R end, [] ,Spread),
+
     Boundary = aoc:dedup(Boundary2),
 
     %io:format("Boundary : ~p~n ", [Boundary]),
