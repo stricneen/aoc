@@ -1,8 +1,6 @@
 -module(day15).
 -export([run/0]).
 
-% # 35  . 46      E 69  G 71
-
 run() ->
     Input = aoc:readlines("../data/day.txt"),
 
@@ -31,35 +29,32 @@ run() ->
    
      Winners = lists:sort(dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players)),
   
-    io:format("~nPart 1 : ~p~n", [Winners])
+    io:format("~nPart 1 : ~p~n", ["Done"])
 .
 
-  %  io:format("~nPart 1 : ~p~n", [Final]).
 
 
 play_game(Board, C) ->
+
+aoc:print_dict(Board),
+io:format("~n Turn : ~p~n", [C]),
+
    Next = play_round(Board),
    %io:format("~nTurn : ~p~n", [C]),
 
-aoc:print_dict(Next),
 timer:sleep(100),
 
-   Elfs = dict:filter(fun(_,{X, _}) -> (X =:= elf) end, Next),
-   Goblins = dict:filter(fun(_,{X, _}) -> (X =:= gob) end, Next),
-   
-  case (dict:size(Elfs) == 0) or (dict:size(Goblins) == 0) of
-      true -> Next;
-      false -> play_game(Next, C+1)
-   end.
-
-
+    Elfs = dict:filter(fun(_,{X, _}) -> (X =:= elf) end, Next),
+    Goblins = dict:filter(fun(_,{X, _}) -> (X =:= gob) end, Next),
+    case (dict:size(Elfs) == 0) or (dict:size(Goblins) == 0) or (C > 30) of % turns
+        true -> Next;
+        false -> play_game(Next, C+1)
+    end.
 
 play_round(Board) ->
     Players = dict:filter(fun(_,{X, _}) -> (X =:= elf) or (X =:= gob) end, Board),
     PlayersL = lists:sort(dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players)),
     io:format("~n Players : ~p~n", [PlayersL]),
-
-
 
     Tick = lists:foldl(fun(P,B) -> 
         {K,V} = P,
@@ -90,7 +85,7 @@ turn(Player, Board) ->
         _ when InRange -> 
             ToAttack = lists:sort(lists:map(fun({{X1,Y1},{Type,HP},_}) -> {HP,X1,Y1,Type} end, Boundary)),
             
-            io:format("~p~n", [ToAttack]),
+            % io:format("~p~n", [ToAttack]),
 
             {DHP,MX,MY,Att} = hd(ToAttack),
             case DHP > 3 of
