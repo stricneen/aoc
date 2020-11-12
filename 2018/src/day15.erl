@@ -15,7 +15,6 @@ run() ->
         end,
     Grid = lists:foldl(Folder, dict:new(), lists:seq(1, length(Input))),
     
-    %Positions = dict:filter(fun(_,V) -> (V==69) or (V==71) end, Grid),
     Board = dict:map(fun(_,V) -> 
         case V of
             69 -> {elf, 200};
@@ -26,28 +25,25 @@ run() ->
         end
         end, Grid),
 
-    %Players = dict:filter(fun(_,{X, _}) -> (X =:= elf) or (X =:= gob) end, Board),
+    io:format("~nPart 1 : ~p~n", [Board]),
+    Final = play_game(Board, 0),
+
+    io:format("~nPart 1 : ~p~n", [Final]).
+
+
+play_game(Board, C) ->
+  Next = play_round(Board),
+  io:format("~nTurn : ~p~n", [C]),
+
+   Elfs = dict:filter(fun(_,{X, _}) -> (X =:= elf) end, Next),
+   Goblins = dict:filter(fun(_,{X, _}) -> (X =:= gob) end, Next),
    
-   % determine move
-
- io:format("~nPart 1 : ~p~n", [Board]),
-
-    Final = lists:foldl(fun(I, Acc) ->  
-        Next = play_round(Acc),
-        Next
-        end,
-        Board, lists:seq(1,70)),
-
-%    First = play_round(Board),
-
- io:format("~nPart 1 : ~p~n", [Final]).
+  case (dict:size(Elfs) == 0) or (dict:size(Goblins) == 0) of
+      true -> Next;
+      false -> play_game(Next, C+1)
+   end.
 
 
-
-
-
-    % move
-    % attach
 
 play_round(Board) ->
     Players = dict:filter(fun(_,{X, _}) -> (X =:= elf) or (X =:= gob) end, Board),
