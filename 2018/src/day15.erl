@@ -25,17 +25,24 @@ run() ->
         end
         end, Grid),
 
-    io:format("~nPart 1 : ~p~n", [Board]),
-    Final = play_game(Board, 0).
+    Final = play_game(Board, 0),
+    
+    Players = dict:filter(fun(_,{X, _}) -> (X =:= elf) or (X =:= gob) end, Final),
+   
+     Winners = lists:sort(dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players)),
+  
+    io:format("~nPart 1 : ~p~n", [Winners])
+.
 
   %  io:format("~nPart 1 : ~p~n", [Final]).
 
 
 play_game(Board, C) ->
-  Next = play_round(Board),
-  io:format("~nTurn : ~p~n", [C]),
+   Next = play_round(Board),
+   %io:format("~nTurn : ~p~n", [C]),
 
-   aoc:print_dict(Next),
+aoc:print_dict(Next),
+timer:sleep(100),
 
    Elfs = dict:filter(fun(_,{X, _}) -> (X =:= elf) end, Next),
    Goblins = dict:filter(fun(_,{X, _}) -> (X =:= gob) end, Next),
@@ -51,15 +58,13 @@ play_round(Board) ->
     Players = dict:filter(fun(_,{X, _}) -> (X =:= elf) or (X =:= gob) end, Board),
     PlayersL = lists:sort(dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players)),
     io:format("~n Players : ~p~n", [PlayersL]),
-timer:sleep(100),
+
+
+
     Tick = lists:foldl(fun(P,B) -> 
         {K,V} = P,
-
-        % get the player
         {ok, {T,S}} = dict:find(K, B),
-
         % io:format("~n Turn  : ~p~n", [{T,S}] ),
-
         R = case T of 
             spc -> B;
             _ -> turn({K,V}, B)
@@ -78,16 +83,18 @@ turn(Player, Board) ->
     {{X,Y}, {Ty,_}} = Player,
 
     Boundary = opts(Ty, [{X,Y}] ,Board, 1),
-
     InRange = lists:any(fun({_,_,D}) -> D =:= 1 end, Boundary),
 
     Turn = case Boundary of
         [] -> Board;
         _ when InRange -> 
-            ToAttack = lists:sort(lists:map(fun({{X1,Y1},{Type,HP},_}) -> {-HP,X1,Y1,Type} end, Boundary)),
+            ToAttack = lists:sort(lists:map(fun({{X1,Y1},{Type,HP},_}) -> {HP,X1,Y1,Type} end, Boundary)),
+            
+            io:format("~p~n", [ToAttack]),
+
             {DHP,MX,MY,Att} = hd(ToAttack),
-            case -DHP > 3 of
-                true -> dict:store({MX,MY},{Att, (-DHP)-3} ,Board);
+            case DHP > 3 of
+                true -> dict:store({MX,MY},{Att, DHP-3} ,Board);
                 false -> dict:store({MX,MY},{spc, 0} ,Board)
             end;
 
