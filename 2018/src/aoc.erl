@@ -6,9 +6,27 @@
 -export([dedup/1]).
 -export([print/1]).
 -export([print/3]).
+-export([print_dict/1]).
 -export([clear_screen/0]).
 
 
+print_dict(D) ->
+     clear_screen(),
+    dict:fold(fun({X,Y},{T,_},_) ->
+    
+      Disp = case T of
+          wal -> "#";
+          gob -> "G";
+          elf -> "E";
+          spc -> " "
+        end,
+
+
+        io:format("\033[" ++ integer_to_list(Y) ++ ";" ++ integer_to_list(X) ++ "H"),
+        io:format("~s", [Disp])
+        end, [], D),
+        
+    io:format("~n~n~n", []).
 
 print(L) ->
     io:format(os:cmd(clear)), % clear screen

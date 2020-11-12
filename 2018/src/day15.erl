@@ -26,14 +26,16 @@ run() ->
         end, Grid),
 
     io:format("~nPart 1 : ~p~n", [Board]),
-    Final = play_game(Board, 0),
+    Final = play_game(Board, 0).
 
-    io:format("~nPart 1 : ~p~n", [Final]).
+  %  io:format("~nPart 1 : ~p~n", [Final]).
 
 
 play_game(Board, C) ->
   Next = play_round(Board),
   io:format("~nTurn : ~p~n", [C]),
+
+   aoc:print_dict(Next),
 
    Elfs = dict:filter(fun(_,{X, _}) -> (X =:= elf) end, Next),
    Goblins = dict:filter(fun(_,{X, _}) -> (X =:= gob) end, Next),
@@ -49,7 +51,7 @@ play_round(Board) ->
     Players = dict:filter(fun(_,{X, _}) -> (X =:= elf) or (X =:= gob) end, Board),
     PlayersL = lists:sort(dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players)),
     io:format("~n Players : ~p~n", [PlayersL]),
-
+timer:sleep(100),
     Tick = lists:foldl(fun(P,B) -> 
         {K,V} = P,
 
