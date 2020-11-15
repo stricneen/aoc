@@ -6,13 +6,14 @@
 -export([dedup/1]).
 -export([print/1]).
 -export([print/3]).
+-export([print/4]).
 -export([print_dict/1]).
 -export([clear_screen/0]).
 
 
 print_dict(D) ->
      clear_screen(),
-    dict:fold(fun({X,Y},{T,_},_) ->
+    dict:fold(fun({X,Y},{T,_,_},_) ->
     
       Disp = case T of
           wal -> "#";
@@ -40,6 +41,10 @@ clear_screen() ->
 print(X, Y, T) ->
     io:format("\033[" ++ integer_to_list(Y) ++ ";" ++ integer_to_list(X) ++ "H"),
     io:format("~s", [[T]]).   
+
+print(X, Y, T, L) ->
+    io:format("\033[" ++ integer_to_list(Y) ++ ";" ++ integer_to_list(X) ++ "H"),
+    io:format(T, L).   
 
 readlines(FileName) ->
     {ok, Device} = file:open(FileName, [read]),
