@@ -3,11 +3,8 @@
 
 run() ->
     Input = aoc:readlines("../data/day16.txt"),
-    % io:format(Input),
-
     Parsed = parse(Input),
 
-    Test = [{{3,2,1,1},{9,2,1,2},{3,2,2,1}}],
     Results = lists:map(fun({Be, {OP,A,B,C}, Af}) ->
 
         % io:format("~p~n", [addi(OP,A,B,C,Be)]),
@@ -43,7 +40,6 @@ run() ->
             case seti(OP,A,B,C,Be) == Af of 
                 true -> "seti"; false -> ""
             end,
-
             case gtir(OP,A,B,C,Be) == Af of 
                 true -> "gtir"; false -> ""
             end,
@@ -68,12 +64,33 @@ run() ->
 
     P1 = length(lists:filter(fun({_,Matches}) -> length(Matches) > 2 end, Results)),
 
-    io:format("~nPart 1 : ~p~n", [P1]).
+    P2 = "",
 
 
-% Before: [0, 2, 2, 2]
-% 4 2 3 2
-% After:  [0, 2, 5, 2]
+    %% Opcodes
+    % 0  - eqir
+    % 1  - seti
+    % 2  - eqri
+    % 3  - eqrr
+    % 4  - addi
+    % 5  - setr
+    % 6  - gtrr
+    % 7  - gtri
+    % 8  - muli
+    % 9  - bori
+    % 10 - bani
+    % 11 - borr
+    % 12 - gtir
+    % 13 - banr
+    % 14 - addr
+    % 15 - mulr
+
+
+    io:format("~nPart 1 : ~p~n", [P1]),
+
+    io:format("~nPart 2 : ~p~n", [lists:sort(P2)]).
+
+
 
 % Addition:
 
