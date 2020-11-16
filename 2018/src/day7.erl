@@ -8,7 +8,7 @@ run() ->
          {lists:nth(2, Id), lists:nth(8, Id)} 
             end, Input),
     
-     P1 = next(Start, [], ""),
+    P1 = next(Start, [], ""),
     io:format("~nPart 1 : ~p~n", [P1]),
 
     ThreadCount = 5,

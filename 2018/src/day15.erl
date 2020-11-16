@@ -44,6 +44,7 @@ run() ->
 
 % 181741 no
 
+
 % tl 179288
 % tl 164885
 
@@ -58,10 +59,10 @@ io:format("Turn : ~p", [C]),
    Next = play_round(Board),
 %   timer:sleep(100),
 
-    Players = dict:filter(fun(_,{X, _,_}) -> (X =:= elf) or (X =:= gob) end, Next),
-    PlayersI =  dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players),
-    PlayersL = lists:sort(fun({{X1,Y1},_}, {{X2,Y2},_}) -> {Y1,X1} < {Y2,X2} end, PlayersI),
-    io:format("~n Players : ~p~n", [PlayersL]),
+    % Players = dict:filter(fun(_,{X, _,_}) -> (X =:= elf) or (X =:= gob) end, Next),
+    % PlayersI =  dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players),
+    % PlayersL = lists:sort(fun({{X1,Y1},_}, {{X2,Y2},_}) -> {Y1,X1} < {Y2,X2} end, PlayersI),
+    % io:format("~n Players : ~p~n", [PlayersL]),
 
     Elfs = dict:filter(fun(_,{X, _,_}) -> (X =:= elf) end, Next),
     Goblins = dict:filter(fun(_,{X, _,_}) -> (X =:= gob) end, Next),
@@ -75,7 +76,7 @@ play_round(Board) ->
     PlayersI =  dict:fold(fun(K,V,Acc) -> [{K,V}] ++ Acc end,  [], Players),
     PlayersL = lists:sort(fun({{X1,Y1},_}, {{X2,Y2},_}) -> {Y1,X1} < {Y2,X2} end, PlayersI),
  
-  io:format("Players : ~p~n", [PlayersL]),
+%   io:format("Players : ~p~n", [PlayersL]),
 
     Tick = lists:foldl(fun(P,B) -> 
         {K,{Typ,HP,Id}} = P,
@@ -99,7 +100,7 @@ play_round(Board) ->
 
 turn(Player, Board) ->
     
-  io:format("~n Player : ~p~n", [Player]),
+%   io:format("~n Player : ~p~n", [Player]),
 
     {{X,Y}, {Ty,_,_}} = Player,
 
