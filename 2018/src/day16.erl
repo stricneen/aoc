@@ -64,8 +64,35 @@ run() ->
 
     P1 = length(lists:filter(fun({_,Matches}) -> length(Matches) > 2 end, Results)),
 
-    P2 = "",
 
+    ProgRaw = aoc:readlines("../data/day16_2.txt"),
+    Prog = lists:map(fun(X) -> list_to_tuple(lists:map(fun(Y) -> list_to_integer(Y) end, string:lexemes(X, " "))) end, ProgRaw),
+
+    P2 = lists:foldl(fun({Op,A,B,C}, {R0,R1,R2,R3}) ->
+        % io:format("~p~n", [{Op,A,B,C}]),
+        case Op of
+            0  -> eqir(0, A, B, C, {R0,R1,R2,R3});
+            1  -> seti(0, A, B, C, {R0,R1,R2,R3});
+            2  -> eqri(0, A, B, C, {R0,R1,R2,R3});
+            3  -> eqrr(0, A, B, C, {R0,R1,R2,R3});
+            4  -> addi(0, A, B, C, {R0,R1,R2,R3});
+            5  -> setr(0, A, B, C, {R0,R1,R2,R3});
+            6  -> gtrr(0, A, B, C, {R0,R1,R2,R3});
+            7  -> gtri(0, A, B, C, {R0,R1,R2,R3});
+            8  -> muli(0, A, B, C, {R0,R1,R2,R3});
+            9  -> bori(0, A, B, C, {R0,R1,R2,R3});
+            10 -> bani(0, A, B, C, {R0,R1,R2,R3});
+            11 -> borr(0, A, B, C, {R0,R1,R2,R3});
+            12 -> gtir(0, A, B, C, {R0,R1,R2,R3});
+            13 -> banr(0, A, B, C, {R0,R1,R2,R3});
+            14 -> addr(0, A, B, C, {R0,R1,R2,R3});
+            15 -> mulr(0, A, B, C, {R0,R1,R2,R3});
+            _ -> throw("Invalid opcode")
+        end
+
+        
+
+    end, {0,0,0,0},Prog),
 
     %% Opcodes
     % 0  - eqir
@@ -88,7 +115,7 @@ run() ->
 
     io:format("~nPart 1 : ~p~n", [P1]),
 
-    io:format("~nPart 2 : ~p~n", [lists:sort(P2)]).
+    io:format("~nPart 2 : ~p~n", [P2]).
 
 
 
