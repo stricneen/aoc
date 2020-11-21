@@ -18,26 +18,50 @@ run() ->
         end ++ Acc
         end, [], Input),
 
-
     % MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
     MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
-    Origins = lists:map(fun({X,Y}) -> {X,Y} end, Parsed),
+    Clay = lists:map(fun({X,Y}) -> {X,Y} end, Parsed),
     Spring = {500,0},
 
+    Water = tick([Spring], [], Clay, 0),
+    % io:format("~p~n : ", [XX]),
+    print_g(Spring, Clay, Water, MinX).
 
-    print_g(Spring, Origins, MinX).
+tick(Lead, Wet, Clay, C) ->
+    io:format("~p~n", [C]),
+    case C > 15 of
+        true -> Wet;
+        false -> 
+            
+            Spread = lists:foldl(fun({X,Y},Acc) ->
+                case lists:member({X,Y+1}, Clay) of
+                    false -> [{X,Y+1}] ++ Acc;
+                    true -> Acc
+                end
+                end, Wet, Lead),
+%   io:format("~p~n", [Spread]),
+        tick(Spread, aoc:dedup(Lead ++ Wet), Clay, C+1)
+    end.
+        
 
+            
     % io:format("~nMin : ~p~n", [MinX]),
         
 %  io:format("~nPart 1 : ~p~n", [Origins]).
 
 
-print_g({SX,SY}, L, MinX) ->
+print_g({SX,SY}, Clay, Water, MinX) ->
     aoc:clear_screen(),
     aoc:print(SX-MinX+2,SY+1, "+"),
+
     lists:foldl(fun({X,Y},_) -> 
         aoc:print(X-MinX+2,Y+1 , "#")
-        end, [], L),
+        end, [], Clay),
+
+    lists:foldl(fun({X,Y},_) -> 
+        aoc:print(X-MinX+2,Y+1 , "|")
+        end, [], Water),
+
     aoc:print(20,20,"").
 
 
