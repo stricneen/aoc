@@ -2,7 +2,7 @@
 -export([run/0]).
 
 run() ->
-    Input = aoc:readlines("../data/day.txt"),
+    Input = aoc:readlines("../data/day17.txt"),
  
     Parsed = lists:foldl(fun(X, Acc) ->
         L = string:lexemes(X, ","),
@@ -20,39 +20,95 @@ run() ->
 
     % MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
     MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
-    Clay = lists:map(fun({X,Y}) -> {X,Y} end, Parsed),
+    Clay = aoc:dedup(lists:map(fun({X,Y}) -> {X,Y} end, Parsed)),
     Spring = {500,0},
 
-    Water = tick([Spring], [], Clay, 0),
+    {Water,Settled} = tick({[{500,1}],[]}, Clay, 0),
     % io:format("~p~n : ", [XX]),
-    print_g(Spring, Clay, Water, MinX).
 
-tick(Lead, Wet, Clay, C) ->
-    io:format("~p~n", [C]),
-    case C > 15 of
-        true -> Wet;
+
+    print_g(Spring, Clay, Water, Settled, MinX),
+
+    
+    io:format("Water : ~p~n", [length(Water)]),
+    io:format("Settled : ~p~n", [length(Settled)]),
+
+    io:format("~nPart 1 : ~p~n", [length(Water) + length(Settled)]).
+
+tick({Water,Settled}, Clay, C) ->
+
+     io:format("~p~n", [length(Water) + length(Settled)]),
+    
+    
+
+    Fixed = Clay ++ Settled,
+
+    case C > 20000 of
+        true -> {Water,Settled};
         false -> 
-            
-            Spread = lists:foldl(fun({X,Y},Acc) ->
-                case lists:member({X,Y+1}, Clay) of
-                    false -> [{X,Y+1}] ++ Acc;
-                    true -> Acc
-                end
-                end, Wet, Lead),
-%   io:format("~p~n", [Spread]),
-        tick(Spread, aoc:dedup(Lead ++ Wet), Clay, C+1)
+
+            {NewSpread, NewSettled} = lists:foldl(fun({X,Y}, {Spr, Set}) ->
+                % drip - nothing below
+                case lists:member({X,Y+1}, Fixed) of
+
+                    false -> {[{X,Y+1}] ++ Spr, Set};
+                    true -> 
+                        % io:format("~p~n", [X]),
+
+                        Level = lists:sort(lists:filter(fun({_,CY}) -> CY == Y end, Fixed)),
+                        CL = first(lists:reverse(Level), fun({CX,_}) -> CX < X end, none),
+                        CR = first(Level, fun({CX,_}) -> CX > X end, none),
+
+                        {IsSettled, SettledLocs} = case {CL,CR} of 
+                            {{LX,_}, {RX,_}} ->
+                                FullBase = lists:filter(fun({CX,CY}) -> (CY == Y + 1) and (CX > LX) and (CX < RX) end, Fixed),
+                                {length(FullBase) == RX - LX - 1, lists:map(fun({BX,BY}) -> {BX,BY-1} end , FullBase)};
+                            _ -> {false, []}
+                        end,
+
+                        case IsSettled of
+                            true -> {Spr,Set ++ SettledLocs};
+
+                            false -> 
+                                Cx = [],
+                                L = case lists:member({X-1,Y}, Fixed) of
+                                    false -> Cx ++ [{X-1,Y}];
+                                    _ -> Cx
+                                end,
+                                R = case lists:member({X+1,Y}, Fixed) of
+                                    false -> L ++ [{X+1,Y}];
+                                    _ -> L
+                                end,
+                                {Spr ++ R, Set}
+                        end
+                        
+                    end
+                     
+                end, {[],[]}, Water),
+
+        BedRock = lists:foldl(fun({_,Y}, A) -> if Y > A -> Y; true -> A end end, 0, Clay),
+
+        % NewWater = aoc:dedup(NewSpread++Water),
+        NextSettled = aoc:dedup(NewSettled++Settled),
+        NewWater = lists:filter(fun({X,Y}) ->  (Y - 1 < BedRock) and (not lists:member({X,Y}, NextSettled)) end, aoc:dedup(NewSpread++Water)),
+        
+        case (length(Water)  == length(NewWater)) and (length(Settled) == length(NextSettled))  of
+            true -> {NewWater, NextSettled};
+            false -> tick( {NewWater, NextSettled}, Clay, C+1)
+        end
     end.
         
 
-            
-    % io:format("~nMin : ~p~n", [MinX]),
-        
-%  io:format("~nPart 1 : ~p~n", [Origins]).
 
 
-print_g({SX,SY}, Clay, Water, MinX) ->
+first(L, Condition, Default) ->
+  case lists:dropwhile(fun(E) -> not Condition(E) end, L) of
+    [] -> Default;
+    [F | _] -> F
+  end.
+
+print_g({SX,SY}, Clay, Water, Settled, MinX) ->
     aoc:clear_screen(),
-    aoc:print(SX-MinX+2,SY+1, "+"),
 
     lists:foldl(fun({X,Y},_) -> 
         aoc:print(X-MinX+2,Y+1 , "#")
@@ -62,8 +118,16 @@ print_g({SX,SY}, Clay, Water, MinX) ->
         aoc:print(X-MinX+2,Y+1 , "|")
         end, [], Water),
 
-    aoc:print(20,20,"").
+    lists:foldl(fun({X,Y},_) -> 
+        aoc:print(X-MinX+2,Y+1 , "~")
+        end, [], Settled),
+
+    aoc:print(SX-MinX+2,SY+1, "+"),
+
+    aoc:print(1,20,"").
 
 
 
 
+% tl 142
+% tl 2287
