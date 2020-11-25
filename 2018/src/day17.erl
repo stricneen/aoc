@@ -2,7 +2,7 @@
 -export([run/0]).
 
 run() ->
-    Input = aoc:readlines("../data/day17.txt"),
+    Input = aoc:readlines("../data/day.txt"),
  
     Parsed = lists:foldl(fun(X, Acc) ->
         L = string:lexemes(X, ","),
@@ -23,7 +23,7 @@ run() ->
     Clay = aoc:dedup(lists:map(fun({X,Y}) -> {X,Y} end, Parsed)),
     Spring = {500,0},
 
-    {Water,Settled} = tick({[{500,1}],[]}, Clay, 0),
+    {Water,Settled} = tick( { [{500,1}] ,[] } ,[], Clay, 0),
     % io:format("~p~n : ", [XX]),
 
 
@@ -35,18 +35,18 @@ run() ->
 
     io:format("~nPart 1 : ~p~n", [length(Water) + length(Settled)]).
 
-tick({Water,Settled}, Clay, C) ->
 
-     io:format("~p~n", [length(Water) + length(Settled)]),
-    
-    
+tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
 
+%  io:format("~p~n", [length(Water) + length(WaterInner)]),
+    
     Fixed = Clay ++ Settled,
 
-    case C > 20000 of
-        true -> {Water,Settled};
+    case C > 50 of
+        true ->  io:format("    time out : ~p~n", [C]),  
+        {aoc:dedup(WaterEdge++WaterInner),Settled};
+        
         false -> 
-
             {NewSpread, NewSettled} = lists:foldl(fun({X,Y}, {Spr, Set}) ->
                 % drip - nothing below
                 case lists:member({X,Y+1}, Fixed) of
@@ -67,8 +67,19 @@ tick({Water,Settled}, Clay, C) ->
                         end,
 
                         case IsSettled of
-                            true -> {Spr,Set ++ SettledLocs};
 
+                            % add above to spread if it is new settled
+                           
+
+                            
+                            true -> { [{X,Y}] ++ Spr, SettledLocs ++ Set};
+                                % Reactive = case lists:member({X,Y+1}, Fixed) of
+                                %     true -> [];
+                                %     false -> [{X, Y - 1}]
+                                %     end,
+                                % { Reactive ++ Spr, SettledLocs ++ Set};
+                            % [{X, Y - 1}] ++ 
+                            
                             false -> 
                                 Cx = [],
                                 L = case lists:member({X-1,Y}, Fixed) of
@@ -84,17 +95,31 @@ tick({Water,Settled}, Clay, C) ->
                         
                     end
                      
-                end, {[],[]}, Water),
+                end, {[],[]}, WaterEdge),
+        
+         io:format("WaterEdge: ~p~n ", [WaterEdge] ),
+
+        io:format("New spread: ~p~n New settled: ~p~n", [NewSpread, NewSettled] ),
 
         BedRock = lists:foldl(fun({_,Y}, A) -> if Y > A -> Y; true -> A end end, 0, Clay),
 
-        % NewWater = aoc:dedup(NewSpread++Water),
         NextSettled = aoc:dedup(NewSettled++Settled),
-        NewWater = lists:filter(fun({X,Y}) ->  (Y - 1 < BedRock) and (not lists:member({X,Y}, NextSettled)) end, aoc:dedup(NewSpread++Water)),
+        NewWater = lists:filter(fun({X,Y}) ->  
+            (Y - 1 < BedRock) and (not lists:member({X,Y}, NextSettled)) 
+            end, aoc:dedup(NewSpread)),
         
-        case (length(Water)  == length(NewWater)) and (length(Settled) == length(NextSettled))  of
-            true -> {NewWater, NextSettled};
-            false -> tick( {NewWater, NextSettled}, Clay, C+1)
+         io:format("NS : ~p~n", [length(NewSpread)]),
+         io:format("NW : ~p~n", [length(NewWater)]),
+                
+        case (length(NewSettled) + length(NewWater)) == 0 of
+            true -> { 
+                %  io:format("NW : ~p~n", [length(NewWater)]),
+                %  io:format("WE : ~p~n", [length(WaterEdge)]),
+                %  io:format("WI : ~p~n", [length(WaterInner)]),
+                
+                
+                aoc:dedup(NewWater ++ WaterEdge ++ WaterInner), NextSettled };
+            false -> tick( {NewWater, aoc:dedup(WaterEdge ++ WaterInner -- NewWater)} , NextSettled, Clay, C+1)
         end
     end.
         
