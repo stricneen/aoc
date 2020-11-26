@@ -1,0 +1,1 @@
+exports.sum = (l) => l.reduce((x,a) => x+a, 0);
