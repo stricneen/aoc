@@ -26,25 +26,25 @@ run() ->
     {Water,Settled} = tick( { [{500,1}] ,[] } ,[], Clay, 0),
     % io:format("~p~n : ", [XX]),
 
+    XWater = lists:filter(fun(X) -> not lists:member(X, Settled) end, Water),
+
 
     print_g(Spring, Clay, Water, Settled, MinX),
 
     
-    io:format("Water : ~p~n", [length(Water)]),
+    io:format("Water : ~p~n", [length(XWater)]),
     io:format("Settled : ~p~n", [length(Settled)]),
 
-    io:format("~nPart 1 : ~p~n", [length(Water) + length(Settled)]).
+    io:format("~nPart 1 : ~p~n", [length(XWater) + length(Settled)]).
 
 
 tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
 
-%  io:format("~p~n", [length(Water) + length(WaterInner)]),
-    
-    Fixed = Clay ++ Settled,
+    Fixed =  Settled ++ Clay,
 
-    case C > 50 of
+    case C > 30 of
         true ->  io:format("    time out : ~p~n", [C]),  
-        {aoc:dedup(WaterEdge++WaterInner),Settled};
+        {aoc:dedup(WaterEdge++WaterInner),aoc:dedup(Settled)};
         
         false -> 
             {NewSpread, NewSettled} = lists:foldl(fun({X,Y}, {Spr, Set}) ->
@@ -53,46 +53,22 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
 
                     false -> {[{X,Y+1}] ++ Spr, Set};
                     true -> 
-                        % io:format("~p~n", [X]),
+                        {F, Top} = fill({X,Y}, [], Clay),
 
-                        Level = lists:sort(lists:filter(fun({_,CY}) -> CY == Y end, Fixed)),
-                        CL = first(lists:reverse(Level), fun({CX,_}) -> CX < X end, none),
-                        CR = first(Level, fun({CX,_}) -> CX > X end, none),
 
-                        {IsSettled, SettledLocs} = case {CL,CR} of 
-                            {{LX,_}, {RX,_}} ->
-                                FullBase = lists:filter(fun({CX,CY}) -> (CY == Y + 1) and (CX > LX) and (CX < RX) end, Fixed),
-                                {length(FullBase) == RX - LX - 1, lists:map(fun({BX,BY}) -> {BX,BY-1} end , FullBase)};
-                            _ -> {false, []}
+                        Cx = [],
+                        L = case lists:member({X-1, Top}, Fixed) or lists:member({X-1, Top}, WaterInner) of
+                            false -> Cx ++ [{X-1,Top}];
+                            _ -> Cx
+                        end,
+                        R = case lists:member({X+1, Top}, Fixed) or lists:member({X+1, Top}, WaterInner) of
+                            false -> L ++ [{X+1, Top}];
+                            _ -> L
                         end,
 
-                        case IsSettled of
 
-                            % add above to spread if it is new settled
-                           
-
-                            
-                            true -> { [{X,Y}] ++ Spr, SettledLocs ++ Set};
-                                % Reactive = case lists:member({X,Y+1}, Fixed) of
-                                %     true -> [];
-                                %     false -> [{X, Y - 1}]
-                                %     end,
-                                % { Reactive ++ Spr, SettledLocs ++ Set};
-                            % [{X, Y - 1}] ++ 
-                            
-                            false -> 
-                                Cx = [],
-                                L = case lists:member({X-1,Y}, Fixed) of
-                                    false -> Cx ++ [{X-1,Y}];
-                                    _ -> Cx
-                                end,
-                                R = case lists:member({X+1,Y}, Fixed) of
-                                    false -> L ++ [{X+1,Y}];
-                                    _ -> L
-                                end,
-                                {Spr ++ R, Set}
-                        end
-                        
+                        { R ++ Spr, F ++ Set}
+                    
                     end
                      
                 end, {[],[]}, WaterEdge),
@@ -123,6 +99,31 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
         end
     end.
         
+        %  |   X    |
+        % -|--------|-
+
+fill({X,Y}, Added, Clay) ->
+
+    Level = lists:sort(lists:filter(fun({_,CY}) -> CY == Y end, Clay)),
+
+    CL = first(lists:reverse(Level), fun({CX,_}) -> CX < X end, none),
+    CR = first(Level, fun({CX,_}) -> CX > X end, none),
+
+    case {CL,CR} of 
+        {{LX,_}, {RX,_}} ->
+                FullBase = lists:filter(fun({CX,CY}) -> (CY == Y + 1) and (CX > LX) and (CX < RX) end, Added ++ Clay),
+                case length(FullBase) == RX - LX - 1 of % is the base solid
+                    true -> fill({X,Y - 1}, lists:map(fun({XX,YY}) -> {XX,YY-1} end, FullBase) ++ Added, Clay);
+                    false -> {Added, Y}
+                end;
+
+        _ -> {Added, Y}
+    end.
+
+                        
+
+
+    
 
 
 
