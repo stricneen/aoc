@@ -9,3 +9,5 @@
 2018 - Erlang
 
 2019 - F#
+
+2020 - Javascript
