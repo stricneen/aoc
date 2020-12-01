@@ -19,9 +19,7 @@ run() ->
         end, [], Input),
 
     % MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
-    MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
     Clay = aoc:dedup(lists:map(fun({X,Y}) -> {X,Y} end, Parsed)),
-    Spring = {500,0},
 
     {Water,Settled} = tick( { [{500,1}] ,[] } ,[], Clay, 0),
     % io:format("~p~n : ", [XX]),
@@ -29,6 +27,8 @@ run() ->
     XWater = lists:filter(fun(X) -> not lists:member(X, Settled) end, Water),
 
 
+    MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
+    Spring = {500,0},
     print_g(Spring, Clay, Water, Settled, MinX),
 
     
@@ -42,7 +42,7 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
 
     Fixed =  Settled ++ Clay,
 
-    case C > 30 of
+    case C > 3000000000 of
         true ->  io:format("    time out : ~p~n", [C]),  
         {aoc:dedup(WaterEdge++WaterInner),aoc:dedup(Settled)};
         
@@ -73,9 +73,9 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
                      
                 end, {[],[]}, WaterEdge),
         
-         io:format("WaterEdge: ~p~n ", [WaterEdge] ),
+        %  io:format("WaterEdge: ~p~n ", [WaterEdge] ),
 
-        io:format("New spread: ~p~n New settled: ~p~n", [NewSpread, NewSettled] ),
+        % io:format("New spread: ~p~n New settled: ~p~n", [NewSpread, NewSettled] ),
 
         BedRock = lists:foldl(fun({_,Y}, A) -> if Y > A -> Y; true -> A end end, 0, Clay),
 
@@ -84,8 +84,8 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
             (Y - 1 < BedRock) and (not lists:member({X,Y}, NextSettled)) 
             end, aoc:dedup(NewSpread)),
         
-         io:format("NS : ~p~n", [length(NewSpread)]),
-         io:format("NW : ~p~n", [length(NewWater)]),
+        %  io:format("NS : ~p~n", [length(NewSpread)]),
+    %    io:format("NW : ~p~n", [length(Settled)]),
                 
         case (length(NewSettled) + length(NewWater)) == 0 of
             true -> { 
@@ -99,25 +99,36 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
         end
     end.
         
-        %  |   X    |
-        % -|--------|-
+%  #         |         #
+%  #|||||||||||#       #
+%  #~~~~~~~#~~~#       #
+%  #~~~~~~~#####       #
+%  #~~~~~~~~~~~~~~~~~~~#
+
 
 fill({X,Y}, Added, Clay) ->
 
     Level = lists:sort(lists:filter(fun({_,CY}) -> CY == Y end, Clay)),
 
-    CL = first(lists:reverse(Level), fun({CX,_}) -> CX < X end, none),
-    CR = first(Level, fun({CX,_}) -> CX > X end, none),
-
+    CL = first(lists:reverse(Level), fun({CX,_}) -> (CX < X) end, none),
+    CR = first(Level, fun({CX,_}) -> (CX > X) end, none),
+io:format("Edges : ~p~n~n", [{CL,CR}]),
     case {CL,CR} of 
         {{LX,_}, {RX,_}} ->
                 FullBase = lists:filter(fun({CX,CY}) -> (CY == Y + 1) and (CX > LX) and (CX < RX) end, Added ++ Clay),
+                
+                io:format("FB : ~p~n", [length(FullBase)]),
+                io:format("Df : ~p~n~n", [RX - LX - 1]),
+
                 case length(FullBase) == RX - LX - 1 of % is the base solid
                     true -> fill({X,Y - 1}, lists:map(fun({XX,YY}) -> {XX,YY-1} end, FullBase) ++ Added, Clay);
-                    false -> {Added, Y}
+                    false -> 
+                        % have we filled the row 
+                        
+                        {Added, Y}
                 end;
 
-        _ -> {Added, Y}
+        _ ->  {Added, Y}
     end.
 
                         
@@ -135,25 +146,26 @@ first(L, Condition, Default) ->
 
 print_g({SX,SY}, Clay, Water, Settled, MinX) ->
     aoc:clear_screen(),
-
+    D = 120,
     lists:foldl(fun({X,Y},_) -> 
         aoc:print(X-MinX+2,Y+1 , "#")
-        end, [], Clay),
+        end, [], clip(Clay, D)),
 
     lists:foldl(fun({X,Y},_) -> 
         aoc:print(X-MinX+2,Y+1 , "|")
-        end, [], Water),
+        end, [], clip(Water,D)),
 
     lists:foldl(fun({X,Y},_) -> 
         aoc:print(X-MinX+2,Y+1 , "~")
-        end, [], Settled),
+        end, [], clip(Settled,D)),
 
     aoc:print(SX-MinX+2,SY+1, "+"),
 
-    aoc:print(1,20,"").
+    aoc:print(1,30,"").
 
 
-
+clip(L, Depth) ->
+    lists:filter(fun({_,Y}) -> Y < Depth end, L).
 
 % tl 142
 % tl 2287
