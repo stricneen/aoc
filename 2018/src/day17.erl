@@ -42,7 +42,7 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
 
     Fixed =  Settled ++ Clay,
 
-    case C > 50 of
+    case C > 100 of
         true ->  io:format("    time out : ~p~n", [C]),  
         {aoc:dedup(WaterEdge++WaterInner),aoc:dedup(Settled)};
         
@@ -53,7 +53,7 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
 
                     false -> {[{X,Y+1}] ++ Spr, Set};
                     true -> 
-                        {F, Top} = fill({X,Y}, Settled, Clay, WaterEdge++WaterInner),
+                        {F, Top} = fill({X,Y}, Settled, Clay, WaterEdge++WaterInner--Settled),
 
                         Cx = [],
                         % is wall to left ?
@@ -100,7 +100,7 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
                 
                 
                 aoc:dedup(NewWater ++ WaterEdge ++ WaterInner), NextSettled };
-            false -> tick( {NewWater, aoc:dedup(WaterEdge ++ WaterInner -- NewWater)} , NextSettled, Clay, C+1)
+            false -> tick( {NewWater -- Settled, aoc:dedup(WaterEdge ++ WaterInner -- NewWater -- Settled)} , NextSettled, Clay, C+1)
         end
     end.
         
@@ -124,7 +124,7 @@ fill({X,Y}, Added, Clay, TEMPFILL) ->
     %  {CRX,CRY} = CR,
     % aoc:print(CLX,CLY, "@"),
     % aoc:print(CRX,CRY, "@"),
-     timer:sleep(100),
+    %  timer:sleep(100),
     
 
     io:format("Edges : ~p~n~n", [{CL,CR}]),
@@ -171,9 +171,9 @@ print_g({SX,SY}, Clay, Water, Settled, MinX) ->
         aoc:print(X-MinX+2,Y+1 , "|")
         end, [], clip(Water,D)),
 
-    % lists:foldl(fun({X,Y},_) -> 
-    %     aoc:print(X-MinX+2,Y+1 , "~")
-    %     end, [], clip(Settled,D)),
+    lists:foldl(fun({X,Y},_) -> 
+        aoc:print(X-MinX+2,Y+1 , "~")
+        end, [], clip(Settled,D)),
 
     aoc:print(SX-MinX+2,SY+1, "+"),
 
