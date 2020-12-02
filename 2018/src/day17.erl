@@ -42,7 +42,7 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
 
     Fixed =  Settled ++ Clay,
 
-    case C > 3000000000 of
+    case C > 50 of
         true ->  io:format("    time out : ~p~n", [C]),  
         {aoc:dedup(WaterEdge++WaterInner),aoc:dedup(Settled)};
         
@@ -53,21 +53,26 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
 
                     false -> {[{X,Y+1}] ++ Spr, Set};
                     true -> 
-                        {F, Top} = fill({X,Y}, [], Clay),
-
+                        {F, Top} = fill({X,Y}, Settled, Clay, WaterEdge++WaterInner),
 
                         Cx = [],
-                        L = case lists:member({X-1, Top}, Fixed) or lists:member({X-1, Top}, WaterInner) of
+                        % is wall to left ?
+                        L = case lists:member({X-1, Top}, Fixed)  of % or lists:member({X-1, Top}, WaterInner) of
                             false -> Cx ++ [{X-1,Top}];
                             _ -> Cx
                         end,
-                        R = case lists:member({X+1, Top}, Fixed) or lists:member({X+1, Top}, WaterInner) of
+                        % is wall to right ?
+                        R = case lists:member({X+1, Top}, Fixed) of % or lists:member({X+1, Top}, WaterInner) of
                             false -> L ++ [{X+1, Top}];
                             _ -> L
                         end,
 
+                        RSettled = F ++ Set,
+                        % take out the any settled from the edges
+                        RSpread = lists:filter(fun(RS) -> not lists:member(RS, RSettled) end, R ++ Spr),
 
-                        { R ++ Spr, F ++ Set}
+
+                        { RSpread, RSettled }
                     
                     end
                      
@@ -106,13 +111,24 @@ tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
 %  #~~~~~~~~~~~~~~~~~~~#
 
 
-fill({X,Y}, Added, Clay) ->
+fill({X,Y}, Added, Clay, TEMPFILL) ->
 
     Level = lists:sort(lists:filter(fun({_,CY}) -> CY == Y end, Clay)),
 
     CL = first(lists:reverse(Level), fun({CX,_}) -> (CX < X) end, none),
-    CR = first(Level, fun({CX,_}) -> (CX > X) end, none),
-io:format("Edges : ~p~n~n", [{CL,CR}]),
+    CR = first(Level,                fun({CX,_}) -> (CX > X) end, none),
+
+    %  aoc:clear_screen(),
+    print_g({500,0}, Clay, TEMPFILL, Added, 400),
+    %  {CLX,CLY} = CL,
+    %  {CRX,CRY} = CR,
+    % aoc:print(CLX,CLY, "@"),
+    % aoc:print(CRX,CRY, "@"),
+     timer:sleep(100),
+    
+
+    io:format("Edges : ~p~n~n", [{CL,CR}]),
+    
     case {CL,CR} of 
         {{LX,_}, {RX,_}} ->
                 FullBase = lists:filter(fun({CX,CY}) -> (CY == Y + 1) and (CX > LX) and (CX < RX) end, Added ++ Clay),
@@ -121,7 +137,7 @@ io:format("Edges : ~p~n~n", [{CL,CR}]),
                 io:format("Df : ~p~n~n", [RX - LX - 1]),
 
                 case length(FullBase) == RX - LX - 1 of % is the base solid
-                    true -> fill({X,Y - 1}, lists:map(fun({XX,YY}) -> {XX,YY-1} end, FullBase) ++ Added, Clay);
+                    true -> fill({X,Y - 1}, lists:map(fun({XX,YY}) -> {XX,YY-1} end, FullBase) ++ Added, Clay, TEMPFILL);
                     false -> 
                         % have we filled the row 
                         
@@ -155,13 +171,13 @@ print_g({SX,SY}, Clay, Water, Settled, MinX) ->
         aoc:print(X-MinX+2,Y+1 , "|")
         end, [], clip(Water,D)),
 
-    lists:foldl(fun({X,Y},_) -> 
-        aoc:print(X-MinX+2,Y+1 , "~")
-        end, [], clip(Settled,D)),
+    % lists:foldl(fun({X,Y},_) -> 
+    %     aoc:print(X-MinX+2,Y+1 , "~")
+    %     end, [], clip(Settled,D)),
 
     aoc:print(SX-MinX+2,SY+1, "+"),
 
-    aoc:print(1,30,"").
+    aoc:print(5,22,"").
 
 
 clip(L, Depth) ->
