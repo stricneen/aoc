@@ -4,6 +4,14 @@ var fs = require('fs'),
 exports.readfile = (fn) => {
     const fp = path.join(__dirname, `./data/${fn}`);
     return fs.readFileSync(fp).toString();
-};
+}
 
 exports.sum = (l) => l.reduce((x,a) => x+a, 0);
+
+exports.product = (l) => l.reduce((x,a) => x*a, 1);
+
+// aoc.p(10,10,"Text");
+exports.p = (x, y, t) => {
+    console.log("\033[" + y + ";" + x + "H" + t);
+    // console.log(t);
+}
