@@ -18,170 +18,75 @@ run() ->
         end ++ Acc
         end, [], Input),
 
-    % MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
-    Clay = aoc:dedup(lists:map(fun({X,Y}) -> {X,Y} end, Parsed)),
-
-    {Water,Settled} = tick( { [{500,1}] ,[] } ,[], Clay, 0),
-    % io:format("~p~n : ", [XX]),
-
-    XWater = lists:filter(fun(X) -> not lists:member(X, Settled) end, Water),
-
-
     MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
-    Spring = {500,0},
-    print_g(Spring, Clay, Water, Settled, MinX),
+    Clay = aoc:dedup(lists:map(fun({X,Y}) -> {{X,Y}, "#"} end, Parsed)),
+    Grid = dict:from_list(Clay),
+    GridSource = dict:store({500,0}, "+", Grid),
+    R = tick([{500,0}], GridSource, 100),
+    print_dict(R, MinX),
 
-    
-    io:format("Water : ~p~n", [length(XWater)]),
-    io:format("Settled : ~p~n", [length(Settled)]),
+    io:format("~nPart 1 : ~p~n", [0]).
 
-    io:format("~nPart 1 : ~p~n", [length(XWater) + length(Settled)]).
+tick(_, Grid, 0) -> Grid;
+tick(Edge, Grid, C) ->
 
+    {NEdge, NGrid} = lists:foldl(fun({X,Y}, {N,G}) -> 
 
-tick( {WaterEdge, WaterInner}, Settled, Clay, C) ->
-
-    Fixed =  Settled ++ Clay,
-
-    case C > 100 of
-        true ->  io:format("    time out : ~p~n", [C]),  
-        {aoc:dedup(WaterEdge++WaterInner),aoc:dedup(Settled)};
-        
-        false -> 
-            {NewSpread, NewSettled} = lists:foldl(fun({X,Y}, {Spr, Set}) ->
-                % drip - nothing below
-                case lists:member({X,Y+1}, Fixed) of
-
-                    false -> {[{X,Y+1}] ++ Spr, Set};
-                    true -> 
-                        {F, Top} = fill({X,Y}, Settled, Clay, WaterEdge++WaterInner--Settled),
-
-                        Cx = [],
-                        % is wall to left ?
-                        L = case lists:member({X-1, Top}, Fixed)  of % or lists:member({X-1, Top}, WaterInner) of
-                            false -> Cx ++ [{X-1,Top}];
-                            _ -> Cx
-                        end,
-                        % is wall to right ?
-                        R = case lists:member({X+1, Top}, Fixed) of % or lists:member({X+1, Top}, WaterInner) of
-                            false -> L ++ [{X+1, Top}];
-                            _ -> L
-                        end,
-
-                        RSettled = F ++ Set,
-                        % take out the any settled from the edges
-                        RSpread = lists:filter(fun(RS) -> not lists:member(RS, RSettled) end, R ++ Spr),
+        NE = case dict:find({X,Y+1}, Grid) of 
+            {ok, V} -> [];
+            error -> [{X,Y+1}]
+        end,
 
 
-                        { RSpread, RSettled }
-                    
-                    end
-                     
-                end, {[],[]}, WaterEdge),
-        
-        %  io:format("WaterEdge: ~p~n ", [WaterEdge] ),
+        {NE ++ N, dict:store({X,Y}, "|", Grid)}
+        end, {[], Grid}, Edge),
 
-        % io:format("New spread: ~p~n New settled: ~p~n", [NewSpread, NewSettled] ),
+    % R = dict:store({500,1}, "|", Grid),
 
-        BedRock = lists:foldl(fun({_,Y}, A) -> if Y > A -> Y; true -> A end end, 0, Clay),
-
-        NextSettled = aoc:dedup(NewSettled++Settled),
-        NewWater = lists:filter(fun({X,Y}) ->  
-            (Y - 1 < BedRock) and (not lists:member({X,Y}, NextSettled)) 
-            end, aoc:dedup(NewSpread)),
-        
-        %  io:format("NS : ~p~n", [length(NewSpread)]),
-    %    io:format("NW : ~p~n", [length(Settled)]),
-                
-        case (length(NewSettled) + length(NewWater)) == 0 of
-            true -> { 
-                %  io:format("NW : ~p~n", [length(NewWater)]),
-                %  io:format("WE : ~p~n", [length(WaterEdge)]),
-                %  io:format("WI : ~p~n", [length(WaterInner)]),
-                
-                
-                aoc:dedup(NewWater ++ WaterEdge ++ WaterInner), NextSettled };
-            false -> tick( {NewWater -- Settled, aoc:dedup(WaterEdge ++ WaterInner -- NewWater -- Settled)} , NextSettled, Clay, C+1)
-        end
-    end.
-        
-%  #         |         #
-%  #|||||||||||#       #
-%  #~~~~~~~#~~~#       #
-%  #~~~~~~~#####       #
-%  #~~~~~~~~~~~~~~~~~~~#
-
-
-fill({X,Y}, Added, Clay, TEMPFILL) ->
-
-    Level = lists:sort(lists:filter(fun({_,CY}) -> CY == Y end, Clay)),
-
-    CL = first(lists:reverse(Level), fun({CX,_}) -> (CX < X) end, none),
-    CR = first(Level,                fun({CX,_}) -> (CX > X) end, none),
-
-    %  aoc:clear_screen(),
-    print_g({500,0}, Clay, TEMPFILL, Added, 400),
-    %  {CLX,CLY} = CL,
-    %  {CRX,CRY} = CR,
-    % aoc:print(CLX,CLY, "@"),
-    % aoc:print(CRX,CRY, "@"),
-    %  timer:sleep(100),
-    
-
-    io:format("Edges : ~p~n~n", [{CL,CR}]),
-    
-    case {CL,CR} of 
-        {{LX,_}, {RX,_}} ->
-                FullBase = lists:filter(fun({CX,CY}) -> (CY == Y + 1) and (CX > LX) and (CX < RX) end, Added ++ Clay),
-                
-                io:format("FB : ~p~n", [length(FullBase)]),
-                io:format("Df : ~p~n~n", [RX - LX - 1]),
-
-                case length(FullBase) == RX - LX - 1 of % is the base solid
-                    true -> fill({X,Y - 1}, lists:map(fun({XX,YY}) -> {XX,YY-1} end, FullBase) ++ Added, Clay, TEMPFILL);
-                    false -> 
-                        % have we filled the row 
-                        
-                        {Added, Y}
-                end;
-
-        _ ->  {Added, Y}
-    end.
-
-                        
-
-
-    
+    tick(NEdge, NGrid, C-1).
 
 
 
-first(L, Condition, Default) ->
-  case lists:dropwhile(fun(E) -> not Condition(E) end, L) of
-    [] -> Default;
-    [F | _] -> F
-  end.
-
-print_g({SX,SY}, Clay, Water, Settled, MinX) ->
-    aoc:clear_screen(),
-    D = 120,
-    lists:foldl(fun({X,Y},_) -> 
-        aoc:print(X-MinX+2,Y+1 , "#")
-        end, [], clip(Clay, D)),
-
-    lists:foldl(fun({X,Y},_) -> 
-        aoc:print(X-MinX+2,Y+1 , "|")
-        end, [], clip(Water,D)),
-
-    lists:foldl(fun({X,Y},_) -> 
-        aoc:print(X-MinX+2,Y+1 , "~")
-        end, [], clip(Settled,D)),
-
-    aoc:print(SX-MinX+2,SY+1, "+"),
-
-    aoc:print(5,22,"").
 
 
-clip(L, Depth) ->
-    lists:filter(fun({_,Y}) -> Y < Depth end, L).
+
+
+print_dict(D, MinX) ->
+     aoc:clear_screen(),
+    L = dict:to_list(D),
+    lists:foldl(fun({{X,Y},C},_) -> 
+        aoc:print(X-MinX+5,Y+1, C)
+        end, [], L).
+
+% first(L, Condition, Default) ->
+%   case lists:dropwhile(fun(E) -> not Condition(E) end, L) of
+%     [] -> Default;
+%     [F | _] -> F
+%   end.
+
+
+% print_g({SX,SY}, Clay, Water, Settled, MinX) ->
+%     aoc:clear_screen(),
+%     D = 120,
+%     lists:foldl(fun({X,Y},_) -> 
+%         aoc:print(X-MinX+2,Y+1 , "#")
+%         end, [], clip(Clay, D)),
+
+%     lists:foldl(fun({X,Y},_) -> 
+%         aoc:print(X-MinX+2,Y+1 , "|")
+%         end, [], clip(Water,D)),
+
+%     lists:foldl(fun({X,Y},_) -> 
+%         aoc:print(X-MinX+2,Y+1 , "~")
+%         end, [], clip(Settled,D)),
+
+%     aoc:print(SX-MinX+2,SY+1, "+"),
+
+%     aoc:print(5,22,"").
+
+
+% clip(L, Depth) ->
+%     lists:filter(fun({_,Y}) -> Y < Depth end, L).
 
 % tl 142
 % tl 2287
