@@ -15,9 +15,9 @@ const check = (x,y) =>  {
     return trees;
 }
 
-console.log("Part 1", check(3,1));
+console.log("Part 1 : ", check(3,1));
 
 var results = [check(1,1), check(3,1), check(5,1), check(7,1), check(1,2)];
 var p2 = aoc.product(results);
 
-console.log("Part 2", p2);
+console.log("Part 2 : ", p2);

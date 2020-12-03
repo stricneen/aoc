@@ -15,7 +15,7 @@ var valids = input.map(x => {
 });
 
 var count = valids.filter(x=>x);
-console.log("Part 1", count.length);
+console.log("Part 1 : ", count.length);
 
 
 var valids2 = input.map(x => {
@@ -25,5 +25,5 @@ var valids2 = input.map(x => {
 });
 
 var count2 = valids2.filter(x=>x);
-console.log("Part 2", count2.length);
+console.log("Part 2 : ", count2.length);
     

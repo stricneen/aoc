@@ -6,9 +6,9 @@ exports.readfile = (fn) => {
     return fs.readFileSync(fp).toString();
 }
 
-exports.sum = (l) => l.reduce((x,a) => x+a, 0);
+exports.sum = (l) => l.reduce((a,x) => x+a, 0);
 
-exports.product = (l) => l.reduce((x,a) => x*a, 1);
+exports.product = (l) => l.reduce((a,x) => x*a, 1);
 
 // aoc.p(10,10,"Text");
 exports.p = (x, y, t) => {
