@@ -1,158 +1,84 @@
-const aoc = require('./aoc');
-    
+const aoc = require('./aoc');    
 const buffer = aoc.readfile('day04.txt');
-// 215
 const text = buffer.split(/\n/);
-// const input = text.map(x => parseInt(x));
 
-// const fold = text.reduce((acc, l) => {
+const requiredFields = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid'];
 
-//     if (l.length == 0) {
-//         return {l:acc, n: true};
-//     }
-
-//     if (l.n) {
-//         return {l: acc.push(l), n: false};
-//     }
-//     else {
-//         var t = acc;
-//         // t[acc.length] += t[acc.length] + l;
-//         return {l: t, n:false}
-//     }
-
-//     return l;
-// }, {l:[], n:false});
-
-const fields = [
-    'byr', 
-    'iyr',
-    'eyr',
-    'hgt',
-    'hcl',
-    'ecl',
-    'pid'];
-
-
-    var valid = 0;
-var items = 0;
-var used = [];
+var part1ValidPassports = 0, p1Valid = 0;
+var part2ValidPassports = 0, p2Valid = 0;
 
 for(var i=0;i<text.length;i++) {
 
-    // byr:1937 iyr:2017 cid:147 hgt:183cm
-
     if (text[i].length == 0) {
-
-        if (items == 7) {
-            valid++;
-            console.log('VALID');
-        }
-
-        used = [];
-        items = 0;
-        
-        console.log('');
+        if (p1Valid == 7) part1ValidPassports++;
+        if (p2Valid == 7) part2ValidPassports++;
+        p1Valid = 0;
+        p2Valid = 0;
         continue;
-
     }
 
-    var its = text[i].split(' ');
-    for(var j = 0;j < its.length; j++) {
-        var name = its[j].split(':')[0];
-        var val = its[j].split(':')[1];
-console.log(name,val);
+    var fields = text[i].split(' ');
+    for(var j = 0; j<fields.length; j++) {
 
-if (fields.includes(name)) {
-    
-    // byr (Birth Year) - four digits; at least 1920 and at most 2002.
-    // iyr (Issue Year) - four digits; at least 2010 and at most 2020.
-    // eyr (Expiration Year) - four digits; at least 2020 and at most 2030.
-            if (name == 'byr') {
-                if (val.length == 4 && parseInt(val) >= 1920 && parseInt(val) <= 2002) {
-                items++
-                }
-            }
+        var name = fields[j].split(':')[0];
+        var val = fields[j].split(':')[1];
 
-            if (name == 'iyr') {
-                if (val.length == 4 && parseInt(val) >= 2010 && parseInt(val) <= 2020) {
-                items++
-            }
-            }
+        // Part 1 check
+        if (requiredFields.includes(name)) {
+            p1Valid++;
+        }
 
-            if (name == 'eyr') {
-                if (val.length == 4 && parseInt(val) >= 2020 && parseInt(val) <= 2030) {
-                items++
-                }
+
+        if (requiredFields.includes(name)) {
+            
+            // byr (Birth Year) - four digits; at least 1920 and at most 2002.
+            if (name == 'byr' && parseInt(val) >= 1920 && parseInt(val) <= 2002) {
+                p2Valid++;
+            }
+            
+            // iyr (Issue Year) - four digits; at least 2010 and at most 2020.
+            if (name == 'iyr' && parseInt(val) >= 2010 && parseInt(val) <= 2020) {
+                p2Valid++;
+            }
+            
+            // eyr (Expiration Year) - four digits; at least 2020 and at most 2030.
+            if (name == 'eyr' && parseInt(val) >= 2020 && parseInt(val) <= 2030) {
+                p2Valid++;
             }
             
             // hgt (Height) - a number followed by either cm or in:
             // If cm, the number must be at least 150 and at most 193.
             // If in, the number must be at least 59 and at most 76.
             if (name == 'hgt') {
-
                 var uom = val.slice(-2);
-
-                if (uom == 'cm' || uom == 'in') {
-
-                    var num = parseInt(val.substring(0, val.length - 2));
-
-                    if (uom == 'cm' && num >= 150 && num <=193){
-                        items ++
-
-                    }
-
-                    if (uom == 'in' && num >= 59 && num <=76){
-                        items ++
-
-                    }
-                    
-
+                var num = parseInt(val.substring(0, val.length - 2));
+                if (uom == 'cm' && num >= 150 && num <=193){
+                    p2Valid ++;
                 }
-
-                // if (val.length == 4 && parseInt(val) >= 2020 && parseInt(val) <= 2030) {
-                // items++
-                // }
+                if (uom == 'in' && num >= 59 && num <=76){
+                    p2Valid ++;
+                }
             }
 
-// hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
-            if(name == 'hcl') {
-                if(val.length == 7 && val[0] == '#'){
-                items++}
+            // hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
+            if(name == 'hcl' && val.length == 7 && val[0] == '#'){
+                p2Valid++;
             }
 
+            // ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
+            if (name == 'ecl' && ['amb','blu','brn','gry','grn','hzl','oth'].includes(val)) {
+                p2Valid++;
+            }
 
-// ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
-if (name == 'ecl') {
-    if (['amb','blu','brn','gry','grn','hzl','oth'].includes(val)) {
-    items++
+            // pid (Passport ID) - a nine-digit number, including leading zeroes.
+            if (name == 'pid' && val.length == 9 && aoc.isNumber(val)) {
+                p2Valid++;
+            }
+
+        }   
     }
 }
 
-// pid (Passport ID) - a nine-digit number, including leading zeroes.
-if (name == 'pid') {
-    if (val.length == 9 && /^\d+$/.test(val)) {
-
-
-    items++
-    }
-}
-
-
-// cid (Country ID) - ignored, missing or not.
-
-
-
-            // // items++;
-            // used.push(name);
-        }
-        console.log(name);
-        
-    }
-
-}
-
-
-
-
-console.log(valid);
+console.log("Part 1 :  ", part1ValidPassports);
+console.log("Part 2 :  ", part2ValidPassports);
     
