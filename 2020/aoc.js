@@ -15,5 +15,4 @@ exports.product = (l) => l.reduce((a,x) => x*a, 1);
 // aoc.p(10,10,"Text");
 exports.p = (x, y, t) => {
     console.log("\033[" + y + ";" + x + "H" + t);
-    // console.log(t);
 }

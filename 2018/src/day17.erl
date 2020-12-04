@@ -32,25 +32,17 @@ tick(Edge, Grid, C) ->
 
     {NEdge, NGrid} = lists:foldl(fun({X,Y}, {N,G}) -> 
 
+    %    -x-
+    %     - 
         Below = dict:find({X,Y+1}, Grid),
         Left = dict:find({X-1,Y}, Grid),
         Right = dict:find({X+1,Y}, Grid),
         
+        NE = case {Below, Left, Right} of 
 
-        NE = case Below of 
-
-            "#" when Left == error ->
-
-            {ok, V} ->
-                case V of
-
-                    "#" ->
-
-
-                end    ;
-
-
-            error -> [{X,Y+1}]
+            {error, _, _}  -> [{X,Y+1}];
+            {{ok,"#"}, error, error} -> [{X-1,Y},{X+1,Y}];
+            _ -> []
         end,
 
 
