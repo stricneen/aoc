@@ -20,10 +20,10 @@ var pos = text.map(x => {
     return r*8+c;
 })
 
-console.log("Part 1 : ", Math.max(...pos));
+console.log("Part 1 :  ", Math.max(...pos));
 
 for(var i=Math.min(...pos);i<Math.max(...pos);i++) {
     if (pos.includes(i-1) && pos.includes(i+1) && !pos.includes(i)) {
-        console.log("Part 2 : ",i);
+        console.log("Part 2 :  ",i);
     }
 }
