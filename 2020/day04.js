@@ -79,6 +79,6 @@ for(var i=0;i<text.length;i++) {
     }
 }
 
-console.log("Part 1 :  ", part1ValidPassports);
-console.log("Part 2 :  ", part2ValidPassports);
+console.log("Part 1 : ", part1ValidPassports);
+console.log("Part 2 : ", part2ValidPassports);
     
