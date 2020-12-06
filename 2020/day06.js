@@ -6,32 +6,56 @@ const text = buffer.split(/\n/);
 // const input = text.map(x => parseInt(x));
 // 5348
 const group = text.reduce((a,x) => {
-
         if (x.length == 0) {
-            a.push("");
+            a.push([]);
             return a;
         } else {
-             a[a.length-1] += x;
-             return a;
+
+            var e = a[a.length-1];
+            e.push(x);
+            return a;
         }
 
 
-}, [""]);
+}, [[]]);
+
+console.log(group);
+
+var g = group.map(x => {
+
+    if (x.length == 0) return 0;
+
+var a = 0;
+    var c = x[0];
+
+    c.split('').forEach(e => {
+        
+        if (x.every(y => y.indexOf(e) > -1)){
+            a++;
+        }
+
+    });
 
 
-
-const dedup = group.map(x => {
-    var y = x.split('');
-    var z = [...new Set(y)];
-
-    return z.sort().join('');
+    return a;
 });
 
-console.log(dedup);
+console.log(g);
 
-const len = dedup.map(x => x.length);
+console.log(aoc.sum(g));
 
-console.log(len);
+// const dedup = group.map(x => {
+//     var y = x.split('');
+//     var z = [...new Set(y)];
 
-console.log(aoc.sum(len));
+//     return z.sort().join('');
+// });
+
+// // console.log(dedup);
+
+// const len = dedup.map(x => x.length);
+
+// // console.log(len);
+
+// console.log(aoc.sum(len));
     
