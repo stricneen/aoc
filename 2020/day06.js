@@ -3,59 +3,25 @@ const aoc = require('./aoc');
 const buffer = aoc.readfile('day06.txt');
 
 const text = buffer.split(/\n/);
-// const input = text.map(x => parseInt(x));
-// 5348
-const group = text.reduce((a,x) => {
-        if (x.length == 0) {
-            a.push([]);
-            return a;
-        } else {
 
-            var e = a[a.length-1];
-            e.push(x);
-            return a;
-        }
+const groups = aoc.group(text);
+
+const lengths = groups.map(l => l.join(''))
+                    .map(l => aoc.dedup_str(l))
+                    .map(x => x.length);
+
+console.log("Part 1 : ", aoc.sum(lengths));
 
 
-}, [[]]);
-
-console.log(group);
-
-var g = group.map(x => {
-
+var g = groups.map(x => {
     if (x.length == 0) return 0;
-
-var a = 0;
-    var c = x[0];
-
-    c.split('').forEach(e => {
-        
+    var a = 0;
+    x[0].split('').forEach(e => {
         if (x.every(y => y.indexOf(e) > -1)){
             a++;
         }
-
     });
-
-
     return a;
 });
 
-console.log(g);
-
-console.log(aoc.sum(g));
-
-// const dedup = group.map(x => {
-//     var y = x.split('');
-//     var z = [...new Set(y)];
-
-//     return z.sort().join('');
-// });
-
-// // console.log(dedup);
-
-// const len = dedup.map(x => x.length);
-
-// // console.log(len);
-
-// console.log(aoc.sum(len));
-    
+console.log("Part 2 : ", aoc.sum(g));

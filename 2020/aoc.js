@@ -18,3 +18,21 @@ exports.range = (s,e) => [...Array(Math.abs((e||0)-s)).keys()].map(x => x + (e?s
 exports.p = (x, y, t) => {
     console.log("\033[" + y + ";" + x + "H" + t);
 }
+
+exports.dedup_str = (s) => [...new Set(s.split(''))].join('');
+
+exports.dedup = (a) => [...new Set(...a)];
+
+exports.group = (l, f) => {
+    const def = x => x.length == 0;
+    const fn = f || def;
+    return l.reduce((a,x) => {
+        if (fn(x)) {
+            a.push([]);
+            return a;
+        } else {
+            a[a.length-1].push(x);
+            return a;
+        }
+    }, [[]]);
+}
