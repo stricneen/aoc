@@ -1,43 +1,33 @@
+const { BADHINTS } = require('dns');
 const aoc = require('./aoc');
 const buffer = aoc.readfile('day07.txt');
 
 const text = buffer.split(/\n/);
 // const input = text.map(x => parseInt(x));
 
+const shinyGold = 'shiny gold';
+
+// Parse
 const bags = text.map(x => {
     const outside = x.split('contain');
     const bag = outside[0].replace('bags ', '').trim();
     const r = {bag}
     const inside = outside[1].split(',').map(x => x.trim());
     const indside2 = inside.map(x => {
-        const y = x.split('');
+        const y = x.split(''); 
         return { n: parseInt(y[0]), bag: y.splice(1).join('').replace('.','').replace(' bags','').replace( 'bag','').trim()}
     })
-    r['inside'] = indside2;
+    r['contains'] = indside2.reduce((a,e) => isNaN(e.n) ? a : [e, ...a] ,[]);
     return r;
-
 });
 
-//  console.log(bags);
-
- 
 const canContain = (l) => {
-
-    // All bags that can contains b
-
-    const can = bags.filter(b => {
-        
-        const canHold = b.inside.map(x => x.bag);
-
+    return bags.filter(b => {
+        const canHold = b.contains.map(x => x.bag);
         const match = canHold.filter(value => l.includes(value));
-
         return (match.length > 0);
-    })
-
-
-    return can;
-    
-};
+    });
+}
 
 const shiny = (l, acc) => {
     const cc = canContain(l);
@@ -47,43 +37,19 @@ const shiny = (l, acc) => {
     return n;   
 }
 
-const r = shiny(['shiny gold'], []);
+const r = shiny([shinyGold], []);
 const names = r.map(x => x.bag);
 console.log("Part 1 : ", [...new Set(names)].length);
 
-
-const addBags = (l, acc) => {
-
-    // if (l.length==0) return acc;
-    // find bags in l
+const addBags = (l) => {
     const b = bags.filter(x => l.includes(x.bag));
-    const c = b.map(x => x.inside);
-    const merged = [].concat.apply([], c).filter(x => x.bag != 'o other');
-
+    const c = b.map(x => x.contains);
+    const merged = [].concat.apply([], c);
     if (merged.length == 0) return 0;
 
-    console.log("merged" ,merged);
-
-    const layer = merged.map(x => x.n + (x.n * addBags(x.bag, 0)));
-
-
-
-    console.log("Layer", layer);
-
+    const layer = merged.map(x => x.n + (x.n * addBags(x.bag)));
     const total = aoc.sum(layer);
-
-    console.log("Total", total);
-
-    return acc + total;
-    // const next = merged.map(x => x.bag);
-    // console.log("next", next);
-
-    // return total + addBags(next, 0);
+    return total;
 }
 
-
-// Gold bag 
-
-const gold = bags.filter(x => x.bag == 'shiny gold');
-
-console.log(addBags('shiny gold', 0));
+console.log("Part 2 : ", addBags(shinyGold, 0));
