@@ -1,11 +1,10 @@
 const aoc = require('./aoc');
-    const buffer = aoc.readfile('day08.txt');
+const buffer = aoc.readfile('day08.txt');
 const text = buffer.split(/\n/);
 
 const instr = text.map(x => {
-    return {i: x.split(' ')[0], v: parseInt(x.split(' ')[1]) }
+    return {op: x.split(' ')[0], arg: parseInt(x.split(' ')[1]) }
 });
-
 
 const exec = (instr) => {
     var acc = 0;
@@ -14,40 +13,41 @@ const exec = (instr) => {
     while (true) {
         var curr = instr[ptr];
         if (exec.includes(ptr)) {
-            return false;
+            return {acc: acc, err: true};
         }
-        if (ptr ==  instr.length) {
-            return acc;
+        if (ptr >=  instr.length) {
+            return {acc: acc, err: false};
         }
-    
         exec.push(ptr);
-    
-        if (curr.i == 'nop') {
+        if (curr.op == 'nop') {
         }
-        if (curr.i == 'acc') {
-            acc += curr.v;
+        if (curr.op == 'acc') {
+            acc += curr.arg;
         }
-        if (curr.i == 'jmp') {
-            ptr += curr.v-1;
+        if (curr.op == 'jmp') {
+            ptr += curr.arg-1;
         }
         ptr ++;    
     }
 }
 
+const r1 = exec(instr, true);
+console.log("Part 1 : ", r1.acc);
 
 for (var i = 0 ; i < instr.length; i++) {
+
     const test = instr.map((e,c) => {
-        if (c == i && e.i == 'jmp') {
-            return {i: 'nop', v: e.v};
+        if (c == i && e.op == 'jmp') {
+            return {op: 'nop', arg: e.arg};
         }
-        if (c == i && e.i == 'nop') {
-            return {i: 'jmp', v: e.v};
+        if (c == i && e.op == 'nop') {
+            return {op: 'jmp', arg: e.arg};
         }
         return e;
     });
 
-    var r = exec(test);
-    if (r !== false) {
-        console.log("Part 2 : ", r);
+    const r2 = exec(test, false);
+    if (r2.err == false) {
+        console.log("Part 2 : ", r2.acc);
     }
 }
