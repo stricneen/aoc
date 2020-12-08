@@ -1,7 +1,7 @@
 const aoc = require('./aoc');
 const buffer = aoc.readfile('day08.txt');
 const text = buffer.split(/\n/);
-
+aoc.header('Day 8: Handheld Halting');
 const instr = text.map(x => {
     return {op: x.split(' ')[0], arg: parseInt(x.split(' ')[1]) }
 });

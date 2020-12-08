@@ -6,6 +6,12 @@ exports.readfile = (fn) => {
     return fs.readFileSync(fp).toString();
 }
 
+exports.header = (s) => {
+    console.log();
+    console.log(s);
+    console.log('-'.repeat(s.length));
+}
+
 exports.isNumber = (s) => /^\d+$/.test(s);
 
 exports.sum = (l) => l.reduce((a,x) => x+a, 0);
