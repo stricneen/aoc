@@ -38,63 +38,89 @@ tick(Edge, Grid, C) ->
         Left = dict:find({X-1,Y}, Grid),
         Right = dict:find({X+1,Y}, Grid),
         
-        NE = case {Below, Left, Right} of 
+        NEdge = case {Below, Left, Right} of 
 
+            {{ok,"#"}, error, error} ->     [{X-1,Y},{X+1,Y}];
+            {{ok,"#"}, {ok, "|"}, error} -> [{X+1,Y}];
+            {{ok,"#"}, error, {ok, "|"}} -> [{X-1,Y}]; 
+            {{ok,"~"}, error, error} ->     [{X-1,Y},{X+1,Y}];
+            {{ok,"~"}, {ok, "|"}, error} -> [{X+1,Y}];
+            {{ok,"~"}, error, {ok, "|"}} -> [{X-1,Y}]; 
             {error, _, _}  -> [{X,Y+1}];
-            {{ok,"#"}, error, error} -> [{X-1,Y},{X+1,Y}];
+            
             _ -> []
         end,
 
+        NGrid = store_all([{X,Y}] ++ NEdge, "|", G),
 
-        {NE ++ N, dict:store({X,Y}, "|", Grid)}
+        Settled = settle([{X,Y}] ++ NEdge, NGrid),
+
+        {NEdge++N, Settled}
+
         end, {[], Grid}, Edge),
 
     % R = dict:store({500,1}, "|", Grid),
 
     tick(NEdge, NGrid, C-1).
 
+    % #         |         #
+    % #         | #       #
+    % #       #|||#       #
+    % #       #####       #
+    % #                   #
 
+settle([], D) -> D;
+settle([{X,Y}|T], D) ->
+    DN = case {is_left_corner({X,Y}, D), is_right_corner({X,Y}, D)} of
+        { true, true } -> dict:store({X,Y}, "~", D);
+        { true, false } -> check_right([{X+1,Y}], D);
+        { false, true } -> check_left([{X-1,Y}], D);
+        { false, false } -> D
+    end,
+    % io:format("~p~n", [[{X,Y}|T]]),
+    settle(T, DN).
 
+check_right([{X,Y}|T], G) -> 
+    case {is_base({X,Y}, G), is_left_corner({X,Y}, G)} of 
+        { true, true } -> store_all([{X,Y}|T], "~", G);
+        { true, false } -> check_right([{X+1,Y}] ++ [{X,Y}] ++ T, G);
+        _ -> G
+    end.
 
+check_left([{X,Y}|T], G) -> 
+    case {is_base({X,Y}, G), is_right_corner({X,Y}, G)} of 
+        { true, true } -> store_all([{X,Y}|T], "~", G);
+        { true, false } -> check_left([{X+1,Y}] ++ [{X,Y}] ++ T, G);
+        _ -> G
+    end.
 
+is_left_corner({X,Y}, G) ->
+    case {dict:find({X-1,Y}, G),dict:find({X,Y+1}, G)} of
+        {{ok, "#"},{ok, "#"}} -> true;
+        _ -> false
+    end.
+    
+is_right_corner({X,Y}, G) ->
+    case {dict:find({X+1,Y}, G),dict:find({X,Y+1}, G)} of
+        {{ok, "#"},{ok, "#"}} -> true;
+        _ -> false
+    end.
+
+is_base({X,Y}, G) ->
+    case dict:find({X,Y+1}, G) of
+        {ok, "#"} -> true;
+        _ -> false
+    end.
+
+store_all([], _, D) -> D;
+store_all([H|T], V, D) -> 
+    N = dict:store(H, V, D),
+    store_all(T, V, N).
 
 
 print_dict(D, MinX) ->
-     aoc:clear_screen(),
+    aoc:clear_screen(),
     L = dict:to_list(D),
     lists:foldl(fun({{X,Y},C},_) -> 
         aoc:print(X-MinX+5,Y+1, C)
         end, [], L).
-
-% first(L, Condition, Default) ->
-%   case lists:dropwhile(fun(E) -> not Condition(E) end, L) of
-%     [] -> Default;
-%     [F | _] -> F
-%   end.
-
-
-% print_g({SX,SY}, Clay, Water, Settled, MinX) ->
-%     aoc:clear_screen(),
-%     D = 120,
-%     lists:foldl(fun({X,Y},_) -> 
-%         aoc:print(X-MinX+2,Y+1 , "#")
-%         end, [], clip(Clay, D)),
-
-%     lists:foldl(fun({X,Y},_) -> 
-%         aoc:print(X-MinX+2,Y+1 , "|")
-%         end, [], clip(Water,D)),
-
-%     lists:foldl(fun({X,Y},_) -> 
-%         aoc:print(X-MinX+2,Y+1 , "~")
-%         end, [], clip(Settled,D)),
-
-%     aoc:print(SX-MinX+2,SY+1, "+"),
-
-%     aoc:print(5,22,"").
-
-
-% clip(L, Depth) ->
-%     lists:filter(fun({_,Y}) -> Y < Depth end, L).
-
-% tl 142
-% tl 2287
