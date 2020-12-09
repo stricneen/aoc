@@ -1,10 +1,7 @@
 const aoc = require('./aoc');
-aoc.header('Day 7: Handy Haversacks');
-
 const buffer = aoc.readfile('day07.txt');
 
 const text = buffer.split(/\n/);
-// const input = text.map(x => parseInt(x));
 
 const shinyGold = 'shiny gold';
 

@@ -3,54 +3,37 @@ const buffer = aoc.readfile('day09.txt');
 const text = buffer.split(/\n/);
 const input = text.map(x => parseInt(x));
 
-const preambleCount = 25;
+const preamble = 25;
 
 const findSum = (val, pre) => {
-    for(var i = 0; i< pre.length; i++) 
-        for(var j = 0; j< pre.length; j++) 
-            if (pre[i] + pre[j] == val && i != j) 
+    for(var i = 0; i < pre.length; i++) 
+        for(var j = 0; j < pre.length; j++) 
+            if (pre[i] + pre[j] == val) 
                 return true;
     return false;
 }
 
-for (var i = 0; i < input.length; i++) {
-    const pre = input.slice(i, i +preambleCount);
-    const val = input[i + preambleCount]
-
-    // console.log(pre);
-    // console.log(val);
-
-    const sum = findSum(val,pre);
-    if (!sum) {
-        console.log("Part 1 : ", val);
-        break;
+const weakness = () => {
+    for (var i = 0; i < input.length; i++) {
+        const pre = input.slice(i, i + preamble);
+        const val = input[i + preamble];
+        const sum = findSum(val,pre);
+        if (!sum) return val;
     }
 }
 
-
- const find = 14144619;
-//const find = 127;
-
-for (var i = 0; i < input.length; i++) {
-    for (var j = 0; j < input.length; j++) {
-
-    
-        var s = input.slice(i,j);
-
-        var sum = aoc.sum(s);
-
-        if (sum > find){
-            break;
+const contiguous = (p1) => {
+    for (var i = 0; i < input.length; i++) {
+        for (var j = 0; j < input.length; j++) {
+            var slice = input.slice(i,j);
+            var sum = aoc.sum(slice);
+            if (sum > p1) break;
+            if (sum == p1) return Math.min(...slice) + Math.max(...slice);
         }
-
-        if (sum == find) {
-            console.log(s);
-            console.log(Math.max(...s) + Math.min(...s));
-            break;
-        }
-
     }
-
 }
 
-// console.log(s);
+const p1 = weakness();
+console.log("Part 1 : ", p1)
+console.log("Part 2 : ", contiguous(p1));
+                
