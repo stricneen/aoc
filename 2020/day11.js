@@ -1,12 +1,13 @@
+const { POINT_CONVERSION_COMPRESSED } = require('constants');
 const aoc = require('./aoc');
 const buffer = aoc.readfile('day.txt');
 const text1 = buffer.split(/\n/);
 // const input = text.map(x => parseInt(x));
 const text = text1.join('');
 
-const len = text1[0].length;
+const len = 6 ;// text1[0].length; CHANGE
 
-console.log(text);
+// console.log(text);
 
 const occ = (x) => x.split('').filter(x => x == '#').join('').length;
 
@@ -42,36 +43,26 @@ if (x == 10) debugger;
     return ret;
 }
 
+const pos_to_coord = (data, width, coord) => {
+    return data[(coord.y * width) + coord.x];
+} 
 
-const state2 = (grid, x) => {
+const t = {name: 'Paul', age: 34};
 
-    var ret = '';
-    const ul = (x) % len == 0 ? '' : grid[x-len-1] || '';
-    // const l  = (x) % len == 0 ? '' : text2[x-1] || '';
-    const dl = (x) % len == 0 ? '' : grid[x+len-1] || '';
+const state2 = (grid, width, x) => {
 
-    const u  = grid[x-len] || '';
-    const d  = grid[x+len] || '';
+    // whats to the left ?
+    
+    const view = aoc.range(0, grid.length)
+        .map(e =>  { return {x: -e, y: 0 } })
+       // .map(e => vat(grid, width, e))
+        .filter(e => !!e);
 
-    const ur = (x+1) % len == 0 ? '' : grid[x-len+1] || '';
-    const r  = (x+1) % len == 0 ? '' : grid[x+1] || '';
-    const dr = (x+1) % len == 0 ? '' : grid[x+len+1] || '';
+    return view;
 
 
-    const l = grid.slice(x +1, );
-    console.log(l);
 
-    const  s = ul + u + ur + l + r + dr + d + dl;
 
-    if (grid[x] == '.') {
-        ret += '.';
-    } else if (grid[x] == 'L' && occ(s)==0){
-        ret += '#';
-    } else if (grid[x] == '#' && occ(s) >= 4 ) {
-        ret += 'L';
-    } else ret += grid[x];
-
-    return ret;
 }
 
 // var t = text;
@@ -95,6 +86,17 @@ const state2 = (grid, x) => {
 // }
 
 var l = text;
-l   = l.split('').map((x,i) => state2(l,i)).join('');
+var grid = aoc.range(1, 37);
+
+l   = l.split('').map((x,i) => state2(grid,6, 8)).join('');
 console.log(l);
 
+// l   = l.split('').map((x,i) => state2(grid,20)).join('');
+// console.log(l);
+
+// l   = l.split('').map((x,i) => state2(grid,36)).join('');
+// console.log(l);
+
+
+
+// console.log(test);
