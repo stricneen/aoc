@@ -1,102 +1,92 @@
-const { POINT_CONVERSION_COMPRESSED } = require('constants');
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day.txt');
-const text1 = buffer.split(/\n/);
-// const input = text.map(x => parseInt(x));
-const text = text1.join('');
+const buffer = aoc.readfile('day11.txt');
+const text = buffer.split(/\n/);
 
-const len = 6 ;// text1[0].length; CHANGE
+const grid = text.reduce((a,e) => {
+    a.push(e);
+    return a;
+}, []);
 
-// console.log(text);
+const width = grid[0].length;
+const height = grid.length;
 
-const occ = (x) => x.split('').filter(x => x == '#').join('').length;
+// console.log(grid);
 
-const state = (text2, x) => {
 
-    var ret = '';
-    const ul = (x) % len == 0 ? '' : text2[x-len-1] || '';
-    const l  = (x) % len == 0 ? '' : text2[x-1] || '';
-    const dl = (x) % len == 0 ? '' : text2[x+len-1] || '';
+const allCoords = function* (x,y) {
+    for(var dy = 0; dy < y; dy++)
+        for(var dx = 0; dx <  x; dx++)
+            yield {x: dx, y: dy};
+  };
 
-    const u  = text2[x-len] || '';
-    const d  = text2[x+len] || '';
+const stringToGrid = (s,w,h) => {
+    return aoc.range(0, h).reduce((a,e) => {
+        a.push(s.substr(e * w, w));
+        return a;
+    },[]);
+};
 
-    const ur = (x+1) % len == 0 ? '' : text2[x-len+1] || '';
-    const r  = (x+1) % len == 0 ? '' : text2[x+1] || '';
-    const dr = (x+1) % len == 0 ? '' : text2[x+len+1] || '';
+const gridToString = (g) => g.reduce((a,c) => a + c,'');
 
-    // console.log(ul);
-    const  s = ul + u + ur + l + r + dr + d + dl;
-if (x == 10) debugger;
-// console.log(s);
-    if (text2[x] == '.') {
-        ret += '.';
-    } else if (text2[x] == 'L' && occ(s)==0){
-        ret += '#';
-    } else if (text2[x] == '#' && occ(s) >= 4 ) {
-        ret += 'L';
-    } else ret += text2[x];
+const vat = (grid, coord) => {
 
-// mine #.LL.L#.## LLL
-// actu #.LL.L#.## #LLLLLL.L#L.L.L..L.
-
-    return ret;
+if (coord.y == 93) {
+    var t = 0;
 }
 
-const pos_to_coord = (data, width, coord) => {
-    return data[(coord.y * width) + coord.x];
-} 
-
-const t = {name: 'Paul', age: 34};
-
-const state2 = (grid, width, x) => {
-
-    // whats to the left ?
-    
-    const view = aoc.range(0, grid.length)
-        .map(e =>  { return {x: -e, y: 0 } })
-       // .map(e => vat(grid, width, e))
-        .filter(e => !!e);
-
-    return view;
-
-
-
-
+ return    grid[coord.y]?.[coord.x];
 }
 
-// var t = text;
-// var i = 0;
+const surrounding = (grid, coord) => {
 
-// var l = text;
-// while (true) {
- 
-//     const b = l.split('').filter(x => x == '#').join('').length;
-//    l   = l.split('').map((x,i) => state(l,i)).join('');
-//     // console.log(l);
-//     const a = l.split('').filter(x => x == '#').join('').length;
+    const s = [
+        grid[coord.y - 1]?.[coord.x -1],
+        grid[coord.y]?.[coord.x -1],
+        grid[coord.y + 1]?.[coord.x -1],
     
+        grid[coord.y - 1]?.[coord.x],
+        grid[coord.y + 1]?.[coord.x],
 
-//     // i++;
-//     if (a == b) {
-//        console.log(l.split('').filter(x => x == '#').join('').length);
-//         break;
+        grid[coord.y - 1]?.[coord.x +1],
+        grid[coord.y]?.[coord.x +1],
+        grid[coord.y + 1]?.[coord.x +1],
+    ].filter(x => !!x);
 
-//     }
-// }
+    return s;
+};
 
-var l = text;
-var grid = aoc.range(1, 37);
+var i = 0;
+let loop = grid;
+while (true) {
 
-l   = l.split('').map((x,i) => state2(grid,6, 8)).join('');
-console.log(l);
+    let next = '';
+    for (let c of allCoords(width, height)) {
 
-// l   = l.split('').map((x,i) => state2(grid,20)).join('');
-// console.log(l);
+        const curr = vat(loop, c);
+        const s = surrounding(loop, c);
+        
+        if (c.x == 3 && c.y == 0) {
+            let ttt = 0;
+        }
 
-// l   = l.split('').map((x,i) => state2(grid,36)).join('');
-// console.log(l);
+        if (curr == '.') {
+            next += '.';
+        } else if (curr == 'L' && s.filter(x => x == '#').length == 0) {
+            next += '#';
+        } else if (curr == '#' && s.filter(x => x == '#').length >= 4) {
+            next += 'L';
+        } else {
+            next += curr;
+        }
+    }
 
 
+    if (gridToString(loop) == next) {
+        console.log("Part 1 : ", next.split('').filter(x => x == '#').length);
+        break;
+    }
 
-// console.log(test);
+    loop = stringToGrid(next, width, height);
+    // console.log(loop);
+}
+
