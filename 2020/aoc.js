@@ -1,5 +1,6 @@
 var fs = require('fs'),
     path = require('path');
+const { exit } = require('process');
 
 exports.readfile = (fn) => {
     const fp = path.join(__dirname, `./data/${fn}`);
@@ -27,7 +28,7 @@ exports.p = (x, y, t) => {
 
 exports.dedup_str = (s) => [...new Set(s.split(''))].join('');
 
-exports.dedup = (a) => [...new Set(...a)];
+exports.dedup = (a) => [...new Set(a)];
 
 exports.group = (l, f) => {
     const def = x => x.length == 0;
@@ -42,3 +43,5 @@ exports.group = (l, f) => {
         }
     }, [[]]);
 }
+
+exports.sort_ints = (a) => a.sort((a, b) => a - b);
