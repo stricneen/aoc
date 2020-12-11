@@ -29,12 +29,7 @@ const stringToGrid = (s,w,h) => {
 const gridToString = (g) => g.reduce((a,c) => a + c,'');
 
 const vat = (grid, coord) => {
-
-if (coord.y == 93) {
-    var t = 0;
-}
-
- return    grid[coord.y]?.[coord.x];
+     return grid[coord.y]?.[coord.x];
 }
 
 const surrounding = (grid, coord) => {
@@ -55,38 +50,32 @@ const surrounding = (grid, coord) => {
     return s;
 };
 
-var i = 0;
-let loop = grid;
-while (true) {
+const part1 = () => {
+    var i = 0;
+    let loop = grid;
+    while (true) {
+        let next = '';
+        for (let c of allCoords(width, height)) {
 
-    let next = '';
-    for (let c of allCoords(width, height)) {
+            const curr = vat(loop, c);
+            const s = surrounding(loop, c);
+            if (curr == '.') {
+                next += '.';
+            } else if (curr == 'L' && s.filter(x => x == '#').length == 0) {
+                next += '#';
+            } else if (curr == '#' && s.filter(x => x == '#').length >= 4) {
+                next += 'L';
+            } else {
+                next += curr;
+            }
+        }
 
-        const curr = vat(loop, c);
-        const s = surrounding(loop, c);
+        if (gridToString(loop) == next) {
+            return next.split('').filter(x => x == '#').length;
+        }
         
-        if (c.x == 3 && c.y == 0) {
-            let ttt = 0;
-        }
-
-        if (curr == '.') {
-            next += '.';
-        } else if (curr == 'L' && s.filter(x => x == '#').length == 0) {
-            next += '#';
-        } else if (curr == '#' && s.filter(x => x == '#').length >= 4) {
-            next += 'L';
-        } else {
-            next += curr;
-        }
+        loop = stringToGrid(next, width, height);
     }
+};
 
-
-    if (gridToString(loop) == next) {
-        console.log("Part 1 : ", next.split('').filter(x => x == '#').length);
-        break;
-    }
-
-    loop = stringToGrid(next, width, height);
-    // console.log(loop);
-}
-
+console.log("Part 1 : ", part1());
