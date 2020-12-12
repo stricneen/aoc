@@ -8,7 +8,7 @@ const device = Math.max(...input) + 3;
 input.push(0);
 input.push(device);
 
-console.time("start day 10");
+// console.time("start day 10");
 
 const sorted = aoc.sort_ints(input);
 
@@ -49,4 +49,4 @@ const combs = split.map((e) => {
 
 console.log("Part 2 : ", aoc.product(combs));
 
-console.timeEnd("start day 10");
+// console.timeEnd("start day 10");
