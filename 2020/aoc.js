@@ -45,3 +45,9 @@ exports.group = (l, f) => {
 }
 
 exports.sort_ints = (a) => a.sort((a, b) => a - b);
+
+exports.denBin = (s) => (s >>> 0).toString(2);
+
+exports.revStr = (s) => s.split('').reverse().join('');
+
+exports.between = (data, s, e) =>   data.split(s)[1].split(e)[0];
