@@ -29,13 +29,13 @@ const t4 = '67,x,7,59,61'; // 779210.
 const t5 = '67,7,x,59,61'; // 1261476.
 const t6 = '1789,37,47,1889'; // first occurs at timestamp 1202161486.'
 
-const timetable = time1.split(',')
+const timetable = time.split(',')
     .map((x,i) => { return {offset: i, time: parseInt(x)}})
     .filter(x => !isNaN(x.time));
 
 timetable.sort((a,b) => a.offset - b.offset);
 
-const lcd = (x,y) => {
+const lcd = (x,y,t) => {
     console.log();
     console.log(x);
     console.log(y);
@@ -60,7 +60,7 @@ const lcd = (x,y) => {
         if ((firstMeeting % min.time) == min.offset) {
             return {offset: firstMeeting, time: x.time * y.time}
         }
-        firstMeeting += max.time;
+        firstMeeting += t;
     }
 
      
@@ -68,36 +68,37 @@ const lcd = (x,y) => {
 
 };
 
-let s = lcd(timetable[0], timetable[1]);
-for(var i =2 ; i < timetable.length; i++) {
+// let np = timetable[0].time;
+// let s = lcd(timetable[0], timetable[1], np);
+// for(var i =2 ; i < timetable.length; i++) {
 
-
-    s = lcd(s, timetable[i]);
-    console.log(s);
-
-    
-}
-
-console.log (s.time - s.offset);
-
-
-
-
-// const inc = Math.max(...timesp2.map(x => x.time - x.offset));
-
-// console.log(timesp2);
-// console.log(inc);
-
-// var c= 0;
-// while (true) {
-
-// //    if (c % 100000000000000 == 0) console.log(c);
-//      const xx = timesp2.map(x => (c + x.offset) % x.time == 0);
-//     if (xx.every(x => x==true)) {
-//         break;
-//     }
-//      c+=inc;
-//     //  console.log(c);
+//     s = lcd(s, timetable[i], np);
+//     np *= timetable[i].time;
+//     console.log(s);
 // }
 
-// console.log(c);
+// console.log (s.time - s.offset);
+
+
+
+const next = (offset, time, ans, period) => {
+
+    // let ans = x;
+    while((ans + offset) % time != 0) {
+        ans += period;
+
+    }
+    console.log(period);
+    return ans;
+
+}
+
+console.log(timetable);
+const p2 = timetable.reduce((a,e) => {
+
+    const n = next(e.offset, e.time, a[1], a[0]);
+
+    return [a[0]*e.time, n];
+}, [1, 0]);
+
+console.log(p2);
