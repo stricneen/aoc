@@ -1,17 +1,31 @@
-const input = "0,13,1,8,6,15".split(",")
+const test = '0,3,6';
+const text = '0,13,1,8,6,15';
 
-const solve = (n) => {
-  let lastNum = input[input.length - 1];
-  const lastSpoken = new Array(n);
-  input.forEach((e,i) => lastSpoken[e] = i + 1);
+const input = text.split(',').map(x => parseInt(x));
 
-  for (let i = input.length; i < n; i++) {
-    const next = lastSpoken[lastNum] ? i - lastSpoken[lastNum] : 0;
-    lastSpoken[lastNum] = i;
-    lastNum = next;
-  }
-  return lastNum;
+
+// 0 : 1
+// 3 : 2
+// 6
+
+const game = (to) => {
+
+    const prev = new Array(to);
+
+    let prevRounds = input.slice(0, input.length-1);
+    prevRounds.forEach((e,i) => prev[e] = i+1);
+    
+    let current = input[input.length - 1];
+    let i = input.length;
+
+    while(i < to) {
+        const c = prev[current];
+        prev[current] = i;
+        current = c != undefined ? i - c : 0;
+        i++;  
+    }
+    return current;
 }
 
-console.log("Part 1 : ", solve(2020));
-console.log("Part 2 : ", solve(30000000));
+console.log("Part 1 : ", game(2020));
+console.log("Part 2 : ", game(30000000));
