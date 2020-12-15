@@ -56,7 +56,7 @@ const getAddresses = (mask, dec, reg) => {
 let mask = '';
 let mem = {};
 let mem2 = {};
-for(instr of text) {
+for(const instr of text) {
 
     if (instr[1] == 'a') {
         mask = instr.substring(7);
@@ -67,7 +67,7 @@ for(instr of text) {
 
         mem[reg] = getAddress(mask, binary);;
 
-        for(address of getAddresses(mask, binary, reg)) {
+        for(const address of getAddresses(mask, binary, reg)) {
             mem2[address] = binary;
         }
     }
