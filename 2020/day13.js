@@ -1,7 +1,15 @@
 const aoc = require('./aoc');
 
+const time = '19,x,x,x,x,x,x,x,x,x,x,x,x,37,x,x,x,x,x,383,x,x,x,x,x,x,x,23,x,x,x,x,13,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29,x,457,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,17';
+const testtimes = '7,13,x,x,59,x,31,19'; // 1068781
+const time1 = '17,x,13,19'  //  is 3417.
+const t3 = '67,7,59,61';   //754018.
+const t4 = '67,x,7,59,61'; // 779210.
+const t5 = '67,7,x,59,61'; // 1261476.
+const t6 = '1789,37,47,1889'; // first occurs at timestamp 1202161486.'
+
     
-const t = 1000391;
+const t0 = 1000391;
 
 const test = 939;
 // const testtimes = '7,13,x,x,59,x,31,19';
@@ -13,21 +21,17 @@ const mintime = (f, m) => {
     }
     return [x,f];
 }
-// const times = time.split(',').filter(x => x != 'x').map(x => parseInt(x));
-// console.log(times);
-// const ts = times.map(x => mintime(x, t));
-// console.log(ts);
+const times = time.split(',').filter(x => x != 'x').map(x => parseInt(x));
+//console.log(times);
+const ts = times.map(x => mintime(x, t0));
+
+const earliest = ts.reduce((a,e) => e[0] < a ? e[0] : a, Infinity);
+const bus = ts.filter(e => e[0] == earliest)[0];
+console.log("Part 1 : ", (earliest - t0) * bus[1]);
 
 // 1915
 
 
-const time = '19,x,x,x,x,x,x,x,x,x,x,x,x,37,x,x,x,x,x,383,x,x,x,x,x,x,x,23,x,x,x,x,13,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29,x,457,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,17';
-const testtimes = '7,13,x,x,59,x,31,19'; // 1068781
-const time1 = '17,x,13,19'  //  is 3417.
-const t3 = '67,7,59,61';   //754018.
-const t4 = '67,x,7,59,61'; // 779210.
-const t5 = '67,7,x,59,61'; // 1261476.
-const t6 = '1789,37,47,1889'; // first occurs at timestamp 1202161486.'
 
 const timetable = time.split(',')
     .map((x,i) => { return {offset: i, time: parseInt(x)}})
@@ -88,12 +92,12 @@ const next = (offset, time, ans, period) => {
         ans += period;
 
     }
-    console.log(period);
+    // console.log(period);
     return ans;
 
 }
 
-console.log(timetable);
+// console.log(timetable);
 const p2 = timetable.reduce((a,e) => {
 
     const n = next(e.offset, e.time, a[1], a[0]);
@@ -101,4 +105,4 @@ const p2 = timetable.reduce((a,e) => {
     return [a[0]*e.time, n];
 }, [1, 0]);
 
-console.log(p2);
+console.log("Part 2 : ", p2[1]);
