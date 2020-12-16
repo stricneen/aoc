@@ -77,5 +77,5 @@ const p2 = dirs.reduce((a,e) => {
  
 }, { pos: {x:0, y:0}, waypoint:{x: 10, y: -1}, facing: 'e'} );
 
-console.log("Part 1  : " , Math.abs(p1.pos.x) + Math.abs(p1.pos.y));
-console.log("Part 2  : " , Math.abs(p2.pos.x) + Math.abs(p2.pos.y));
+console.log("Part 1 : " , Math.abs(p1.pos.x) + Math.abs(p1.pos.y));
+console.log("Part 2 : " , Math.abs(p2.pos.x) + Math.abs(p2.pos.y));
