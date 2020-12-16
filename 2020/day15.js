@@ -3,11 +3,6 @@ const text = '0,13,1,8,6,15';
 
 const input = text.split(',').map(x => parseInt(x));
 
-
-// 0 : 1
-// 3 : 2
-// 6
-
 const game = (to) => {
 
     const prev = new Array(to);
