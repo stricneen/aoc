@@ -36,18 +36,31 @@ const solve = (eq) => {
         const after = eq.substring(firstC + 1);
 
 
-        // ((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2
+        // 1 + 2 * 3 + 4 * 5 + 6
         return solve(before + solve(innereq) + after);
     }
     else {
         const part = eq.split(' ');
-        if (part[1] == '*') {
-            const m = parseInt(part[0]) * parseInt(part[2]);
+
+        if (eq.indexOf('+') > -1 && eq.indexOf('*') > -1) {
+
+            const add = part.indexOf('+');
+            if (add > -1) {
+    
+                part[add-1] = '(' + part[add-1];
+                part[add+1] =  part[add+1] + ')';
+                return solve(part.join(' '));
+            }
+
+        }
+
+        if (part[1] == '+'){
+            const m = parseInt(part[0]) + parseInt(part[2]);
             const n  = m.toString() + ' ' + part.slice(3).join(' ');
             return solve(n);
         }
-        if (part[1] == '+'){
-            const m = parseInt(part[0]) + parseInt(part[2]);
+        if (part[1] == '*') {
+            const m = parseInt(part[0]) * parseInt(part[2]);
             const n  = m.toString() + ' ' + part.slice(3).join(' ');
             return solve(n);
         }
