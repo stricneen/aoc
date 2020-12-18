@@ -1,26 +1,8 @@
 const aoc = require('./aoc');
-    
 const buffer = aoc.readfile('day18.txt');
-
 const text = buffer.split(/\n/);
 
-
-// 1 + 2 * 3 + 4 * 5 + 6 
-// 2 * 3 + (4 * 5)
-// 5 + (8 * 3 + 9 + 3 * 4 * 3)
-// 5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))
-// ((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2
-
-
-
-const solve = (eq) => {
-
-    console.log(eq);
-
-
-    if (aoc.isNumber(eq)) {
-        return parseInt(eq);
-    }
+const solve = (eq, prefAdd) => {
 
     if (eq.indexOf(')') > -1) {
 
@@ -35,50 +17,43 @@ const solve = (eq) => {
         const innereq = closing == -1 ? inner : inner.substring(0, closing);
         const after = eq.substring(firstC + 1);
 
-
-        // 1 + 2 * 3 + 4 * 5 + 6
-        return solve(before + solve(innereq) + after);
+        return solve(before + solve(innereq, prefAdd) + after, prefAdd);
     }
     else {
+
         const part = eq.split(' ');
 
-        if (eq.indexOf('+') > -1 && eq.indexOf('*') > -1) {
-
-            const add = part.indexOf('+');
-            if (add > -1) {
-    
-                part[add-1] = '(' + part[add-1];
-                part[add+1] =  part[add+1] + ')';
-                return solve(part.join(' '));
+        if (prefAdd) {
+            if (eq.indexOf('+') > -1 && eq.indexOf('*') > -1) {
+                const add = part.indexOf('+');
+                if (add > -1) {
+                    part[add-1] = '(' + part[add-1];
+                    part[add+1] =  part[add+1] + ')';
+                    return solve(part.join(' '), prefAdd);
+                }
             }
-
         }
 
         if (part[1] == '+'){
             const m = parseInt(part[0]) + parseInt(part[2]);
             const n  = m.toString() + ' ' + part.slice(3).join(' ');
-            return solve(n);
+            return solve(n, prefAdd);
         }
         if (part[1] == '*') {
             const m = parseInt(part[0]) * parseInt(part[2]);
             const n  = m.toString() + ' ' + part.slice(3).join(' ');
-            return solve(n);
+            return solve(n ,prefAdd);
         }
 
     }
-
-
-
     return parseInt(eq);
 };
 
-let ans = [];
-for (eq of text) {
-    let a = solve(eq);
-    ans.push(a);
-    console.log(a);
-}
+let p1 = text.map(x => solve(x, false));
+let p2 = text.map(x => solve(x, true));
 
-console.log("Part 1 : ", aoc.sum(ans));
+console.log("Part 1 : ", aoc.sum(p1));
+console.log("Part 2 : ", aoc.sum(p2));
 
-    
+require('assert').strictEqual(aoc.sum(p1), 12956356593940);
+require('assert').strictEqual(aoc.sum(p2), 94240043727614);
