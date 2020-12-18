@@ -4,18 +4,17 @@ const text = buffer.split(/\n/);
 
 const solve = (eq, prefAdd) => {
 
-    if (eq.indexOf(')') > -1) {
+    if (eq.indexOf(')') > -1) { // Are there brackets?
 
-        const firstC = eq.indexOf(')');
-        const prev = eq.substring(0, firstC);
-        const matchO = prev.lastIndexOf('(');
+        const firstClosing = eq.indexOf(')');
+        const matchingOpener = eq.substring(0, firstClosing).lastIndexOf('(');
 
-        const inner = eq.substr(matchO + 1, firstC - 1);
+        const inner = eq.substr(matchingOpener + 1, firstClosing - 1);
         const closing = inner.indexOf(')');
 
-        const before = eq.substring(0, matchO);
+        const before = eq.substring(0, matchingOpener);
         const innereq = closing == -1 ? inner : inner.substring(0, closing);
-        const after = eq.substring(firstC + 1);
+        const after = eq.substring(firstClosing + 1);
 
         return solve(before + solve(innereq, prefAdd) + after, prefAdd);
     }
@@ -34,15 +33,13 @@ const solve = (eq, prefAdd) => {
             }
         }
 
-        if (part[1] == '+'){
-            const m = parseInt(part[0]) + parseInt(part[2]);
-            const n  = m.toString() + ' ' + part.slice(3).join(' ');
+        if (part[1] == '+' || part[1] == '*') {
+            const res = part[1] == '+' 
+                ? parseInt(part[0]) + parseInt(part[2])
+                : parseInt(part[0]) * parseInt(part[2]);
+
+            const n  = res.toString() + ' ' + part.slice(3).join(' ');
             return solve(n, prefAdd);
-        }
-        if (part[1] == '*') {
-            const m = parseInt(part[0]) * parseInt(part[2]);
-            const n  = m.toString() + ' ' + part.slice(3).join(' ');
-            return solve(n ,prefAdd);
         }
 
     }
