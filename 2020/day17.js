@@ -90,7 +90,7 @@ const iterate4d = (grid, size) => {
 }
 
 
-// console.time('x');
+console.time('x');
 
 const cycles = 6;
 const size = text[0].length + 1;
@@ -110,6 +110,6 @@ for(let cycle = 0; cycle < cycles; cycle++) {
     grid = next;
 }
 console.log("Part 2 : ", next.length);
-// console.timeEnd('x');
+console.timeEnd('x');
 
 
