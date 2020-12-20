@@ -38,7 +38,6 @@ const expand = (rules) => {
             }
         }
         return exp(n.filter(x => data.some(d => d.startsWith(x.red))));
-
     };
 
     const root = rules.get(0);
