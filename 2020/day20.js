@@ -1,3 +1,4 @@
+const { pathToFileURL } = require('url');
 const aoc = require('./aoc');
 const buffer = aoc.readfile('day.txt');
 const text = buffer.split(/\n/);
@@ -22,6 +23,15 @@ const getedges = (tile) => {
         aoc.revStr(tile.reduce((a,e) =>  a + e[0],'')),
         tile.reduce((a,e) =>  a + e[e.length-1],''),
         aoc.revStr(tile[tile.length-1])
+    ];
+};
+
+const getedges2 = (tile) => {
+    return [
+        tile[0], 
+        tile.reduce((a,e) =>  a + e[0],''),
+        tile.reduce((a,e) =>  a + e[e.length-1],''),
+        tile[tile.length-1]
     ];
 };
 
@@ -111,11 +121,11 @@ const flipRotate = function*(grid) {
 //      0       [2, '....']
 //     1 2      [3, '....']
 //      3
-const fitTile = (grid, edges, tomatch) => {
+const fitTile = (grid, edges, tomatch, edgefunc) => {
 
     for(r of flipRotate(grid)) {
 
-        const e = getedges(r);
+        const e = edgefunc(r);
 
         const e2 = edges.map((x,i) => e[x] == tomatch[i]); 
         if (e2.every(x => x))
@@ -140,53 +150,88 @@ matches.forEach((v,k) => {
     if (v[0] == 2) topleftId = k;  
 });
 
-
-
 const topLeft = tiles.get(topleftId);
 const topLeftedges = matches.get(topleftId);
-const rotateForFit = fitTile(topLeft, [2,3], topLeftedges[1]);
-
+const rotateForFit = fitTile(topLeft, [2,3], topLeftedges[1], getedges);
 print(rotateForFit);
 
-const commonEdges = new Map();
-matches.forEach((v,k) => {
-    v[1].forEach(edge => {
-        if (commonEdges.has(edge)) {
-            commonEdges.set(edge, [k].concat(commonEdges.get(edge)));
-        } else if (commonEdges.has(aoc.revStr(edge))) {
-            commonEdges.set(aoc.revStr(edge), [k].concat(commonEdges.get(aoc.revStr(edge))));
-        } else {
-            commonEdges.set(edge, [k]);
+const findTile = (l, edge, n, fn) => {
+    let r;
+    l.forEach((v,k) => {
+        const rotate = fitTile(v, [n], [edge], fn);
+        if (rotate) {
+            r = { id: k, grid: rotate};
+            
+            console.log('found');
         }
     });
-});
-
-console.log(tiles.keys());
-
-const sideLength = Math.sqrt(tiles.size);
-console.log("Size : ", sideLength);
-
-const s = [];
-for (let i = 0; i < sideLength; i++) {
-    let row = [];
-    for (let j = 0; j < sideLength; j++) {
-        row.push(0);
-    }
-    s.push(row);
+    return r;
 }
 
-s[0][0] = topleftId;
-
-console.log(s);
-
-console.log(commonEdges);
-const commonEdgesTiles = [];
-commonEdges.forEach(v => commonEdgesTiles.push(v));
+const sideLength = Math.sqrt(tiles.size);
+//console.log("Size : ", sideLength);
 
 
-console.log(commonEdgesTiles);
-//      0       [2, '....']
-//     1 2      [3, '....']
-//      3
+let grid = [ [ {id: topleftId, grid: rotateForFit} ]];
+tiles.delete(topleftId);
 
+for (let r = 0; r < sideLength; r++) {
 
+    for (let c = 0; c < sideLength; c++) {
+        if (r == 0 && c == 0) continue;
+
+        if (c == 0) {
+            
+            const tomatch = grid[r-1][0];
+
+            const bottomEdge = getedges2(tomatch.grid)[3];
+            const nextTile = findTile(tiles, bottomEdge, 0, getedges2);
+        
+            grid.push([nextTile]);
+//            row.push(nextTile);
+            tiles.delete(nextTile.id);
+
+            print(nextTile.grid);
+
+        } else {
+
+            const row = grid[r];
+            const tomatch = row[row.length-1];
+
+            const rightEdge = getedges(tomatch.grid)[2];
+            const nextTile = findTile(tiles, rightEdge, 1, getedges2);
+        
+            row.push(nextTile);
+            tiles.delete(nextTile.id);
+
+            print(nextTile.grid);
+        }
+
+    }
+
+}
+
+const removeEdges = (grid) => {
+    const inner =  grid.slice(1,grid.length-1);
+    const inner2 = inner.map(x => x.slice(1,x.length-1));
+    return inner2;
+}
+
+console.log(grid);
+
+const f = grid.map(r => r.map(r1 => removeEdges(r1.grid)));
+
+const final = f.map(r => {
+    const rr = [];
+    for (let i = 0; i < r[0].length; i++) {
+
+        let line = '';
+        for (let j = 0; j < r.length; j++) {
+            line += r[j][i];
+        }
+        rr.push(line);
+    }
+    return rr;
+}).flat(1);
+
+console.log(rotate(rotate(rotate(final))));
