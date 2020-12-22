@@ -153,7 +153,7 @@ matches.forEach((v,k) => {
 const topLeft = tiles.get(topleftId);
 const topLeftedges = matches.get(topleftId);
 const rotateForFit = fitTile(topLeft, [2,3], topLeftedges[1], getedges);
-print(rotateForFit);
+// print(rotateForFit);
 
 const findTile = (l, edge, n, fn) => {
     let r;
@@ -191,7 +191,7 @@ for (let r = 0; r < sideLength; r++) {
 //            row.push(nextTile);
             tiles.delete(nextTile.id);
 
-            print(nextTile.grid);
+            // print(nextTile.grid);
 
         } else {
 
@@ -204,7 +204,7 @@ for (let r = 0; r < sideLength; r++) {
             row.push(nextTile);
             tiles.delete(nextTile.id);
 
-            print(nextTile.grid);
+            // print(nextTile.grid);
         }
 
     }
@@ -217,7 +217,7 @@ const removeEdges = (grid) => {
     return inner2;
 }
 
-console.log(grid);
+// console.log(grid);
 
 const f = grid.map(r => r.map(r1 => removeEdges(r1.grid)));
 
@@ -275,10 +275,10 @@ const scan = (grid) => {
 };
 
 const f1 = rotate(rotate(rotate(flip(final))));
-print(f1);
+// print(f1);
 
 const monsters = scan(f1);
-console.log(monsters);
+// console.log(monsters);
 
 let h = 0;
 for (let i = 0; i < final.length; i++) {
