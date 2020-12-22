@@ -72,7 +72,7 @@ let print = (grid) => { grid.forEach(x => console.log(x)); console.log(); }
 
 // console.log("Part 1 : ", p1);
 // require('assert').strictEqual(p1, 14129524957217);
-require('assert').strictEqual(p1, 20899048083289);
+// require('assert').strictEqual(p1, 20899048083289);
 
 const rotate = (grid) => {
     const r = grid.map(x => '');
@@ -134,64 +134,59 @@ const fitTile = (grid, edges, tomatch) => {
 };
     
 
-    // const redges = getedges(grid);
-    // const t = edges.map(x => redges[x]);
-    // const match  = t.map((e,i) => e == tomatch[i]);
-    // if (match.every(x => x)) return grid;
-
-    // const r1 = rotate(grid);
-    // const redges = getedges(r1);
-    // const t = edges.map(x => redges[x]);
-    // const match  = t.map((e,i) => e == tomatch[i]);
-    // if (match.every(x => x)) return r1;
-
-    
-
-
-    
-    
-
-    // const r = edges[1];
-    // // const b = edges[3];
-
-    // // if (revMatch(edges[2]))
-
-    //  const r1 = rotate(grid);
-    
-
-    
-
-
-//   3079 => [ 2, [ '#..##.#...', '..#.###...' ] ]
-
 // Pick the top corner
 let topleftId = 0;
 matches.forEach((v,k) => {
     if (v[0] == 2) topleftId = k;  
 });
 
+
+
 const topLeft = tiles.get(topleftId);
-const topLeftedges = matches.get(topleftId);  //tlmatch.reduce();
+const topLeftedges = matches.get(topleftId);
 const rotateForFit = fitTile(topLeft, [2,3], topLeftedges[1]);
 
 print(rotateForFit);
 
-// console.log(topleft);
+const commonEdges = new Map();
+matches.forEach((v,k) => {
+    v[1].forEach(edge => {
+        if (commonEdges.has(edge)) {
+            commonEdges.set(edge, [k].concat(commonEdges.get(edge)));
+        } else if (commonEdges.has(aoc.revStr(edge))) {
+            commonEdges.set(aoc.revStr(edge), [k].concat(commonEdges.get(aoc.revStr(edge))));
+        } else {
+            commonEdges.set(edge, [k]);
+        }
+    });
+});
+
+console.log(tiles.keys());
+
+const sideLength = Math.sqrt(tiles.size);
+console.log("Size : ", sideLength);
+
+const s = [];
+for (let i = 0; i < sideLength; i++) {
+    let row = [];
+    for (let j = 0; j < sideLength; j++) {
+        row.push(0);
+    }
+    s.push(row);
+}
+
+s[0][0] = topleftId;
+
+console.log(s);
+
+console.log(commonEdges);
+const commonEdgesTiles = [];
+commonEdges.forEach(v => commonEdgesTiles.push(v));
 
 
+console.log(commonEdgesTiles);
+//      0       [2, '....']
+//     1 2      [3, '....']
+//      3
 
-
-
-
-
-//const test = tiles.get(2311);
-
-// const r1 = rotate(test);
-// const r2 = rotate(r1);
-// const r3 = rotate(r2);
-
-// print(test);
-// print(r1);
-// print(r2);
-// print(r3);
 
