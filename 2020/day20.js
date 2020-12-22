@@ -1,6 +1,6 @@
 const { pathToFileURL } = require('url');
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day.txt');
+const buffer = aoc.readfile('day20.txt');
 const text = buffer.split(/\n/);
 
 const tiles = text.reduce((a,e) => {
@@ -69,7 +69,7 @@ edges.forEach((v,k) => {
 } );
 
 
-console.log(matches);
+// console.log(matches);
 
 let p1 = 1;
 matches.forEach((v,k) => {
@@ -80,8 +80,8 @@ matches.forEach((v,k) => {
   
 let print = (grid) => { grid.forEach(x => console.log(x)); console.log(); }
 
-// console.log("Part 1 : ", p1);
-// require('assert').strictEqual(p1, 14129524957217);
+console.log("Part 1 : ", p1);
+//require('assert').strictEqual(p1, 14129524957217);
 // require('assert').strictEqual(p1, 20899048083289);
 
 const rotate = (grid) => {
@@ -162,7 +162,7 @@ const findTile = (l, edge, n, fn) => {
         if (rotate) {
             r = { id: k, grid: rotate};
             
-            console.log('found');
+            // console.log('found');
         }
     });
     return r;
@@ -234,4 +234,61 @@ const final = f.map(r => {
     return rr;
 }).flat(1);
 
-console.log(rotate(rotate(rotate(final))));
+// print(final);
+
+// 20 * 3   - 15 in total
+const isMonster = (grid) => {
+    // console.log(grid);
+    return grid[0][18] == '#'
+        && grid[1][0] == '#'
+        && grid[1][5] == '#'
+        && grid[1][6] == '#'
+        && grid[1][11] == '#'
+        && grid[1][12] == '#'
+        && grid[1][17] == '#'
+        && grid[1][18] == '#'
+        && grid[1][19] == '#'
+        && grid[2][1] == '#'
+        && grid[2][4] == '#'
+        && grid[2][7] == '#'
+        && grid[2][10] == '#'
+        && grid[2][13] == '#'
+        && grid[2][16] == '#'
+}
+
+
+const scan = (grid) => {
+    let monsters = 0;
+    for (let x = 0; x < grid.length - 3; x++) {
+        for (let y = 0; y < grid[0].length - 20; y++) {
+
+            const g = [];
+            g.push(grid[x].slice(y,y+20));
+            g.push(grid[x+1].slice(y,y+20));
+            g.push(grid[x+2].slice(y,y+20));
+            
+
+            if (isMonster(g)) monsters++;
+        }
+    }
+    return monsters;
+};
+
+const f1 = rotate(rotate(rotate(flip(final))));
+print(f1);
+
+const monsters = scan(f1);
+console.log(monsters);
+
+let h = 0;
+for (let i = 0; i < final.length; i++) {
+    for (let j = 0; j < final[0].length; j++) {
+        if (final[i][j] == '#') h++;
+
+    }    
+}
+
+console.log("Part 2 : ", h - (monsters * 15));
+//                   # 
+// #    ##    ##    ###
+//  #  #  #  #  #  #   
