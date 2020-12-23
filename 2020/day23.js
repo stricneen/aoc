@@ -5,7 +5,7 @@ const input = '476138259';
 const test = '389125467';
 const cups = input.split('').map(x => parseInt(x));
 
-const arrayToDLL = (array) => {
+const arrayToLL = (array) => {
     return array.map((e,i) => {
       
         const next = i == array.length - 1 ? 0 : i + 1;
@@ -46,7 +46,7 @@ const play = (cups, rounds) => {
 }
 
 
-const dll1 = arrayToDLL(cups);
+const dll1 = arrayToLL(cups);
 const play1 = play(dll1, 100);
 
 let index = play1.find(x => x.val == 1).next;
@@ -59,7 +59,7 @@ for (let i = 0; i < 8; i++) {
 console.log('Part 1 : ', parseInt(p1));
 
 const cups2 = cups.concat(Array.from({length: 1000000 - 9}, (_, i) => i + 10));
-const dll2 = arrayToDLL(cups2);
+const dll2 = arrayToLL(cups2);
 
 const p2 = play(dll2, 10000000);
 
