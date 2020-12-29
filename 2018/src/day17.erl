@@ -37,13 +37,15 @@ run() ->
     Settled = grid_has("~", R, MinY, MaxY),
     Flowing = grid_has("|", R, MinY, MaxY),
     
-     io:format("~nSettled : ~p~n", [Settled]),
-     io:format("~nFlowing : ~p~n", [Flowing]),
+    %  io:format("~nSettled : ~p~n", [Settled]),
+    %  io:format("~nFlowing : ~p~n", [Flowing]),
      
 % print_to_file(R),
 % print_dict2(Grid,600),
 
-    io:format("~nPart 1 : ~p~n", [Settled + Flowing]).
+    io:format("~nPart 1 : ~p~n", [Settled + Flowing]),
+    io:format("~nPart 2 : ~p~n", [Settled]).
+
 
 tick([], Grid, _, _) -> Grid;
 % tick(_, Grid, 0, _) -> Grid;
@@ -163,43 +165,43 @@ store_all([H|T], V, D) ->
     store_all(T, V, N).
 
 
-replace_at(L, I, R) ->
-    lists:sublist(L, I-1) ++ [R] ++ lists:nthtail(I, L).
+% replace_at(L, I, R) ->
+%     lists:sublist(L, I-1) ++ [R] ++ lists:nthtail(I, L).
 
-print_to_file(D) -> 
-    L = dict:to_list(D),
-    Data = lists:duplicate(2000, lists:duplicate(1000, " ")),
-    U = lists:foldl(fun({{X,Y},V}, A) -> 
-        replace_at(A, Y+1, replace_at(lists:nth(Y+1,A), X+1, V))
-    end, Data, L),
+% print_to_file(D) -> 
+%     L = dict:to_list(D),
+%     Data = lists:duplicate(2000, lists:duplicate(1000, " ")),
+%     U = lists:foldl(fun({{X,Y},V}, A) -> 
+%         replace_at(A, Y+1, replace_at(lists:nth(Y+1,A), X+1, V))
+%     end, Data, L),
     
-    LineSep = io_lib:nl(),
-    Print = [string:join(U, LineSep), LineSep],
-    file:write_file("output.txt", Print).
+%     LineSep = io_lib:nl(),
+%     Print = [string:join(U, LineSep), LineSep],
+%     file:write_file("output.txt", Print).
 
     
 
-print_dict(D, MinX) ->
-    aoc:clear_screen(),
-    L = dict:to_list(D),
-    lists:foldl(fun({{X,Y},C},_) -> 
-        aoc:print(X-MinX+5,Y+1, C)
-        end, [], L).
+% print_dict(D, MinX) ->
+%     aoc:clear_screen(),
+%     L = dict:to_list(D),
+%     lists:foldl(fun({{X,Y},C},_) -> 
+%         aoc:print(X-MinX+5,Y+1, C)
+%         end, [], L).
 
-print_dict2(D, Top) ->
-    aoc:clear_screen(),
-    Size = 130,
-    L = lists:filter(fun({{_,Y},_}) -> (Y > Top) and (Y < Top + Size) end, dict:to_list(D)),
-    lists:foldl(fun({{X,Y},C},_) -> 
-        aoc:print(X-500+250, Y - Top, C)
-        end, [], L).
+% print_dict2(D, Top) ->
+%     aoc:clear_screen(),
+%     Size = 130,
+%     L = lists:filter(fun({{_,Y},_}) -> (Y > Top) and (Y < Top + Size) end, dict:to_list(D)),
+%     lists:foldl(fun({{X,Y},C},_) -> 
+%         aoc:print(X-500+250, Y - Top, C)
+%         end, [], L).
 
-print_dict_side(D, MinX) ->
-    aoc:clear_screen(),
-    L = dict:to_list(D),
-    lists:foldl(fun({{X,Y},C},_) -> 
-        aoc:print(Y+1,X-MinX+5, C)
-        end, [], L).
+% print_dict_side(D, MinX) ->
+%     aoc:clear_screen(),
+%     L = dict:to_list(D),
+%     lists:foldl(fun({{X,Y},C},_) -> 
+%         aoc:print(Y+1,X-MinX+5, C)
+%         end, [], L).
 
 % print_dict(D, MinY, MaxY) ->
 %     aoc:clear_screen(),
