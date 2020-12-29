@@ -9,8 +9,11 @@
 -export([print/4]).
 -export([print_dict/1]).
 -export([clear_screen/0]).
+-export([max/1]).
 
-
+max(L) ->
+    lists:foldl(fun(E, A) -> if E > A -> E; true -> A end end, 0, L).
+    
 print_dict(D) ->
      clear_screen(),
     dict:fold(fun({X,Y},{T,_,_},_) ->

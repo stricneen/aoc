@@ -2,7 +2,7 @@
 -export([run/0]).
 
 run() ->
-    Input = aoc:readlines("../data/day.txt"),
+    Input = aoc:readlines("../data/day17.txt"),
  
     Parsed = lists:foldl(fun(X, Acc) ->
         L = string:lexemes(X, ","),
@@ -25,20 +25,23 @@ run() ->
     Clay = aoc:dedup(lists:map(fun({X,Y}) -> {{X,Y}, "#"} end, Parsed)),
     Grid = dict:from_list(Clay),
     GridSource = dict:store({500,0}, "+", Grid),
-    R = tick([{500,0}], GridSource, 100, MaxY),
+    R = tick([{500,0}], GridSource, 50, MaxY),
     
-    MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
-    print_dict(R, MinX),
+    MinY = lists:foldl(fun({_,Y}, A) -> if Y < A -> Y; true -> A end end, 100000, Parsed),
+    MaxY = lists:foldl(fun({_,Y}, A) -> if Y > A -> Y; true -> A end end, 0, Parsed),
+    % print_dict_side(R, MinX),
 
 % 31649 - too high
+% 31648
 
-    Settled = grid_has("~", R),
-    Flowing = grid_has("|", R),
+    Settled = grid_has("~", R, MinY, MaxY),
+    Flowing = grid_has("|", R, MinY, MaxY),
     
      io:format("~nSettled : ~p~n", [Settled]),
      io:format("~nFlowing : ~p~n", [Flowing]),
      
-
+% print_to_file(R),
+% print_dict2(Grid,600),
 
     io:format("~nPart 1 : ~p~n", [Settled + Flowing]).
 
@@ -46,8 +49,10 @@ tick([], Grid, _, _) -> Grid;
 % tick(_, Grid, 0, _) -> Grid;
 tick(Edge, Grid, C, MaxY) ->
 
-    % timer:sleep(100),
-    % print_dict(Grid, 490),
+%  MaxYEdge = aoc:max(lists:map(fun({_,Y}) -> Y end, Edge)),
+% print_dict2(Grid,MaxYEdge-100),
+%  timer:sleep(100),
+    % print_dict2(Grid, MaxYEdge),
 
     {NEdge, NGrid} = lists:foldl(fun({X,Y}, {N,G}) -> 
 
@@ -87,8 +92,9 @@ tick(Edge, Grid, C, MaxY) ->
 
     tick(NEdge, NGrid, C-1, MaxY).
 
-grid_has(Val, D) ->
-    L = dict:to_list(D),
+grid_has(Val, D, MinY, MaxY) ->
+    L = lists:filter(fun({{_,Y},_}) -> (Y >= MinY) and (Y =< MaxY) end, dict:to_list(D)),
+
     F = lists:filter(fun({_,V}) -> V == Val end, L),
     length(F).
 
@@ -157,11 +163,42 @@ store_all([H|T], V, D) ->
     store_all(T, V, N).
 
 
+replace_at(L, I, R) ->
+    lists:sublist(L, I-1) ++ [R] ++ lists:nthtail(I, L).
+
+print_to_file(D) -> 
+    L = dict:to_list(D),
+    Data = lists:duplicate(2000, lists:duplicate(1000, " ")),
+    U = lists:foldl(fun({{X,Y},V}, A) -> 
+        replace_at(A, Y+1, replace_at(lists:nth(Y+1,A), X+1, V))
+    end, Data, L),
+    
+    LineSep = io_lib:nl(),
+    Print = [string:join(U, LineSep), LineSep],
+    file:write_file("output.txt", Print).
+
+    
+
 print_dict(D, MinX) ->
     aoc:clear_screen(),
     L = dict:to_list(D),
     lists:foldl(fun({{X,Y},C},_) -> 
         aoc:print(X-MinX+5,Y+1, C)
+        end, [], L).
+
+print_dict2(D, Top) ->
+    aoc:clear_screen(),
+    Size = 130,
+    L = lists:filter(fun({{_,Y},_}) -> (Y > Top) and (Y < Top + Size) end, dict:to_list(D)),
+    lists:foldl(fun({{X,Y},C},_) -> 
+        aoc:print(X-500+250, Y - Top, C)
+        end, [], L).
+
+print_dict_side(D, MinX) ->
+    aoc:clear_screen(),
+    L = dict:to_list(D),
+    lists:foldl(fun({{X,Y},C},_) -> 
+        aoc:print(Y+1,X-MinX+5, C)
         end, [], L).
 
 % print_dict(D, MinY, MaxY) ->
