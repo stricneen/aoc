@@ -18,128 +18,130 @@ run() ->
         end ++ Acc
         end, [], Input),
 
-    MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
+    
+    MaxY = lists:foldl(fun({_,Y}, A) -> if Y > A -> Y; true -> A end end, 0, Parsed),
+    
+    
     Clay = aoc:dedup(lists:map(fun({X,Y}) -> {{X,Y}, "#"} end, Parsed)),
     Grid = dict:from_list(Clay),
     GridSource = dict:store({500,0}, "+", Grid),
-    R = tick([{500,0}], GridSource, 50),
+    R = tick([{500,0}], GridSource, 100, MaxY),
+    
+    MinX = lists:foldl(fun({X,_}, A) -> if X < A -> X; true -> A end end, 100000, Parsed),
     print_dict(R, MinX),
 
-    io:format("~nPart 1 : ~p~n", [0]).
+% 31649 - too high
 
-tick(_, Grid, 0) -> Grid;
-tick(Edge, Grid, C) ->
+    Settled = grid_has("~", R),
+    Flowing = grid_has("|", R),
+    
+     io:format("~nSettled : ~p~n", [Settled]),
+     io:format("~nFlowing : ~p~n", [Flowing]),
+     
+
+
+    io:format("~nPart 1 : ~p~n", [Settled + Flowing]).
+
+tick([], Grid, _, _) -> Grid;
+% tick(_, Grid, 0, _) -> Grid;
+tick(Edge, Grid, C, MaxY) ->
+
+    % timer:sleep(100),
+    % print_dict(Grid, 490),
 
     {NEdge, NGrid} = lists:foldl(fun({X,Y}, {N,G}) -> 
 
-    %    -x-
-    %     - 
-        Below = dict:find({X,Y+1}, Grid),
-        Left = dict:find({X-1,Y}, Grid),
-        Right = dict:find({X+1,Y}, Grid),
-        
-        NEdge = case {Below, Left, Right} of 
+        {NE, NG} = case will_settle({X,Y}, G) of
+            true -> settle({X,Y}, G);
+            false -> 
+                Below = dict:find({X,Y+1}, Grid),
+                Left = dict:find({X-1,Y}, Grid),
+                Right = dict:find({X+1,Y}, Grid),
+                
+                NEdge = case {Below, Left, Right} of 
+                    {{ok,"#"}, error, error}     -> [{X-1,Y},{X+1,Y}];
+                    {{ok,"#"}, {ok, "|"}, error} -> [{X+1,Y}];
+                    {{ok,"#"}, error, {ok, "|"}} -> [{X-1,Y}]; 
+                    {{ok,"~"}, error, error}     -> [{X-1,Y},{X+1,Y}];
+                    {{ok,"~"}, {ok, "|"}, error} -> [{X+1,Y}];
+                    {{ok,"~"}, error, {ok, "|"}} -> [{X-1,Y}]; 
+                    {error, _, _}                -> [{X,Y+1}];
+                    _ -> []
+                end,
 
-            {{ok,"#"}, error, error}     -> [{X-1,Y},{X+1,Y}];
-            {{ok,"#"}, {ok, "|"}, error} -> [{X+1,Y}];
-            {{ok,"#"}, error, {ok, "|"}} -> [{X-1,Y}]; 
-            {{ok,"~"}, error, error}     -> [{X-1,Y},{X+1,Y}];
-            {{ok,"~"}, {ok, "|"}, error} -> [{X+1,Y}];
-            {{ok,"~"}, error, {ok, "|"}} -> [{X-1,Y}]; 
-            {error, _, _}                -> [{X,Y+1}];
-            
-            _ -> []
-        end,
+                Dedup = aoc:dedup(NEdge),
+                {Dedup, store_all(Dedup, "|", G)}
+            end,
 
-        NGrid = store_all([{X,Y}] ++ NEdge, "|", G),
-        Settled = settle([{X,Y}] ++ NEdge, NGrid),
+        NE2 = lists:foldl(fun(X3, Acc) -> 
+            case dict:find(X3, NG) of
+                {ok, "~"} -> Acc;
+                _ -> [X3] ++ Acc
+            end
+        end, [], NE ++ N),
 
-        Retry = retry(NGrid, Settled, NEdge),
+        NE3 = lists:filter(fun({_,Y1}) -> Y1 < MaxY end, NE2),
 
-        {NEdge++N++Retry, Settled}
+        {NE3, NG}
         end, {[], Grid}, Edge),
 
+    tick(NEdge, NGrid, C-1, MaxY).
 
+grid_has(Val, D) ->
+    L = dict:to_list(D),
+    F = lists:filter(fun({_,V}) -> V == Val end, L),
+    length(F).
+
+will_settle({X,Y}, G) ->
+   is_base({X,Y}, G) and enclosed_left({X,Y}, G) and enclosed_right({X,Y}, G).
+
+settle({X,Y}, G) ->
+    {LGrid, LS} = settle_left({X,Y}, G, []),
+    {RGrid, Settled} = settle_right({X,Y}, LGrid, LS),
+
+    AboveSettled = lists:map(fun({X1,Y1}) -> {X1,Y1-1} end, [{X,Y}|Settled]),
+    Source = lists:foldl(fun(E,Acc) -> 
+        case dict:find(E, RGrid) of
+            {ok, "|"} -> [E|Acc];
+            _-> Acc
+        end
+        end, [], AboveSettled),
+    {Source, dict:store({X,Y}, "~", RGrid)}.
     
-    tick(NEdge, NGrid, C-1).
-
-retry(Prev, Next, Edge) ->
-    Retry = lists:foldl(fun({X,Y}, Acc) ->
-
-        Was = dict:find({X,Y}, Prev),
-        Is = dict:find({X,Y}, Next),
-        Above = dict:find({X, Y-1}, Next),
-
-    io:format("~p : ~p : ~p~n", [Was, Is, Above]),
-
-        Ret = case {Was, Is, Above} of 
-            {{ok, "|"}, {ok, "~"}, {ok, "|"}} -> [{X,Y-1}];
-            _ -> []
-        end,
-
-        Ret ++ Acc
-        end, [], Edge),
-
-    io:format("~p~n", [Retry]),
-
-    Retry.
-
-%   Total = lists:foldl(fun(A, N) -> A + N end, 0, Lines2),
 
 
-settle([], D) -> D;
-settle([{X,Y}|T], D) ->
-    DN = case {is_left_corner({X,Y}, D), is_right_corner({X,Y}, D)} of
-        { true, true } -> dict:store({X,Y}, "~", D);
-        { true, false } -> check_right([{X+1,Y}], D);
-        { false, true } -> check_left([{X-1,Y}], D);
-        { false, false } -> D
-    end,
-    % io:format("DN : ~p~n", [DN]),
-    settle(T, DN).
-
-check_right([{X,Y}|T], G) -> 
-    case {is_base({X,Y}, G), is_left_corner({X,Y}, G)} of 
-        { true, true } -> check_settle_left([{X,Y}], G);
-        { true, false } -> check_right([{X+1,Y}] ++ [{X,Y}] ++ T, G);
-        _ -> G
+settle_left({X,Y}, G, Settled) ->
+    case dict:find({X-1,Y}, G) of
+        {ok, "#"} -> {G,Settled};
+        {ok, "~"} -> {G,Settled};
+        _ -> settle_left({X-1,Y}, dict:store({X-1,Y}, "~", G), [{X-1,Y}|Settled])
     end.
 
-check_left([{X,Y}|T], G) -> 
-    case {is_base({X,Y}, G), is_right_corner({X,Y}, G)} of 
-        { true, true } -> check_settle_right([{X,Y}], G);
-        { true, false } -> check_left([{X+1,Y}] ++ [{X,Y}] ++ T, G);
-        _ -> G
+settle_right({X,Y}, G, Settled) ->
+    case dict:find({X+1,Y}, G) of
+        {ok, "#"} -> {G,Settled};
+        {ok, "~"} -> {G,Settled};
+        _ -> settle_right({X+1,Y}, dict:store({X+1,Y}, "~", G), [{X+1,Y}|Settled])
     end.
 
-check_settle_right(L, G) ->
-    [{X,Y}|_] = L,
-
-    % io:format("~p:~p~n",[is_base({X,Y}, G), is_left_corner({X,Y}, G)]),
-    case {is_base({X,Y}, G), is_left_corner({X,Y}, G)} of
-        {true, true} -> store_all(L, "~", G);
-        {true, false} -> check_settle_right([{X-1,Y}] ++ L, G);
-        _ ->  G
+enclosed_left({X,Y}, G) ->
+    case { dict:find({X,Y+1}, G), dict:find({X-1,Y}, G)} of
+        { error, _ } -> false;
+        { {ok, "#"}, {ok, "#"}} -> true;
+        { {ok, "~"}, {ok, "#"}} -> true;
+        { {ok,"|"}, _} ->  false;
+        { {ok, "~"}, _} -> enclosed_left({X-1,Y}, G);
+        { {ok, "#"}, _} -> enclosed_left({X-1,Y}, G)
     end.
 
-check_settle_left(L, G) ->
-    [{X,Y}|_] = L,
-    case {is_base({X,Y}, G), is_right_corner({X,Y}, G)} of
-        {true, true} -> store_all(L, "~", G);
-        {true, false} -> check_settle_left([{X+1,Y}] ++ L, G);
-        _ -> G
-    end.
-
-is_left_corner({X,Y}, G) ->
-    case {dict:find({X-1,Y}, G),dict:find({X,Y+1}, G)} of
-        {{ok, "#"},{ok, "#"}} -> true;
-        _ -> false
-    end.
-    
-is_right_corner({X,Y}, G) ->
-    case {dict:find({X+1,Y}, G),dict:find({X,Y+1}, G)} of
-        {{ok, "#"},{ok, "#"}} -> true;
-        _ -> false
+enclosed_right({X,Y}, G) ->
+    case { dict:find({X,Y+1}, G), dict:find({X+1,Y}, G)} of
+        { error, _ } -> false;
+        { {ok, "#"}, {ok, "#"}} -> true;
+        { {ok, "~"}, {ok, "#"}} -> true;
+        { {ok,"|"}, _} ->  false;
+        { {ok, "~"}, _} -> enclosed_right({X+1,Y}, G);
+        { {ok, "#"}, _} -> enclosed_right({X+1,Y}, G)
     end.
 
 is_base({X,Y}, G) ->
@@ -161,3 +163,14 @@ print_dict(D, MinX) ->
     lists:foldl(fun({{X,Y},C},_) -> 
         aoc:print(X-MinX+5,Y+1, C)
         end, [], L).
+
+% print_dict(D, MinY, MaxY) ->
+%     aoc:clear_screen(),
+%     L = dict:to_list(D),
+%     lists:foldl(fun({{X,Y},C},_) -> 
+%         aoc:print(X-MinX+5,Y+1, C)
+%         end, [], L).
+
+    %     1
+    %    234
+    %     5 
