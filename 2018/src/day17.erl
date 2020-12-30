@@ -96,7 +96,6 @@ tick(Edge, Grid, C, MaxY) ->
 
 grid_has(Val, D, MinY, MaxY) ->
     L = lists:filter(fun({{_,Y},_}) -> (Y >= MinY) and (Y =< MaxY) end, dict:to_list(D)),
-
     F = lists:filter(fun({_,V}) -> V == Val end, L),
     length(F).
 
