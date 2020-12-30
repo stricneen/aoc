@@ -2,7 +2,6 @@
 -export([run/0]).
 
 
-
 run() ->
     Input = aoc:readlines("../data/day.txt"),
     io:format(Input),
