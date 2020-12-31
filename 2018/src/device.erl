@@ -2,34 +2,35 @@
 -export([parse/1]).
 -export([execute/2]).
 
-
-
-
 execute({Declarations, Prog}, Options) -> 
     Debug = debug(Options),
     Debug("Declarations : ~p~n", [Declarations]),
     Registers = {0, 0, 0, 0, 0, 0},
 
-    IpBound = declaration(Declarations, ip),
+    IpBound = declaration(Declarations, ip) + 1,
     Debug("IP Bound : ~p~n", [IpBound]),
 
-    loop(Prog, 1, Registers, Debug).
+    loop(Prog, 0, Registers, IpBound, Debug).
 
-loop(Prog, Ptr, Reg, Debug) ->
+loop(Prog, InstPtr, Reg, IpBound, Debug) ->
   
     % io:format("~p : ~p~n", [length(Prog), Ptr]),
   
     % Ip = element(Ptr, Reg),
-    if Ptr >= length(Prog)  -> Reg;
+    if InstPtr >= length(Prog)  -> Reg;
         true ->
-            PostOp = command(Ptr, Prog, Reg, Debug),
+            IpReg = setelement(IpBound, Reg, InstPtr),
+            PostOp = command(InstPtr, Prog, IpReg, Debug),
+            NInstPtr = element(IpBound, PostOp),
 
-            loop(Prog, Ptr + 1, PostOp, Debug)
+            loop(Prog, NInstPtr + 1, PostOp, IpBound, Debug)
     end.
 
-command(Ip, Prog, Reg, Debug) ->
-    {Op, A, B, C} = lists:nth(Ip, Prog),
-    Debug("ip=~p ~p ~p~n", [Ip, Reg, Op]),
+%  c(device), c(day19), day19:run().
+
+command(InstPtr, Prog, Reg, Debug) ->
+    {Op, A, B, C} = lists:nth(InstPtr + 1, Prog),
+    Debug("ip=~p ~p ~p~n", [InstPtr, Reg, Op]),
     case Op of
         addr -> addr(A, B, C, Reg);
         addi -> addi(A, B, C, Reg);

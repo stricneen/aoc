@@ -2,9 +2,9 @@
 -export([run/0]).
 
 run() ->
-    Input = aoc:readlines("../data/day.txt"),
+    Input = aoc:readlines("../data/day19.txt"),
 
     Prog = device:parse(Input),
-    Output = device:execute(Prog, [debug]),
+    Output = device:execute(Prog, []),
 
     io:format("~nPart 1 : ~p~n", [Output]).
