@@ -2,38 +2,57 @@
 -export([parse/1]).
 -export([execute/2]).
 
+
+
+
 execute({Declarations, Prog}, Options) -> 
     Debug = debug(Options),
     Debug("Declarations : ~p~n", [Declarations]),
     Registers = {0, 0, 0, 0, 0, 0},
-    loop(Prog, 0, Registers, Debug).
+
+    IpBound = declaration(Declarations, ip),
+    Debug("IP Bound : ~p~n", [IpBound]),
+
+    loop(Prog, 1, Registers, Debug).
 
 loop(Prog, Ptr, Reg, Debug) ->
+  
     % io:format("~p : ~p~n", [length(Prog), Ptr]),
+  
+    % Ip = element(Ptr, Reg),
     if Ptr >= length(Prog)  -> Reg;
         true ->
-            %  io:format("~p ~n", ["BOG"]),
-            {Op, A, B, C} = lists:nth(Ptr + 1, Prog),
-            Debug("ip=~p ~p ~p~n", [Ptr, Reg, Op]),
-            Res = case Op of
-                addr -> addr(A, B, C, Reg);
-                addi -> addi(A, B, C, Reg);
-                mulr -> mulr(A, B, C, Reg);
-                muli -> muli(A, B, C, Reg);
-                banr -> banr(A, B, C, Reg);
-                bani -> bani(A, B, C, Reg);
-                borr -> borr(A, B, C, Reg);
-                bori -> bori(A, B, C, Reg);
-                setr -> setr(A, B, C, Reg);
-                seti -> seti(A, B, C, Reg);
-                gtir -> gtir(A, B, C, Reg);
-                gtri -> gtri(A, B, C, Reg);
-                gtrr -> gtrr(A, B, C, Reg);
-                eqir -> eqir(A, B, C, Reg);
-                eqri -> eqri(A, B, C, Reg);
-                eqrr -> eqrr(A, B, C, Reg)
-            end,
-            loop(Prog, Ptr + 1, Res, Debug)
+            PostOp = command(Ptr, Prog, Reg, Debug),
+
+            loop(Prog, Ptr + 1, PostOp, Debug)
+    end.
+
+command(Ip, Prog, Reg, Debug) ->
+    {Op, A, B, C} = lists:nth(Ip, Prog),
+    Debug("ip=~p ~p ~p~n", [Ip, Reg, Op]),
+    case Op of
+        addr -> addr(A, B, C, Reg);
+        addi -> addi(A, B, C, Reg);
+        mulr -> mulr(A, B, C, Reg);
+        muli -> muli(A, B, C, Reg);
+        banr -> banr(A, B, C, Reg);
+        bani -> bani(A, B, C, Reg);
+        borr -> borr(A, B, C, Reg);
+        bori -> bori(A, B, C, Reg);
+        setr -> setr(A, B, C, Reg);
+        seti -> seti(A, B, C, Reg);
+        gtir -> gtir(A, B, C, Reg);
+        gtri -> gtri(A, B, C, Reg);
+        gtrr -> gtrr(A, B, C, Reg);
+        eqir -> eqir(A, B, C, Reg);
+        eqri -> eqri(A, B, C, Reg);
+        eqrr -> eqrr(A, B, C, Reg)
+    end.
+         
+declaration(Decs, Name) ->
+    case lists:search(fun({N,_}) -> N == Name end,Decs) of
+        {value,{ip,N}} -> N;
+        _ -> false
     end.
 
 % Addition:
