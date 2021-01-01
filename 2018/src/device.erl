@@ -4,12 +4,15 @@
 
 execute({Declarations, Prog}, Options) -> 
     Debug = debug(Options),
+    Registers = registers(Options),
+
     Debug("Declarations : ~p~n", [Declarations]),
-    Registers = {0, 0, 0, 0, 0, 0},
+    Debug("Registers : ~p~n", [Registers]),
 
     IpBound = declaration(Declarations, ip) + 1,
     Debug("IP Bound : ~p~n", [IpBound]),
 
+    % io:format("~p~n", ["TOP"]).
     loop(Prog, 0, Registers, IpBound, Debug).
 
 loop(Prog, InstPtr, Reg, IpBound, Debug) ->
@@ -208,5 +211,10 @@ debug(Options) ->
         DebugOpt -> fun(T,L) -> io:format(T, L) end;
         true     -> fun(_,_) -> ok end
     end.
-  
+registers(Options) ->
+    Registers = lists:search(fun(X) -> is_tuple(X) andalso element(1, X) == registers  end, Options),
+    case Registers of
+        {value, {registers, V}} -> V; 
+        _ -> {0,0,0,0,0,0}
+    end.
 
