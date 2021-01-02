@@ -2,9 +2,12 @@
 -export([parse/1]).
 -export([execute/2]).
 
+%  c(device), c(day19), day19:run().
+
 execute({Declarations, Prog}, Options) -> 
     Debug = debug(Options),
     Registers = registers(Options),
+    Ticks = ticks(Options),
 
     Debug("Declarations : ~p~n", [Declarations]),
     Debug("Registers : ~p~n", [Registers]),
@@ -12,29 +15,25 @@ execute({Declarations, Prog}, Options) ->
     IpBound = declaration(Declarations, ip) + 1,
     Debug("IP Bound : ~p~n", [IpBound]),
 
-    % io:format("~p~n", ["TOP"]).
-    loop(Prog, 0, Registers, IpBound, Debug).
+    loop(Prog, 0, Registers, IpBound, Debug, Ticks).
 
-loop(Prog, InstPtr, Reg, IpBound, Debug) ->
+
+loop(_, _, Reg, _, _, 0) -> Reg;
+loop(Prog, InstPtr, Reg, IpBound, Debug, Ticks) ->
   
-    % io:format("~p : ~p~n", [length(Prog), Ptr]),
-  
-    % Ip = element(Ptr, Reg),
     if InstPtr >= length(Prog)  -> Reg;
         true ->
             IpReg = setelement(IpBound, Reg, InstPtr),
             PostOp = command(InstPtr, Prog, IpReg, Debug),
             NInstPtr = element(IpBound, PostOp),
 
-            loop(Prog, NInstPtr + 1, PostOp, IpBound, Debug)
+            loop(Prog, NInstPtr + 1, PostOp, IpBound, Debug, Ticks - 1)
     end.
 
-%  c(device), c(day19), day19:run().
 
 command(InstPtr, Prog, Reg, Debug) ->
     {Op, A, B, C} = lists:nth(InstPtr + 1, Prog),
-    Debug("ip=~p ~p ~p~n", [InstPtr, Reg, Op]),
-    case Op of
+    Res = case Op of
         addr -> addr(A, B, C, Reg);
         addi -> addi(A, B, C, Reg);
         mulr -> mulr(A, B, C, Reg);
@@ -51,7 +50,9 @@ command(InstPtr, Prog, Reg, Debug) ->
         eqir -> eqir(A, B, C, Reg);
         eqri -> eqri(A, B, C, Reg);
         eqrr -> eqrr(A, B, C, Reg)
-    end.
+    end,
+    Debug("ip=~p\t~p \t~p\t~p\t~p~n", [InstPtr, Reg, Op, [A,B,C], Res]),
+    Res.
          
 declaration(Decs, Name) ->
     case lists:search(fun({N,_}) -> N == Name end,Decs) of
@@ -216,5 +217,11 @@ registers(Options) ->
     case Registers of
         {value, {registers, V}} -> V; 
         _ -> {0,0,0,0,0,0}
+    end.
+ticks(Options) ->
+    Registers = lists:search(fun(X) -> is_tuple(X) andalso element(1, X) == ticks  end, Options),
+    case Registers of
+        {value, {ticks, V}} -> V; 
+        _ -> -1
     end.
 
