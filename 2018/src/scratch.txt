@@ -1,7 +1,20 @@
 
-#######
-#E..G.#
-#...#.#
-#.G.#G#
-#######
+
+ENWWW(NEEE|SSE(EE|N))
+
+ENWWW + 
+    MAX    NEEE  -OR-  SSE(EE|N)
+
+ENWWW
+NEEE|SSE(EE|N)
+
+
+
+5 ( 4 | 5 )
+
+
+ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN
+
+ENNWSWW ( NEWS | ) SSSEEN ( WNSE | ) EE ( SWEN | ) NNN
+
 
