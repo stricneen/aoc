@@ -18,3 +18,28 @@ ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN
 ENNWSWW ( NEWS | ) SSSEEN ( WNSE | ) EE ( SWEN | ) NNN
 
 
+E          [ 1 ]
+N          [ 2 ]
+W          [ 3 ]
+W          [ 4 ]
+W          [ 5 ]
+(       [ 5, 5 ]
+N       [ 6, 5 ]
+E       [ 7, 5 ]
+E       [ 8, 5 ]
+E       [ 9, 5 ]
+|       [ 5, 5 ]
+S       [ 6, 5 ]
+S       [ 7, 5 ]
+E       [ 8, 5 ]
+(    [ 8, 8, 5 ]
+E    [ 9, 8, 5 ]
+E   [ 10, 8, 5 ]
+|    [ 8, 8, 5 ]
+N    [ 9, 8, 5 ]
+)       [ 8, 5 ]
+)          [ 5 ]
+
+
+ENNWSWW (NEWS|)  SSSEEN  (WNSE|)  EE (SWEN|) NNN 
+      7              13           15    19
