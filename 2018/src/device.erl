@@ -1,6 +1,7 @@
 -module(device).
 -export([parse/1]).
 -export([execute/2]).
+-export([output/1]).
 
 %  c(device), c(day19), day19:run().
 
@@ -15,21 +16,23 @@ execute({Declarations, Prog}, Options) ->
     IpBound = declaration(Declarations, ip) + 1,
     Debug("IP Bound : ~p~n", [IpBound]),
 
-    loop(Prog, 0, Registers, IpBound, Debug, Ticks).
+    loop(Prog, 0, Registers, IpBound, Debug, Ticks, 0, Options).
 
 
-loop(_, _, Reg, _, _, 0) -> Reg;
-loop(Prog, InstPtr, Reg, IpBound, Debug, Ticks) ->
+loop(_, _, Reg, _, _, 0, Clock, Options) ->  [ { registers, Reg}, { clock,Clock}, {ticks,0}, {options, Options} ];
+loop(Prog, InstPtr, Reg, IpBound, Debug, Ticks, Clock, Options) ->
   
-    if InstPtr >= length(Prog)  -> Reg;
+    if InstPtr >= length(Prog)  -> [ { registers, Reg}, { clock,Clock}, {ticks,0}, {options, Options} ];
         true ->
             IpReg = setelement(IpBound, Reg, InstPtr),
             PostOp = command(InstPtr, Prog, IpReg, Debug),
             NInstPtr = element(IpBound, PostOp),
 
-            loop(Prog, NInstPtr + 1, PostOp, IpBound, Debug, Ticks - 1)
+            loop(Prog, NInstPtr + 1, PostOp, IpBound, Debug, Ticks - 1, Clock + 1, Options)
     end.
 
+
+% Commands
 
 command(InstPtr, Prog, Reg, Debug) ->
     {Op, A, B, C} = lists:nth(InstPtr + 1, Prog),
@@ -51,7 +54,8 @@ command(InstPtr, Prog, Reg, Debug) ->
         eqri -> eqri(A, B, C, Reg);
         eqrr -> eqrr(A, B, C, Reg)
     end,
-    Debug("ip=~p\t~p \t~p\t~p\t~p~n", [InstPtr, Reg, Op, [A,B,C], Res]),
+    % Debug("ip=~p\t~p \t~p\t~p\t~p~n", [InstPtr, Reg, Op, [A,B,C], Res]),
+    Debug("(~p)\t~p \t~p ~p\t~p~n", [InstPtr, Reg, Op, [A,B,C], Res]),
     Res.
          
 declaration(Decs, Name) ->
@@ -177,6 +181,8 @@ eqrr(A, B, C, R) ->
     end.
 
 
+% Program parsing
+
 parse(Text) -> 
     ParseDeclaration = fun(L) ->
     Instr = string:tokens(L, " "),
@@ -225,3 +231,19 @@ ticks(Options) ->
         _ -> -1
     end.
 
+
+% Results output
+
+render({ticks, X}) -> 
+    T = case X of
+        0 -> io:format("\t--- Ticks exhasted --- ~n");
+        _ -> io:format("\tTicks remaining : ~p~n", [X])
+    end,
+    T;
+render({registers, X}) -> 
+    io:format("\tRegisters : ~p~n",[X]);
+render(_) -> noop.
+
+output(Output) ->
+    io:format("~n~nTIME-BAND-3000 : ~n~n"),
+    lists:foreach(fun(X) ->render(X) end, Output).
