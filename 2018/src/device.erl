@@ -16,25 +16,34 @@ execute({Declarations, Prog}, Options) ->
     IpBound = declaration(Declarations, ip) + 1,
     Debug("IP Bound : ~p~n", [IpBound]),
 
-    loop(Prog, 0, Registers, IpBound, Debug, Ticks, 0, Options).
+    loop(Prog, 0, Registers, IpBound, Debug, Ticks, 0, Options, [-1,-2]).
 
 
-loop(_, _, Reg, _, _, 0, Clock, Options) ->  [ { registers, Reg}, { clock,Clock}, {ticks,0}, {options, Options} ];
-loop(Prog, InstPtr, Reg, IpBound, Debug, Ticks, Clock, Options) ->
+loop(_, _, Reg, _, _, 0, Clock, Options, _) ->  [ { registers, Reg}, { clock,Clock}, {ticks,0}, {options, Options} ];
+loop(Prog, InstPtr, Reg, IpBound, Debug, Ticks, Clock, Options, L) ->
   
-    if InstPtr >= length(Prog)  -> [ { registers, Reg}, { clock,Clock}, {ticks,0}, {options, Options} ];
+    if InstPtr >= length(Prog)  -> [ { registers, Reg}, { clock,Clock}, {ticks,Ticks}, {options, Options} ];
         true ->
             IpReg = setelement(IpBound, Reg, InstPtr),
-            PostOp = command(InstPtr, Prog, IpReg, Debug),
-            NInstPtr = element(IpBound, PostOp),
+            { PostOp, Lr } = command(InstPtr, Prog, IpReg, Debug, L),
 
-            loop(Prog, NInstPtr + 1, PostOp, IpBound, Debug, Ticks - 1, Clock + 1, Options)
+            [H|T] = Lr,
+
+            NextTick = case lists:member(H, T) of
+                true -> io:format("Part 2 : ~p~n", [hd(T)]), 
+                        0;
+                false -> Ticks - 1
+            end,
+
+
+            NInstPtr = element(IpBound, PostOp),
+            loop(Prog, NInstPtr + 1, PostOp, IpBound, Debug, NextTick, Clock + 1, Options, Lr)
     end.
 
 
 % Commands
 
-command(InstPtr, Prog, Reg, Debug) ->
+command(InstPtr, Prog, Reg, Debug, Loop) ->
     {Op, A, B, C} = lists:nth(InstPtr + 1, Prog),
     Res = case Op of
         addr -> addr(A, B, C, Reg);
@@ -52,17 +61,31 @@ command(InstPtr, Prog, Reg, Debug) ->
         gtrr -> gtrr(A, B, C, Reg);
         eqir -> eqir(A, B, C, Reg);
         eqri -> eqri(A, B, C, Reg);
-        eqrr -> eqrr(A, B, C, Reg)
+        eqrr -> eqrr(A, B, C, Reg);
+
+        next -> next(A, B, C, Reg)
+
     end,
+
+    L = case Op of
+            eqrr -> %io:format("~p~n", [Loop]),
+                     [element(4,Res)] ++ Loop;
+            _ -> Loop
+    end,
+
+
+
     % Debug("ip=~p\t~p \t~p\t~p\t~p~n", [InstPtr, Reg, Op, [A,B,C], Res]),
     Debug("(~p)\t~p \t~p ~p\t~p~n", [InstPtr, Reg, Op, [A,B,C], Res]),
-    Res.
+    { Res, L }.
          
 declaration(Decs, Name) ->
     case lists:search(fun({N,_}) -> N == Name end,Decs) of
         {value,{ip,N}} -> N;
         _ -> false
     end.
+
+
 
 % Addition:
 % addr (add register) stores into register C the result of adding register A and register B.
@@ -150,7 +173,8 @@ gtrr(A, B, C, R) ->
     Op1 = element(A+1, R),
     Op2 = element(B+1, R),
     case Op1 > Op2 of
-        true -> setelement(C+1, R, 1);
+        true -> %io:format("gtrr : ~p\t~p~n", [Op1,R]), 
+                setelement(C+1, R, 1);
         false -> setelement(C+1, R, 0)
     end.
 
@@ -174,12 +198,21 @@ eqri(A, B, C, R) ->
 % eqrr (equal register/register) sets register C to 1 if register A is equal to register B. Otherwise, register C is set to 0.
 eqrr(A, B, C, R) ->
     Op1 = element(A+1, R),
+    % io:format("eqrr: ~p~n", [R]),
+    
     Op2 = element(B+1, R),
     case Op1 == Op2 of
         true -> setelement(C+1, R, 1);
         false -> setelement(C+1, R, 0)
     end.
 
+% User defined task
+next(A, B, C, R) ->
+    Op1 = element(A+1, R),
+    % Op2 = element(B+1, R),
+    Out = (trunc(Op1 / B) + 1) * B,
+    T = setelement(C+1, R, Out),
+    setelement(5,T,trunc(Out/256)-1).
 
 % Program parsing
 
@@ -240,6 +273,8 @@ render({ticks, X}) ->
         _ -> io:format("\tTicks remaining : ~p~n", [X])
     end,
     T;
+render({clock, X}) -> 
+    io:format("\tClock : ~p~n",[X]);
 render({registers, X}) -> 
     io:format("\tRegisters : ~p~n",[X]);
 render(_) -> noop.
