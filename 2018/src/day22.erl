@@ -2,25 +2,19 @@
 -export([run/0]).
 
 run() ->
-
     % Test = calc(510, {10,10}),
     % Risk = lists:map(fun({_,_,{erosion,E},_}) -> E end, Test),
     % io:format("Test : ~p~n", [Risk]),
     % io:format("Test : ~p~n", [lists:sum(Risk)]),
 
-    
-
     Depth = 11394,
     Target = {7,701},
     
     Cave = calc(Depth, Target),
-
-    Risk = lists:map(fun({_,_,{erosion,_,E},_}) -> E end, Cave),
+    Risk = lists:map(fun({_,_,_,{type, _, E}}) -> E end, Cave),
 
     io:format("Test : 114 = ~p~n", [Cave]),
-    
     io:format("Part 1 : ~p~n", [lists:sum(Risk)]). %calc(Depth, Target)]).
-
 
 
 calc(Depth, {Xt, Yt}) ->
@@ -46,10 +40,9 @@ scan(Depth, {Xt, Yt}, [{X,Y}|T], A) ->
         2 -> narrow
     end,
 
-    scan(Depth, {Xt, Yt}, T, [{{location, {X,Y}}, {geologic, Geo}, {erosion, Erosion, Erosion rem 3 }, {type, Type}}] ++ A).
+    scan(Depth, {Xt, Yt}, T, [{{location, {X,Y}}, {geologic, Geo}, {erosion, Erosion }, {type, Type, Erosion rem 3}}] ++ A).
 
 geo({X,Y}, L) ->
-    % io:format("~p~n", [L]),
-    {_, _, {erosion, A, _}, _} = lists:keyfind({location, {X-1,Y}},1, L),
-    {_, _, {erosion, B, _}, _} = lists:keyfind({location, {X,Y-1}},1, L),
+    {_, _, {erosion, A}, _} = lists:keyfind({location, {X-1,Y}},1, L),
+    {_, _, {erosion, B}, _} = lists:keyfind({location, {X,Y-1}},1, L),
     A * B.
