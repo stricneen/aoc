@@ -5,7 +5,10 @@ run() ->
 
     Start = [{ {0,0}, rocky, torch, 0}, { {0,0}, rocky, climbing, 7}],
 
-    Test = calc(510, {15,15}),
+    Test = calc(510, {10,10}, {15,15}),
+
+
+
     TRisk = lists:map(fun({_,_,_,{type, _, E}}) -> E end, Test),
     io:format("Test : ~p~n", [lists:sum(TRisk)]),
 
@@ -15,7 +18,7 @@ run() ->
     % io:format("Part 1 : ~p~n", [lists:sum(Risk)]),
 
     Map = lists:map(fun ({{location,{X,Y}},_,_,{type,Type,_}}) -> {{X,Y},Type} end, Test),
-    % io:format("Map : ~p~n", [Map]),
+ io:format("Map : ~p~n", [Map]),
    
     D = lists:foldl(fun({{X,Y},Type}, Acc) -> 
         {A,B} = permitted(Type),
@@ -25,8 +28,8 @@ run() ->
 
     Route = route(Start, Map, D),
 
-    io:format("Part 2 : ~p~n", [Route]),
-    io:format("Part 2 : ~p~n", [dict:find({10,10,torch}, Route)]),
+    io:format("Part 2 : ~p~n", [lists:sort(dict:to_list(Route))]),
+    io:format("Part 2 : ~p~n", [dict:find({11,11,torch}, Route)]),
     io:format("  - -- --->~n~n").
 
 route([], _, Route) -> Route;
@@ -43,9 +46,26 @@ route(Edge, Map, Route) ->
 
 % c(day22), day22:run().
 
-    io:format("Next : ~p~n~n~n", [length(Edge)]),
-    io:format("edge : ~p~n", [Edge]),
-    io:format("Next : ~p~n~n~n", [Next]),
+%   {{0,0,torch},0},        down 1
+%   {{0,1,torch},1},        r1
+%   {{1,1,torch},2},        r3 + none (10)
+%   {{4,1,none    },12},    down 7 + climbing
+%   {{4,8,climbing},26},    r
+%   {{5,8,climbing},27},    down 3
+%   {{5,11,climbing},30}    r
+%   {{6,11,climbing},31}    d
+%   {6,12,climbing},32}     r4
+
+% 10,12                    u2
+% 10,10                   torch     
+                                
+
+
+
+
+    % io:format("Next : ~p~n~n~n", [length(Edge)]),
+    % io:format("edge : ~p~n", [Edge]),
+    % io:format("Next : ~p~n~n~n", [Next]),
 
     { NextRoute, NextStep } = step(Next, Route, []),
 % io:format("Next : ~p~n~n~n", [NextRoute]),
@@ -73,7 +93,7 @@ permitted(narrow) -> {torch, none};
 permitted(wet) -> {climbing, none}.
 
 
-
+% c(day22), day22:run().
 
 
 spread([], _, Visited) -> Visited;
@@ -89,8 +109,7 @@ move({XO, YO}, Map) ->
     [   lists:keyfind({XO,YO-1}, 1 , Map),
         lists:keyfind({XO+1,YO},1, Map),
         lists:keyfind({XO,YO+1},1, Map),
-        lists:keyfind({XO-1,YO},1, Map)
-    ]).
+        lists:keyfind({XO-1,YO},1, Map)  ]).
 
 transition(climbing, rocky, narrow) -> { torch, 8 };
 transition(climbing, wet, narrow)   -> { none, 8 };
@@ -110,8 +129,8 @@ transition(torch, _, _)             -> { torch, 1 }.
 % narrow                x        x 
 
 
-calc(Depth, {Xt, Yt}) ->
-    Locs = [ {X,Y} || X <- lists:seq(0, Xt), Y <- lists:seq(0, Yt)],
+calc(Depth, {Xt, Yt}, {Xs, Ys}) ->
+    Locs = [ {X,Y} || X <- lists:seq(0, Xs), Y <- lists:seq(0, Ys)],
     scan(Depth, {Xt, Yt}, Locs, []).
 
 scan(_, _, [], A) -> A;
