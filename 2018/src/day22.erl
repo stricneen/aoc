@@ -6,43 +6,40 @@ run() ->
     Start = [{ {0,0}, rocky, torch, 0}, { {0,0}, rocky, climbing, 7}],
 
     Test = calc(510, {10,10}, {15,15}),
-
-
-
     TRisk = lists:map(fun({_,_,_,{type, _, E}}) -> E end, Test),
-    io:format("Test : ~p~n", [lists:sum(TRisk)]),
+    io:format("Test (114): ~p~n", [lists:sum(TRisk)]),
 
-    % Cave = calc(11394, {7,701}),
-    % Risk = lists:map(fun({_,_,_,{type, _, E}}) -> E end, Cave),
-    % io:format("Test : 114 = ~p~n", [Cave]),
-    % io:format("Part 1 : ~p~n", [lists:sum(Risk)]),
+    Cave = calc(11394, {7,701}, {50,750}),
+    Risk = lists:map(fun({_,_,_,{type, _, E}}) -> E end, Cave),
+    io:format("Part 1 (5637): ~p~n", [lists:sum(Risk)]), 
 
-    Map = lists:map(fun ({{location,{X,Y}},_,_,{type,Type,_}}) -> {{X,Y},Type} end, Test),
- io:format("Map : ~p~n", [Map]),
+% c(day22), day22:run().
+    Route = start(Start, Cave),
+
+    % io:format("Route : ~p~n", [lists:sort(dict:to_list(Route))]),
+    io:format("Part 2 : ~p~n", [dict:find({7,701,torch}, Route)]).
+
+start(Start, Cave) -> 
+    Map = lists:map(fun ({{location,{X,Y}},_,_,{type,Type,_}}) -> {{X,Y},Type} end, Cave),
+    % io:format("Map : ~p~n", [Map]),
    
     D = lists:foldl(fun({{X,Y},Type}, Acc) -> 
         {A,B} = permitted(Type),
         dict:store({X,Y,B}, start(X,Y,B),
         dict:store({X,Y,A}, start(X,Y,A), Acc))
         end, dict:new(), Map),
-
-    Route = route(Start, Map, D),
-
-    io:format("Part 2 : ~p~n", [lists:sort(dict:to_list(Route))]),
-    io:format("Part 2 : ~p~n", [dict:find({11,11,torch}, Route)]),
-    io:format("  - -- --->~n~n").
+    route(Start, Map, D).
 
 route([], _, Route) -> Route;
 route(Edge, Map, Route) ->
-    % Next = lists:foldl(fun({{X,Y},_,E,D},A) ->
+    io:format("Next : ~p~n", [length(Edge)]),
+    % io:format("edge : ~p~n", [Edge]),
 
-    %      {ok, C} = dict:find({X,Y,E}, Route),
-    %      case D
-
-
-    %         A end, [], spread(Edge, Map, [])),
-
-   Next = spread(Edge, Map, []),
+    Next = spread(Edge, Map, []),
+%  io:format("Next : ~p~n~n~n", [Next]),
+    { NextRoute, NextStep } = step(Next, Route, []),
+    % io:format("Next : ~p~n~n~n", [NextRoute]),
+    route(NextStep, Map, NextRoute).
 
 % c(day22), day22:run().
 
@@ -55,33 +52,16 @@ route(Edge, Map, Route) ->
 %   {{5,11,climbing},30}    r
 %   {{6,11,climbing},31}    d
 %   {6,12,climbing},32}     r4
-
-% 10,12                    u2
-% 10,10                   torch     
-                                
-
-
-
-
-    % io:format("Next : ~p~n~n~n", [length(Edge)]),
-    % io:format("edge : ~p~n", [Edge]),
-    % io:format("Next : ~p~n~n~n", [Next]),
-
-    { NextRoute, NextStep } = step(Next, Route, []),
-% io:format("Next : ~p~n~n~n", [NextRoute]),
-
-    route(NextStep, Map, NextRoute).
+%   {{10,12,climbing},36},  u2
+%   {{10,10,climbing},38},  torch
 
 step([], R,W) -> {R,W};
 step([{{X,Y},B,E,D}|T], Route, Nxt) ->
-
     {ok, C} = dict:find({X,Y,E}, Route),
-
     { Step, N } = case D < C of
         true -> { dict:store({X,Y,E}, D, Route), [{{X,Y},B,E,D}] ++ Nxt};
         false -> { Route, Nxt }
     end,
-
     step(T, Step, N).
 
 start(0,0, torch) -> 0;
@@ -92,17 +72,37 @@ permitted(rocky) -> {climbing, torch};
 permitted(narrow) -> {torch, none};
 permitted(wet) -> {climbing, none}.
 
-
 % c(day22), day22:run().
 
+spread([], _, Visited) -> 
+    % S = lists:reverse(lists:keysort(4, Visited)),
+    S = lists:foldl(fun({{X,Y}, Type, Equip, Dist},A) -> 
+        [{{X,Y}, Type, Equip, Dist}, {{X,Y}, Type, swap(Type, Equip), Dist + 7}] ++ A end, [], Visited),
+    S2 = lists:reverse(lists:keysort(4, S)),    
+    M = lists:map(fun({{X,Y}, Type, Equip, Dist}) -> {{X,Y,Type, Equip}, Dist} end, S2),
+    D = dict:to_list(dict:from_list(M)),
+    M2 = lists:map(fun({{X,Y, Type, Equip}, Dist}) -> {{X,Y},Type, Equip, Dist} end, D),
 
-spread([], _, Visited) -> Visited;
+    % remove routes larger than 1000
+    M3 = lists:filter(fun({_,_, _, Dist}) -> Dist < 1000 end, M2),
+
+    % io:format("V : ~p~n", [M2]),
+    M3;
+
+
 spread([{{X,Y}, Type, Equip, Dist} | T], Map, Visited) ->
     Exits = lists:map(fun({E,D}) -> 
         {Nt, Nd} = transition( Equip, Type, D ),
         {E, D, Nt, Nd + Dist }
         end, move({X,Y}, Map)),
     spread(T, Map, Exits ++ Visited).
+
+swap(rocky, climbing) -> torch;
+swap(rocky, torch) -> climbing;
+swap(wet, none) -> climbing;
+swap(wet, climbing) -> none;
+swap(narrow, none) -> torch;
+swap(narrow, torch) -> none.
 
 move({XO, YO}, Map) ->
     lists:filter(fun (X) -> X =/= false end,
@@ -128,6 +128,7 @@ transition(torch, _, _)             -> { torch, 1 }.
 % wet         x                  x
 % narrow                x        x 
 
+% th 988
 
 calc(Depth, {Xt, Yt}, {Xs, Ys}) ->
     Locs = [ {X,Y} || X <- lists:seq(0, Xs), Y <- lists:seq(0, Ys)],
