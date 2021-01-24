@@ -218,7 +218,7 @@ next(A, B, C, R) ->
 
 parse(Text) -> 
     ParseDeclaration = fun(L) ->
-    Instr = string:tokens(L, " "),
+    Instr = string:tokens(L, " <>,="),
     { 
         list_to_atom(lists:nth(1, Instr)), 
         list_to_integer(lists:nth(2, Instr))
