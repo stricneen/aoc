@@ -2,7 +2,7 @@
 -export([run/0]).
 
 run() ->
-    Input = aoc:readlines("../data/day23.txt"),
+    Input = aoc:readlines("../data/day.txt"),
     Bots = lists:map(fun(E) -> 
         T = string:tokens(E, " <>,="),
         { list_to_integer(lists:nth(2,T)),
@@ -16,17 +16,65 @@ run() ->
     io:format("~nPart 1 : ~p~n", [length(InRange)]),
 
     Corners = corners(Bots),
+    
+    % X = zoom(Corners, Bots, 80, 0), 
+    
+    io:format("X : ~p~n", [Corners]),
 
-    % Corners = spread({25422263,46196104,22040093}, 2000000), 
-    X = zoom(Corners, Bots, 80, 0), 
-    % io:format("X : ~p~n", [lists:reverse(X)]),
+    % scan_cube([{{25422260,46196064,22040132},893}] ++ X , Bots),
 
-    scan_cube([{{25422260,46196064,22040132},893}] ++ X , Bots),
-% Cube = cube({25422263,46196104,22040093},60),
-% CubeRange = lists:sublist(lists:reverse(lists:keysort(2,in_range(Cube, Bots))),20),
-%  io:format("Y : ~p~n", [CubeRange]),
 
-    io:format("~nPart 2 : ~p~n", [0]).
+    % how big is the first cube?
+    Start = bounding_cube(Corners),
+
+    io:format("~nSplit : ~p~n", [search(Start, Bots)]),
+
+    Z = search(Start, Bots),
+
+    io:format("~nPart 2 : ~p~n", [Z]).
+
+
+
+search({X,1},_) -> X;
+search({{X,Y,Z},R}, Bots) ->
+     io:format("T : ~p~n", [{{X,Y,Z},R}]),
+    Split = split_cube({{X,Y,Z},R}),
+    D = lists:reverse(lists:sort(lists:map(fun(E) -> {count(E, Bots),E} end, Split))),
+    % io:format("D : ~p~n", [D]),
+    {_,{T,_}} = hd(D),
+    search({T,R div 2}, Bots).
+
+count({{X,Y,Z},R}, Bots) ->
+    trunc(rand:uniform(8)).
+
+
+
+
+bounding_cube({MinX, MaxX, MinY, MaxY, MinZ, MaxZ}) ->
+    Max = lists:max([abs(MinX), abs(MaxX), abs(MinY), abs(MaxY), abs(MinZ), abs(MaxZ)]),
+    Powers =  [ X || X <- lists:map(fun(E) -> trunc(math:pow(2,E)) end, lists:seq(0,40))],
+    F = first(Powers, fun(E) -> E > (Max * 2) end, null),
+    Cube = {{F div 2*-1,F div 2*-1,F div 2*-1},F},
+    io:format("Cube :  - ~p~n", [Cube]),
+    Cube.
+
+split_cube({{X,Y,Z},R}) ->
+    [
+        {{X,Y,Z}, R div 2},
+        {{X+R div 2,Y,Z}, R div 2},
+        {{X,Y+R div 2,Z}, R div 2},
+        {{X,Y,Z+R div 2}, R div 2},
+        {{X+R div 2,Y+R div 2,Z}, R div 2},
+        {{X,Y+R div 2,Z+R div 2}, R div 2},
+        {{X+R div 2,Y,Z+R div 2}, R div 2},
+        {{X+R div 2,Y+R div 2,Z+R div 2}, R div 2}
+    ].
+
+first(L, Condition, Default) ->
+  case lists:dropwhile(fun(E) -> not Condition(E) end, L) of
+    [] -> Default;
+    [F | _] -> F
+  end.
 
 scan_cube([], _) -> 0;
 scan_cube([H|T], Bots) -> 
