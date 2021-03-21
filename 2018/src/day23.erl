@@ -17,35 +17,118 @@ run() ->
 
     Corners = corners(Bots),
     
-    % X = zoom(Corners, Bots, 80, 0), 
-    
-    io:format("X : ~p~n", [Corners]),
 
-    % scan_cube([{{25422260,46196064,22040132},893}] ++ X , Bots),
+io:format("{14,14,14,6}, {{-64,-64,-64},128} : ~p~n", [is_bot_in_range_of_cube( {14,14,14,6}, {{-64,-64,-64},128})]),
+io:format("{50,50,50,200} {{-64,-64,-64},128} : ~p~n", [is_bot_in_range_of_cube( {50,50,50,200}, {{-64,-64,-64},128} )]),
 
 
-    % how big is the first cube?
-    Start = bounding_cube(Corners),
+io:format("{10,10,10,5} {{12,12,12},1} : ~p~n", [is_bot_in_range_of_cube({10,10,10,5}, {{12,12,12},1} )]),
 
-    io:format("~nSplit : ~p~n", [search(Start, Bots)]),
 
-    Z = search(Start, Bots),
-
-    io:format("~nPart 2 : ~p~n", [Z]).
+    % io:format("~nSplit : ~p~n", [search(Start, Bots)]),
+     Start = bounding_cube(Corners),
+    Z = search([Start], Bots, 11),
+    io:format("~nPart 2 : ~p~n", [hd(Z)]).
 
 
 
-search({X,1},_) -> X;
-search({{X,Y,Z},R}, Bots) ->
-     io:format("T : ~p~n", [{{X,Y,Z},R}]),
-    Split = split_cube({{X,Y,Z},R}),
-    D = lists:reverse(lists:sort(lists:map(fun(E) -> {count(E, Bots),E} end, Split))),
-    % io:format("D : ~p~n", [D]),
-    {_,{T,_}} = hd(D),
-    search({T,R div 2}, Bots).
+search(X,_,1) -> X;
+search(Cubes, Bots,C) ->
+    % io:format("Cubes : ~p~n", [Cubes]),
 
+    Count2 = lists:map(fun({E,S}) -> {count({E,S}, Bots),dist({E,S}) ,-S , E} end, Cubes),
+    Count = lists:filter(fun({Cx,_,_,_}) -> Cx > 0 end, Count2),
+
+    io:format("Bots in range, distance to origin, size~n"),
+
+    % io:format("Count : ~p~n~n", [Count]),
+    [{_,_,E,S}|T] = lists:reverse(lists:sort(Count)),
+
+    io:format("T : ~p~n", [lists:reverse(lists:sort(Count))]),
+    Split = split_cube({S,-E}),
+    Rest = lists:map(fun({_,_,B,Cx}) -> {Cx,-B} end, T),
+
+    io:format("Split : ~p~n~n~n", [Split]),
+    % Next = lists:map(fun(E) -> { count(E, Bots),  E} end, Split),
+    % Next = lists:filtermap(fun(E) -> C = count(E, Bots), case C of 0 -> false; _ -> {true, {C, E}} end end, Split),
+    % io:format("D : ~p~n", [Next]),
+
+    search(Split ++ Rest, Bots, C-1).
+
+
+% Dist origin to cube
+dist({{X,Y,Z},R}) ->
+    Dist = abs(X+R) + abs(Y+R) + abs(Z+R),    
+    Dist.
+
+% How many bots in cube
 count({{X,Y,Z},R}, Bots) ->
-    trunc(rand:uniform(8)).
+    lists:foldl(fun (B, Acc) -> 
+        case is_bot_in_range_of_cube(B, {{X,Y,Z},R}) of
+            true ->
+                %  io:format("In : ~p ~p~n", [B, {{X,Y,Z},R}]),
+                 Acc + 1;
+            false -> 
+            %    io:format("Out : ~p ~p~n", [B, {{X,Y,Z},R}]),
+                Acc
+        end end, 0, Bots).          %trunc(rand:uniform(8)).
+
+% {50,50,50,200}, {{12,12,12},4}),
+is_bot_in_range_of_cube({Xb,Yb,Zb,Rb}, {{X,Y,Z},R}) ->
+    distance_point_to_cube({Xb,Yb,Zb}, {{X,Y,Z},R}) =< Rb.
+
+
+distance_point_to_cube({X,Y,Z}, {{Xc,Yc,Zc},R}) ->
+    % io:format("X : ~p~n", [distance(X, Xc, Xc + R - 1)]),
+    % io:format("Y : ~p~n", [distance(Y, Yc, Yc + R - 1)]),
+    % io:format("Z : ~p~n", [distance(Z, Zc, Zc + R - 1)]),
+   distance(X, Xc, Xc + R-1) +
+   distance(Y, Yc, Yc + R-1) +
+   distance(Z, Zc, Zc + R-1).
+
+distance(X, B1, B2) ->
+
+    Min = if B1 > B2 -> B2 ; true -> B1 end,
+    Max = if B1 > B2 -> B1 ; true -> B2 end,
+% io:format("D : ~p -> ~p~n", [Min,Max]),
+
+    case {X >= Min, X =< Max} of
+        {true,true} -> 0;
+        {true,false} -> abs(Min - X);
+        {false,true} -> abs(X - Max)
+    end.
+
+
+%     is_bot_in_cube(Bot, {{X,Y,Z},R}) or
+%     is_bot_in_range_of_point(Bot, {X,Y,Z}) or
+%     is_bot_in_range_of_point(Bot, {X + R,Y,Z}) or
+%     is_bot_in_range_of_point(Bot, {X,Y + R,Z}) or
+%     is_bot_in_range_of_point(Bot, {X,Y,Z + R}) or
+%     is_bot_in_range_of_point(Bot, {X + R,Y + R,Z}) or
+%     is_bot_in_range_of_point(Bot, {X + R,Y,Z + R}) or
+%     is_bot_in_range_of_point(Bot, {X,Y + R,Z + R}) or
+%     is_bot_in_range_of_point(Bot, {X + R,Y + R,Z + R}).
+
+
+% is_bot_in_range_of_point({Xb,Yb,Zb,Rb}, {X,Y,Z}) ->
+%     dist({Xb,Yb,Zb,none}, {X,Y,Z,none}) =< Rb.
+
+
+% is bot in cube
+is_bot_in_cube({Xb,Yb,Zb,Rb}, {{X,Y,Z},R}) ->
+    point_in_cube({Xb, Yb, Zb}, {{X,Y,Z},R}) or
+    point_in_cube({Xb+Rb, Yb, Zb}, {{X,Y,Z},R}) or
+    point_in_cube({Xb-Rb, Yb, Zb}, {{X,Y,Z},R}) or
+    point_in_cube({Xb, Yb+Rb, Zb}, {{X,Y,Z},R}) or
+    point_in_cube({Xb, Yb-Rb, Zb}, {{X,Y,Z},R}) or
+    point_in_cube({Xb, Yb, Zb+Rb}, {{X,Y,Z},R}) or
+    point_in_cube({Xb, Yb, Zb-Rb}, {{X,Y,Z},R}).
+
+% is point in cube
+point_in_cube({Xb,Yb,Zb}, {{X,Y,Z},R}) ->
+    (Xb >= X) and (Xb =< (X + R)) and
+    (Yb >= Y) and (Yb =< (Y + R)) and
+    (Zb >= Z) and (Zb =< (Z + R)).
 
 
 
@@ -55,7 +138,7 @@ bounding_cube({MinX, MaxX, MinY, MaxY, MinZ, MaxZ}) ->
     Powers =  [ X || X <- lists:map(fun(E) -> trunc(math:pow(2,E)) end, lists:seq(0,40))],
     F = first(Powers, fun(E) -> E > (Max * 2) end, null),
     Cube = {{F div 2*-1,F div 2*-1,F div 2*-1},F},
-    io:format("Cube :  - ~p~n", [Cube]),
+ io:format("Cube : ~p~n", [Cube]),
     Cube.
 
 split_cube({{X,Y,Z},R}) ->
@@ -85,7 +168,7 @@ scan_cube([H|T], Bots) ->
     scan_cube(T, Bots).
 
 cube_spread({{X,Y,Z},C}, Bots) ->
-    Cube = star({X,Y,Z},100),
+    Cube = star({X,Y,Z},2),
     {Nco,Nd} = hd(lists:reverse(lists:keysort(2,in_range(Cube, Bots)))),
     io:format("cube_spread : ~p~n", [{Nco,Nd}]),
     
@@ -103,8 +186,8 @@ cube({X,Y,Z}, S) ->
 
 star({X,Y,Z}, S) -> 
     Points = [ {Xx,Yy,Zz} || Xx <- lists:seq(X-S, X+S), Yy <- [Y], Zz <- [Z]]
-        ++ [ {Xx,Yy,Zz} || Xx <- [X], Yy <- lists:seq(Y-S, Y+S), Zz <- [Z]] 
-        ++ [ {Xx,Yy,Zz} || Xx <- [X], Yy <- [Y], Zz <- lists:seq(Z-S, Z+S)]
+     ++ [ {Xx,Yy,Zz} || Xx <- [X], Yy <- lists:seq(Y-S, Y+S), Zz <- [Z]] 
+     ++ [ {Xx,Yy,Zz} || Xx <- [X], Yy <- [Y], Zz <- lists:seq(Z-S, Z+S)]
      ++ [ {Xx,Yy,Zz} || Xx <- [X], Yy <- lists:seq(Y-S, Y+S), Zz <- lists:seq(Z-S, Z+S)] 
      ++ [ {Xx,Yy,Zz} || Xx <- lists:seq(X-S, X+S), Yy <- lists:seq(Y-S, Y+S), Zz <- [Z]] 
      ++ [ {Xx,Yy,Zz} || Xx <- lists:seq(X-S, X+S), Yy <- [Y], Zz <- lists:seq(Z-S, Z+S)]  ,
@@ -141,6 +224,7 @@ zoom(Corners, Bots, GridSize ,C) ->
 
  % c(day23), day23:run().
 
+% {37294439,39272733,24243606},505
 
     % {25422263,46196104,22040093},906
     % {25422244,46196084,22040112},900
@@ -158,11 +242,11 @@ zoom(Corners, Bots, GridSize ,C) ->
 
 % tl (You guessed 94374909.
 
-in_range(Grid, Bots) ->
+in_range(Points, Bots) ->
     lists:map(fun({X,Y,Z}) -> 
         {{X,Y,Z}, 
         length(lists:filter(fun({Xb,Yb,Zb,R}) -> dist({Xb,Yb,Zb,n},{X,Y,Z,n}) =< R end, Bots))}
-    end, Grid).
+    end, Points).
 
 
 grid({MinX, MaxX, MinY, MaxY, MinZ, MaxZ}, Axis) ->
@@ -173,6 +257,8 @@ grid({MinX, MaxX, MinY, MaxY, MinZ, MaxZ}, Axis) ->
 
 axis(Lb, Ub, Segs) ->
     [ trunc(Lb + (X / Segs) * abs(Ub - Lb)) || X <- lists:seq(0,Segs)].
+
+
 
 dist({Xs, Ys, Zs, _}, {Xt, Yt, Zt, _}) ->
     abs(Xs - Xt) + abs(Ys - Yt) + abs(Zs - Zt).
