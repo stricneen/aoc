@@ -19,7 +19,7 @@ run() ->
 
     Start = bounding_cube(Corners),
     {X,Y,Z} = search([Start], Bots, 5000),
-    % io:format("~nPart 2 : ~p~n", [{X,Y,Z}]),
+    io:format("~nPart 2 : ~p~n", [{X,Y,Z}]),
 
     io:format("~nPart 2 : ~p~n", [X+Y+Z]).
 
@@ -46,7 +46,7 @@ search(Cubes, Bots,C) ->
 
     % io:format("Bots in range, distance to origin, size~n"),
 
-    % io:format("Count : ~p~n~n", [Count]),
+    io:format("Count : ~p~n~n", [lists:reverse(Count)]),
     [{_,_,E,S}|T] = lists:reverse(lists:sort(Count)),
 
     case E =:= 0 of
