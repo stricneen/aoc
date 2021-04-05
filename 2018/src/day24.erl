@@ -21,8 +21,8 @@ fight(A,B) ->
     
     Pairs = target(A ++ B),
     io:format("~n PC : ~p~n", [Pairs]),
-    Round = attack(Pairs, []),
-    io:format("~n Round : ~p~n", [Round]),
+    % Round = attack(Pairs, []),
+    % io:format("~n Round : ~p~n", [Round]),
 
     0.
 
@@ -52,46 +52,48 @@ attack([{_, Attacker, {Amount, Defender}} | T ], R) ->
         
     attack(T, R ++ [X]).
 
+
 target(Groups) ->
 
-    AttackOrder = lists:reverse(lists:sort(lists:map(fun(Group) -> 
-        {Group#army.units * Group#army.attack, Group#army.initiative, Group} end, Groups))),
+    TargetOrder = sort_for_targetting(Groups),
 
-    io:format("~n AttackOrder : ~p~n", [AttackOrder]),
-    
-    PairUp = lists:foldl(fun({_,_,Attacker}, Pairs) ->
+    PairUp = lists:foldl(fun(Attacker, Pairs) ->
 
         io:format("~nAttacker : ~p~n", [Attacker]),
-io:format("~n  Pairs : ~p~n", [Pairs]),
+        io:format("~n  Pairs : ~p~n", [Pairs]),
+
         % on opposing side and not immue
         % and not already paired 
-        Targetted = lists:map(fun({_,Attacker, {_, Defender}}) -> Defender#army.initiative end, Pairs),
+        Targetted = lists:map(fun({Attacker, {_, Defender}}) -> Defender#army.initiative end, Pairs),
 
-        ValidTargets = lists:filter(fun ({Ax,I,D}) -> 
-            (Attacker#army.side =/= D#army.side)  
-            and not (lists:member(Attacker#army.attackType, D#army.immune)) 
+        ValidTargets = lists:filter(fun (D) -> 
+            (Attacker#army.side =/= D#army.side)   
             and not lists:member(D#army.initiative, Targetted)         
-        end, AttackOrder),
+        end, TargetOrder),
+
+        % most damage - largest eff pow - largest inititive
 
         io:format("~n  ValidTargets : ~p~n", [ValidTargets]),
 
-        Damage = lists:reverse(lists:sort(lists:map(fun({Ax,I,D}) -> 
-            Multiplier = case lists:member(Attacker#army.attackType ,D#army.weaknesses) of
+        Damage = lists:reverse(lists:sort(lists:map(fun(D) -> 
+            WeakMultiplier = case lists:member(Attacker#army.attackType ,D#army.weaknesses) of
                 true -> 2;
                 false -> 1
             end,
+            ImmuneMultiplier = case lists:member(Attacker#army.attackType ,D#army.immune) of
+                true -> 0;
+                false -> 1
+            end,
 
-
-
-            {D}
+            {WeakMultiplier * ImmuneMultiplier * Attacker#army.units * Attacker#army.attack, D}
         end, ValidTargets))),
 
-        [{Attacker#army.initiative, Attacker, targetted(Damage)}] ++ Pairs
+        [{Attacker, targetted(lists:filter(fun({A,_}) -> A > 0 end, Damage))}] ++ Pairs
 
-        end, [], AttackOrder),
+        end, [], TargetOrder),
 
-    
-    lists:reverse(lists:sort(PairUp)).
+
+    lists:map(fun({A,{_,B}}) -> {A,B} end, PairUp).
 
 
 targetted([]) -> none;
@@ -99,7 +101,12 @@ targetted([H|_]) -> H.
 
 
 
+sort_for_targetting(Groups) ->
+    TargetOrder = lists:reverse(lists:sort(lists:map(fun(Group) -> 
+        {Group#army.units * Group#army.attack, Group#army.initiative, Group} end, Groups))),
 
+    io:format("~n TargetOrder : ~p~n", [TargetOrder]),
+    lists:map(fun({_,_,A}) -> A end, TargetOrder).
 
 
 
