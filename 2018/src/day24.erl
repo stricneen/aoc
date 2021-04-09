@@ -20,37 +20,34 @@ fight(A,B) ->
     % io:format("~nAttackOrder : ~p~n", [AttackOrder]),
     
     Pairs = target(A ++ B),
-    io:format("~n PC : ~p~n", [Pairs]),
-    % Round = attack(Pairs, []),
-    % io:format("~n Round : ~p~n", [Round]),
+    % io:format("~n PC : ~p~n", [Pairs]),
+
+
+    Round = attack(sort_for_attack(Pairs), []),
+    io:format("~n Round : ~p~n", [Round]),
 
     0.
 
 
 attack([], X) -> X;
-attack([{_, Attacker, {Amount, Defender}} | T ], R) ->
+attack([{Attacker, Defender} | T ], R) ->
 
-       
+        io:format("~n  ~p ~n     --> ~p~n", [Attacker, Defender]),
         % 80 units with 20 hitPoints
         % attacks 70 - 
         % 70 div 20 = 3
 
-        Z = Amount div Defender#army.hitPoints,
-        
-        % 3 * 20 = 60
 
-
-        X = to_record(Defender#army.side, {
-            Defender#army.units - Z, 
-            Defender#army.hitPoints, 
-            Defender#army.immune, 
-            Defender#army.weaknesses, 
-            Defender#army.attack, 
-            Defender#army.attackType, 
-            Defender#army.initiative}),
 
         
-    attack(T, R ++ [X]).
+    attack(T, R).
+
+sort_for_attack(L) -> 
+    S = lists:map(fun({Attacker, Defender}) -> {Attacker#army.initiative, Attacker, Defender} end, L),
+    S1 = lists:reverse(lists:sort(S)),
+    lists:map(fun({_,A,E}) -> {A,E} end, S1).
+
+
 
 
 target(Groups) ->
@@ -93,7 +90,7 @@ target(Groups) ->
         end, [], TargetOrder),
 
 
-    lists:map(fun({A,{_,B}}) -> {A,B} end, PairUp).
+    lists:map(fun({A,{_,B}}) -> {A,B} end,  PairUp).
 
 
 targetted([]) -> none;
