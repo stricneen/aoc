@@ -4,7 +4,7 @@
 -record(army, {group, side, units, hitPoints, immune, weaknesses, attack, attackType, initiative}).
 
 run() ->
-    {A,B} = test_armies(),
+    {A,B} = armies(),
     % io:format("~nPart 1 : ~p~n", [B]),
     {_, GroupA} = A, {_, GroupB} = B,
     print(GroupA), print(GroupB),
@@ -51,8 +51,8 @@ attack([{Attacker, Defender} | T ], R) ->
         end,
 
         % has the attack been attacked - use alternative unit count
-        io:format("AttackUnits : ~p~n ", [AttackUnits]),
-        io:format("R : ~p~n ", [R]),
+        % io:format("AttackUnits : ~p~n ", [AttackUnits]),
+        % io:format("R : ~p~n ", [R]),
 
 
 
@@ -181,31 +181,31 @@ to_record(T, {Group, Units, Hitpoints, Immune, Weaknesses, Attack, AttackType, I
         attackType = AttackType,
         initiative = Initiative }.
 
-% armies() ->
-%     {convert({immune, [
-%         {1, 1514 , 8968 , [], [cold] , 57 ,bludgeoning , 9},
-%         {2,2721 , 6691 , [], [cold]  , 22, slashing , 15},
-%         {3,1214 , 10379 , [bludgeoning],[] , 69 ,fire , 16},
-%         {4,2870 , 4212 ,[],[], 11, radiation , 12},
-%         {5,1239 , 5405 , [], [cold] , 37, cold , 18},
-%         {6,4509 , 4004 , [radiation], [cold], 8 ,slashing , 20},
-%         {7,3369 , 10672 , [], [slashing]  , 29, cold , 11},
-%         {8,2890 , 11418 , [bludgeoning], [fire] , 30 ,cold , 8},
-%         {9, 149 , 7022 , [], [slashing] , 393, radiation , 13},
-%         {10, 2080 , 5786 , [slashing, bludgeoning], [fire], 20 ,fire , 7}
-%         ]}), 
-%     convert({infection,[
-%         {1, 817 , 47082 , [slashing, radiation, bludgeoning],[] , 115, cold , 3},
-%         {2, 4183 , 35892 ,[],[] , 16 ,bludgeoning , 1},
-%         {3, 7006 , 11084 ,[],[], 2, fire , 2},
-%         {4, 4804 , 25411 ,[],[], 10 ,cold , 14},
-%         {5, 6262 , 28952 , [], [fire] , 7, slashing , 10},
-%         {6, 628 , 32906 ,[],[slashing] , 99 ,radiation , 4},
-%         {7, 5239 , 46047 , [fire],[] , 14, bludgeoning , 6},
-%         {8, 1173 , 32300 , [], [cold, slashing], 53 ,bludgeoning , 19},
-%         {9, 3712 , 12148 , [cold], [slashing] , 5 ,slashing , 17},
-%         {10, 334 , 43582 , [], [cold, fire] , 260, cold , 5}
-%         ]})}.
+armies() ->
+    {convert({immune, [
+        {1, 1514 , 8968 , [], [cold] , 57 ,bludgeoning , 9},
+        {2,2721 , 6691 , [], [cold]  , 22, slashing , 15},
+        {3,1214 , 10379 , [bludgeoning],[] , 69 ,fire , 16},
+        {4,2870 , 4212 ,[],[], 11, radiation , 12},
+        {5,1239 , 5405 , [], [cold] , 37, cold , 18},
+        {6,4509 , 4004 , [radiation], [cold], 8 ,slashing , 20},
+        {7,3369 , 10672 , [], [slashing]  , 29, cold , 11},
+        {8,2890 , 11418 , [bludgeoning], [fire] , 30 ,cold , 8},
+        {9, 149 , 7022 , [], [slashing] , 393, radiation , 13},
+        {10, 2080 , 5786 , [slashing, bludgeoning], [fire], 20 ,fire , 7}
+        ]}), 
+    convert({infection,[
+        {1, 817 , 47082 , [slashing, radiation, bludgeoning],[] , 115, cold , 3},
+        {2, 4183 , 35892 ,[],[] , 16 ,bludgeoning , 1},
+        {3, 7006 , 11084 ,[],[], 2, fire , 2},
+        {4, 4804 , 25411 ,[],[], 10 ,cold , 14},
+        {5, 6262 , 28952 , [], [fire] , 7, slashing , 10},
+        {6, 628 , 32906 ,[],[slashing] , 99 ,radiation , 4},
+        {7, 5239 , 46047 , [fire],[] , 14, bludgeoning , 6},
+        {8, 1173 , 32300 , [], [cold, slashing], 53 ,bludgeoning , 19},
+        {9, 3712 , 12148 , [cold], [slashing] , 5 ,slashing , 17},
+        {10, 334 , 43582 , [], [cold, fire] , 260, cold , 5}
+        ]})}.
 
 
 test_armies() ->
