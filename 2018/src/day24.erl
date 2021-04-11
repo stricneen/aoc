@@ -7,11 +7,38 @@ run() ->
     {_, GroupA} = A, {_, GroupB} = B,
     Groups = GroupA ++ GroupB,
 
+    R = fight(Groups, 0),
 
-    R = fight(Groups),
+    io:format("~nPart 1 : ~p~n", [R]),
+
+    Min = fight_boost(Groups, 84),
+
+    % Min = fight_boost(Groups, 81),
 
 
-    io:format("~nPart 1 : ~p~n", [R]).
+    io:format("~nPart 2 : ~p~n", [Min]).
+
+fight_boost(Groups, Boost) -> 
+    % io:format("~nBoost : ~p~n", [Boost]),
+
+    R = fight(Groups, Boost),
+    complete(Groups, R, Boost).
+
+complete(Groups, {infection, R},B) -> 
+    io:format("~nBoost : ~p  Remaining ~p~n", [B,R]),
+    fight_boost(Groups, B + 1);
+complete(Groups, {immune, R},B) -> {immune, R}.
+
+
+fight(Groups, Boost) ->
+    G = lists:map(fun(E) ->
+        case E#army.side =:= immune of
+            true ->  E#army{attack=E#army.attack + Boost};
+            false -> E
+        end
+        end, Groups),
+
+    fight(G).
 
 fight(Groups) ->
 
