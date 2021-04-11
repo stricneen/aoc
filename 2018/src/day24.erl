@@ -1,37 +1,31 @@
 -module(day24).
-% -compile([{nowarn_unused_function, [{ armies,0 }]}]).
 -export([run/0]).
 -record(army, {group, side, units, hitPoints, immune, weaknesses, attack, attackType, initiative}).
 
 run() ->
     {A,B} = armies(),
-    % io:format("~nPart 1 : ~p~n", [B]),
     {_, GroupA} = A, {_, GroupB} = B,
-    print(GroupA), print(GroupB),
-    R = fight(GroupA ++ GroupB),
+    Groups = GroupA ++ GroupB,
 
-    io:format("~nPart 1 : ~p~n", [lists:sum(lists:map(fun(E) -> E#army.units end ,R))]).
+
+    R = fight(Groups),
+
+
+    io:format("~nPart 1 : ~p~n", [R]).
 
 fight(Groups) ->
 
-    io:format("~n =============================== ~n"),
     Pairs = target(Groups),
-
-    % io:format("~n PC : ~p~n", [Pairs]),
     Round = attack(sort_for_attack(Pairs), Groups),
-
-    % remove negatives
-
-    io:format("~n Start : ~p~n", [Groups]),
+    % io:format("~n Start : ~p~n", [Groups]),
     % io:format("~n Post : ~p~n", [Round]),
-
     Alive = lists:filter(fun(E) -> E#army.units > 0 end, Round),
-    
-    io:format("~n End  : ~p~n", [Alive]),
-    
+    % io:format("~n End  : ~p~n", [Alive]),
     Head = hd(Alive),
     case lists:all(fun(E) -> E#army.side =:= Head#army.side end, Alive) of
-        true -> io:format("~n Done ~n"), Alive;
+        true -> 
+            Remainder = lists:sum(lists:map(fun(E) -> E#army.units end ,Alive)),
+            {Head#army.side, Remainder};
         false -> fight(Alive)
     end.
 
@@ -40,7 +34,7 @@ attack([], X) -> X;
 attack([{_, none} | T ], R) -> attack(T,R); 
 attack([{Attacker, Defender} | T ], R) ->
 
-        io:format("~n  ~p ~n     --> ~p~n", [Attacker, Defender]),
+        % io:format("~n  ~p ~n     --> ~p~n", [Attacker, Defender]),
 
         AttackerState = hd(lists:filter(fun(E) -> 
             E#army.initiative =:= Attacker#army.initiative end, R)),
@@ -53,8 +47,6 @@ attack([{Attacker, Defender} | T ], R) ->
         % has the attack been attacked - use alternative unit count
         % io:format("AttackUnits : ~p~n ", [AttackUnits]),
         % io:format("R : ~p~n ", [R]),
-
-
 
         EffectivePowerAttack = Attacker#army.attack * AttackUnits,
         Attack = EffectivePowerAttack * multiplier(Attacker, Defender),
@@ -71,8 +63,8 @@ attack([{Attacker, Defender} | T ], R) ->
              end, R),
 
 
-        io:format("Attack : ~p~n ", [Attack]),
-        io:format("UnitToLoose : ~p~n ", [UnitToLoose]),
+        % io:format("Attack : ~p~n ", [Attack]),
+        % io:format("UnitToLoose : ~p~n ", [UnitToLoose]),
         
     attack(T, Rn).
 
@@ -149,7 +141,7 @@ sort_for_targetting(Groups) ->
     TargetOrder = lists:reverse(lists:sort(lists:map(fun(Group) -> 
         {Group#army.units * Group#army.attack, Group#army.initiative, Group} end, Groups))),
 
-    io:format("~n TargetOrder : ~p~n", [TargetOrder]),
+    % io:format("~n TargetOrder : ~p~n", [TargetOrder]),
     lists:map(fun({_,_,A}) -> A end, TargetOrder).
 
 
