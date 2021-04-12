@@ -2,29 +2,47 @@
 -export([run/0]).
 
 run() ->
-    Input = aoc:readlines("../data/day.txt"),
+    Input = aoc:readlines("../data/day25.txt"),
     Parsed = parse(Input),
     
     % Dists = [ {A,B,dist(A,B)} || A <- Parsed, B <-Parsed ],
+    A = constellation(Parsed, []),
+      io:format(" ~p~n", [A]),
+    io:format("~nPart 1 : ~p~n", [length(A)]).
 
-    io:format("~nPart 1 : ~p~n", [length(constellation(Parsed))]).
+constellation(L, C) -> 
 
-constellation(L) -> 
-    N = neighbours(L,[]),
-    io:format(" > : ~p~n", [N]),
-    match_up(N, []).
+    io:format("~p~n", [L]),
 
-match_up([], R) -> R;
-match_up([H|T], R) -> 
-    match_up(T, R).
+    T = lists:foldl(fun(E,A) -> 
+         io:format("Acc: ~p~n", [A]),
+
+        Distances = lists:map(fun(X) -> 
+            lists:map(fun(Y) -> {dist(Y,E), Y} end, X) end, A),
+
+%   io:format("Dists: ~p~n", [Distances]),
 
 
-neighbours([], R) -> lists:filter(fun(X) -> length(X) > 0 end, R);
-neighbours([H|T], R) -> 
-    Dist = lists:map(fun(E) -> {E, dist(H,E)} end, T),
-    Near = lists:filter(fun({_,Y}) -> Y =< 3 end, Dist),
-    %  io:format("~p > : ~p~n", [H, Near]),
-    neighbours(T,[Near] ++ R).
+        { Connections , Others } = lists:partition(
+            fun(X) -> lists:any(fun({D,_}) -> D =< 3 end, X)
+            end, Distances),
+
+
+%   io:format("{ Connections , Others }: ~p~n", [{ Connections , Others }]),
+
+Conn = lists:map(fun(Lx) -> lists:map(fun({_,Cx}) -> Cx end, Lx) end,Connections),
+Othe = lists:map(fun(Lx) -> lists:map(fun({_,Cx}) -> Cx end, Lx) end,Others),
+
+%   io:format("~p~n", [{ Conn , Othe }]),
+        merge(E, Conn, Othe)
+    
+    end, [], L),
+    
+    T.
+
+merge(E, [], O) -> [[E]] ++ O;
+merge(E, C, O) -> [[E|lists:append(C)]] ++ O.
+
 
 dist({A1,A2,A3,A4},{B1,B2,B3,B4}) -> 
     abs(A1-B1) + abs(A2-B2) + abs(A3-B3) + abs(A4-B4).
@@ -35,4 +53,4 @@ parse(L) ->
         { list_to_integer(lists:nth(1,T)),
           list_to_integer(lists:nth(2,T)),
           list_to_integer(lists:nth(3,T)),
-          list_to_integer(lists:nth(4,T)) }end, L).
+          list_to_integer(lists:nth(4,T)) } end, L).
