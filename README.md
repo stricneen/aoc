@@ -11,3 +11,6 @@
 [2019](https://adventofcode.com/2019) - F#
 
 [2020](https://adventofcode.com/2020) - Javascript
+
+[2021](https://adventofcode.com/2021) - Javascript
+
