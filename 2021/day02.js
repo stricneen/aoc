@@ -14,8 +14,6 @@ const [h, d] = moves.reduce(([horz, depth], e) => {
 }, [0,0]);
 
 console.log("Part 1 : ", h * d);
-console.assert(h * d === 1488669)
-
 
 
 const [horz, depth,] = moves.reduce(([horz, depth, aim], e) => {
