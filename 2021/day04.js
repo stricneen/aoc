@@ -6,7 +6,7 @@ const text = buffer.split(/\n/);
 
 
 const numbers = text[0].split(',').map(x => parseInt(x));
-// Lets never speak of this again...
+
 
 let card = 1;
 let lines = [];
@@ -24,6 +24,8 @@ for (let i = 2; i <= text.length - 1; i++) {
     lines.push({ card: card + 1000, line: cols[4] })
     cols = [[], [], [], [], []]
 
+// 8020
+// 4560 th
 
     card += 1;
   } else {
@@ -41,32 +43,19 @@ for (let i = 2; i <= text.length - 1; i++) {
 
 }
 
-console.log(numbers)
-console.log(lines)
-let winner
+
 numbers.forEach((num) => {
 
+    lines.forEach((l) => {
+      l.line = l.line.filter(x => x !== num);
+    })
 
-  lines.forEach((l) => {
+    // get all completed cards
+      const done = lines.filter(x => x.line.length === 0).map(x => x.card);
 
-    l.line = l.line.filter(x => x !== num);
-
-  })
-
-
-console.log(lines.length)
-
-  lines.forEach((l) => {
-    if (l.line.length === 0) {
-
-    
-console.log('winner')
-
-      const w = lines.filter(x => x.card === l.card)  
-
-      console.log(w)
-      
-      const sum =  lines.filter(x => x.card === l.card).reduce((a,e) => {
+      if (done.length > 0 && lines.length === 10) {
+      const w = lines.filter(x => x.card === done[0])
+      const sum =  w.reduce((a,e) => {
         return a + aoc.sum(e.line);
 
       },0);
@@ -74,11 +63,18 @@ console.log('winner')
 
       console.log(sum, num, sum * num);
 
-      process.exit()
-    }
-  })
+
+
+        process.exit()
+      }
+      
+      if (done.length > 0) {
+
+        lines = lines.filter(x => !done.includes(x.card));
+        lines = lines.filter(x => !done.includes(x.card + 1000));
+        lines = lines.filter(x => !done.includes(x.card - 1000));
+      }
+
+
+
 })
-
-console.log(winner)
-
-
