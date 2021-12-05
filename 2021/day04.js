@@ -14,9 +14,6 @@ let cols = [[], [], [], [], []]
 for (let i = 2; i <= text.length - 1; i++) {
 
   if (text[i].length === 0) {
-
-
-
     lines.push({ card: card + 1000, line: cols[0] })
     lines.push({ card: card + 1000, line: cols[1] })
     lines.push({ card: card + 1000, line: cols[2] })
