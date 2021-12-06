@@ -3,8 +3,7 @@ const buffer = aoc.readfile('day06.txt');
 const text = buffer.split(',');
 const nums = text.map(x => parseInt(x))
 
-const days = 256;
-const levels = [0,0,0,0,0,0,0,0,0];
+let levels = [0,0,0,0,0,0,0,0,0];
 nums.forEach(n => levels[n] = levels[n] + 1);
 
 const tick = (fish) => {
@@ -14,17 +13,9 @@ const tick = (fish) => {
   return fish;
 };
 
-let d = [...levels];
-for(i=0;i<80;i++) {
-   d = tick(d);
-}
-
-console.log('Part 1 : ', aoc.sum(d));
-
-d = [...levels];
 for(i=0;i<256;i++) {
-   d = tick(d);
+  levels = tick(levels);
+  if (i === 79) console.log('Part 1 : ', aoc.sum(levels));
+  if (i === 255) console.log('Part 2 : ', aoc.sum(levels)); 
 }
-
-console.log('Part 2 : ', aoc.sum(d));
 
