@@ -16,7 +16,15 @@ const tick = (state) => {
             state.prog[arg3] = state.prog[arg1] * state.prog[arg2];
             break;
 
+        case 3: // input
+            state.ptr += 2;
+            state.prog[arg1] = 1;
+            break;
         
+        case 4: // output
+            state.ptr += 2;
+            console.log(state.prog[arg1]);
+            break;
 
     }
 
