@@ -4,7 +4,10 @@ const text = buffer.split(/\n/).map(x => x);
 
 const nums = text.map(x => {
   const t = x.split(' | ');
-  return { a: t[0].split(' '), b: t[1].split(' ')};
+  return { 
+    segments: t[0].split(' ').map(x => x.split('').sort().join('')), 
+    display: t[1].split(' ').map(x => x.split('').sort().join(''))
+  };
 });
 
  const convert = (segs) => {
@@ -21,21 +24,19 @@ const nums = text.map(x => {
   return[zero, one,two,three,four,five,six,seven,eight,nine];
 };
 
-const decode = (code, num) => {
-  const c = code.map(x => x.split('').sort().join(''));
-  const n = num.map(x => x.split('').sort().join(''));
-  const x = parseInt(n.map(x => c.indexOf(x)).join(''));
-  return x;
-}
-
 const p1 = nums.reduce((a,e) => {
-  const t = e.b.map(x=>x.length);
+  const t = e.display.map(x=>x.length);
   const x = t.filter(y=>[2,3,4,7].includes(y)).length;
   return a + x;
 }, 0);
+console.log('Part 1 : ', p1);
 
-const lines = nums.map(n => decode(convert(n.a), n.b));
+const decode = (code, num) => {
+  const x = parseInt(num.map(x => code.indexOf(x)).join(''));
+  return x;
+}
+
+const lines = nums.map(n => decode(convert(n.segments), n.display));
 const p2 = aoc.sum(lines);
 
-console.log('Part 1 : ', p1);
 console.log('Part 2 : ', p2);
