@@ -2,9 +2,7 @@ const aoc = require('./aoc');
 const buffer = aoc.readfile('day10.txt');
 const text = buffer.split(/\n/);
 
-const scores = {
-  ')': 3, ']': 57, '}': 1197, '>': 25137
-}
+const scores = { ')': 3, ']': 57, '}': 1197, '>': 25137 };
 const openers = '([{<';
 const pairs = ['{}', '[]', '<>', '()'];
 
