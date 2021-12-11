@@ -53,22 +53,17 @@ const flash = (flashed, newflash, c) => {
   if (newflash) return flash(flashed, false);
   return flashed;
 
-  // [
-  //   7, 6, 10, 5, 3, 6, 5,  4, 4, 5
-  //   4, 9, 6, 7, 10, 7, 6, 9, 3,  3
-  // ],
 
-  // [
-  //   7, 7, 11, 7, 4, 7, 5,  4, 4, 5
-  //   4, 10, 7, 9, 11,  8,  6, 9, 3,  3
-  // ],
 }
 
 
 const tick = (octos, count, flashes) => {
   console.log(count, flashes)
-  // console.log(octos)
-  if (count=== 0) return flashes;
+   //console.log(octos)
+  //if (count=== 0) return flashes;
+
+  if (octos.every(x=> x.every(x => x ===0))) return flashes;
+
   const inc = octos.map(x => x.map(y => y + 1));
 
 
@@ -85,13 +80,13 @@ const tick = (octos, count, flashes) => {
 
 
   //console.log('-------------------------')
-  return tick(flashed, count - 1, flashes);
+  return tick(flashed, count + 1, flashes);
 };
 
 
 //console.log(octos);
 
-const p1 = tick(octos, 100, 0);
+const p1 = tick(octos, 0, 0);
 
 //let p1 = 0;
 console.log('Part 1 : ', p1);
