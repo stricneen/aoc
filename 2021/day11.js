@@ -1,18 +1,15 @@
 const aoc = require('./aoc');
 const buffer = aoc.readfile('day11.txt');
 const text = buffer.split(/\n/);
+const octos = text.map(x => x.split('')).map(y => y.map(z => parseInt(z)));
 
-const x = text.map(x => x.split(''));
-const octos = x.map(y => y.map(z => parseInt(z)));
-
-
+const inc = (arr, x, y) => {
+  if (x >= 0 && x < arr.length && y >= 0 && y < arr[x].length) 
+    arr[x][y] = arr[x][y] + 1;
+}
 
 const flash = (flashed, newflash, c) => {
-  //c=c-1; 
-  //if (c=== 0) return flashed
- // console.log('bf', flashed)
-
-  const toflash = []
+  const toflash = [];
   for (let x = 0; x < flashed.length; x++) {
     for (let y = 0; y < flashed[x].length; y++) {
       if (flashed[x][y] > 9) {
@@ -22,51 +19,32 @@ const flash = (flashed, newflash, c) => {
       }
     }
   }
-// console.log(toflash)
 
   for (let x = 0; x < flashed.length; x++) {
     for (let y = 0; y < flashed[x].length; y++) {
       if (toflash.includes(`${x}_${y}`)) {
-
-
-        //flashed[x][y] === 11;
-
-        if (x > 0 && y > 0) { flashed[x - 1][y - 1] = flashed[x - 1][y - 1] + 1; }
-        if (y > 0) { flashed[x][y - 1] = flashed[x][y - 1] + 1; }
-        if (x < flashed.length - 1 && y > 0) { flashed[x + 1][y - 1] = flashed[x + 1][y - 1] + 1; }
-
-        if (x > 0) { flashed[x - 1][y] = flashed[x - 1][y] + 1; }
-        flashed[x][y] = flashed[x][y] + 1;
-        if (x < flashed.length - 1) { flashed[x + 1][y] = flashed[x + 1][y] + 1; }
-
-        if (x > 0 && y < flashed[x].length - 1) { flashed[x - 1][y + 1] = flashed[x - 1][y + 1] + 1; }
-        if (y < flashed[x].length - 1) { flashed[x][y + 1] = flashed[x][y + 1] + 1; }
-        if (x < flashed.length - 1 && y < flashed[x].length - 1) { flashed[x + 1][y + 1] = flashed[x + 1][y + 1] + 1; }
-
+        inc(flashed, x-1, y-1);
+        inc(flashed, x,   y-1);
+        inc(flashed, x+1, y-1);
+        inc(flashed, x-1, y);
+        inc(flashed, x,   y);
+        inc(flashed, x+1, y);
+        inc(flashed, x-1, y+1);
+        inc(flashed, x,   y+1);
+        inc(flashed, x+1, y+1);
       }
     }
   }
 
-//  console.log('after', flashed)
-  // console.log(newflash);
-
   if (newflash) return flash(flashed, false);
   return flashed;
-
-
 }
 
-
 const tick = (octos, count, flashes) => {
-  console.log(count, flashes)
-   //console.log(octos)
-  //if (count=== 0) return flashes;
-
-  if (octos.every(x=> x.every(x => x ===0))) return flashes;
+  if (count === 100) console.log('Part 1 :', flashes)
+  if (octos.every(x=> x.every(x => x === 0))) return count;
 
   const inc = octos.map(x => x.map(y => y + 1));
-
-
   const flashed = flash(inc, false, 3);
 
   for (let x = 0; x < flashed.length; x++) {
@@ -77,19 +55,8 @@ const tick = (octos, count, flashes) => {
       }
     }
   }
-
-
-  //console.log('-------------------------')
   return tick(flashed, count + 1, flashes);
 };
 
-
-//console.log(octos);
-
-const p1 = tick(octos, 0, 0);
-
-//let p1 = 0;
-console.log('Part 1 : ', p1);
-
-let p2 = 0;
-console.log('Part 2 : ', p2)
+const p2 = tick(octos, 0, 0);
+console.log('Part 2 :', p2);
