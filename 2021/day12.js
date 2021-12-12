@@ -1,5 +1,5 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day.txt');
+const buffer = aoc.readfile('day12.txt');
 const text = buffer.split(/\n/);
 const tunnels = text.map(x => x.split('-')).map(y => ({ from: y[0], to: y[1] }));
 
@@ -19,12 +19,10 @@ const pathCount = (tunnels, paths, allowPair) => {
 
   paths.filter(x => x[x.length - 1] !== 'end').forEach(path => {
     tunnels.filter(x => x.from === path[path.length - 1] && x.to !== 'start' && x.from !== 'start').forEach(tunnel => {
-
-
       const lc = path.filter(x => x === x.toLowerCase());
       const hasPair = (lc.length !== aoc.dedup(lc).length) || !allowPair;
 
-      if (( !hasPair) || tunnel.to === tunnel.to.toUpperCase()) {
+      if ((tunnel.to === tunnel.to.toLowerCase() && (!path.includes(tunnel.to)) || !hasPair) || tunnel.to === tunnel.to.toUpperCase()) {
         next.push([...path, tunnel.to]);
       }
     });
