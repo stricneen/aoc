@@ -45,5 +45,3 @@ const p2 = basins[0] * basins[1] * basins[2];
 
 console.log('Part 1 : ', p1);
 console.log('Part 2 : ', p2);
-
-console.log(basins);
