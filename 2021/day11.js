@@ -41,7 +41,7 @@ const flash = (flashed, newflash, c) => {
 }
 
 const tick = (octos, count, flashes) => {
-  if (count === 100) console.log('Part 1 :', flashes)
+  if (count === 100) console.log('Part 1 : ', flashes)
   if (octos.every(x=> x.every(x => x === 0))) return count;
 
   const inc = octos.map(x => x.map(y => y + 1));
@@ -59,4 +59,4 @@ const tick = (octos, count, flashes) => {
 };
 
 const p2 = tick(octos, 0, 0);
-console.log('Part 2 :', p2);
+console.log('Part 2 : ', p2);

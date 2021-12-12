@@ -1,5 +1,5 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day12.txt');
+const buffer = aoc.readfile('day12.js.txt');
 const text = buffer.split(/\n/);
 const tunnels = text.map(x => x.split('-')).map(y => ({ from: y[0], to: y[1] }));
 
@@ -30,5 +30,5 @@ const pathCount = (tunnels, paths, allowPair) => {
   return pathCount(tunnels, next, allowPair);
 }
 
-console.log('Part 1 :', pathCount(tunnels, [], false).length);
-console.log('Part 2 :', pathCount(tunnels, [], true).length);
+console.log('Part 1 : ', pathCount(tunnels, [], false).length);
+console.log('Part 2 : ', pathCount(tunnels, [], true).length);
