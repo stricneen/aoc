@@ -1,5 +1,5 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day12.js.txt');
+const buffer = aoc.readfile('day12.txt');
 const text = buffer.split(/\n/);
 const tunnels = text.map(x => x.split('-')).map(y => ({ from: y[0], to: y[1] }));
 
