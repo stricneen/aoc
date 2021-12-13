@@ -26,6 +26,8 @@ exports.p = (x, y, t) => {
     console.log("\033[" + y + ";" + x + "H" + t);
 }
 
+exports.cls = () => console.log('\033[2J');
+
 exports.dedup_str = (s) => [...new Set(s.split(''))].join('');
 
 exports.dedup = (a) => [...new Set(a)];
