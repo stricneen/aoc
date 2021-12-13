@@ -32,6 +32,12 @@ exports.dedup_str = (s) => [...new Set(s.split(''))].join('');
 
 exports.dedup = (a) => [...new Set(a)];
 
+exports.dedupObj = (a) => {
+    const x = a.map(x => JSON.stringify(x));
+    const y = [...new Set(x)];
+    return y.map(x => JSON.parse(x));
+}
+
 exports.group = (l, f) => {
     const def = x => x.length == 0;
     const fn = f || def;

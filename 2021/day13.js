@@ -8,28 +8,17 @@ const folds = text.filter(x => x.indexOf('=') > -1).map(x => x.split('=')).map(x
 const fold = (paper, line) => {
   const foldAt = line[1];
   const horz = line[0].indexOf('y') > -1;
-
-  const next = paper.reduce((a, e) => {
-   if (horz)
+  const b = horz ? paper : paper.map(([a,b]) => [b,a]);
+  const next = b.reduce((a, e) => {
       if (e[1] < foldAt) {
         a.push(e);
       } else {
         a.push([e[0], e[1] - (((e[1] - foldAt) * 2))])
       }
-    else {
-      if (e[0] < foldAt) {
-        a.push(e);
-      } else {
-        a.push([e[0] - (((e[0] - foldAt) * 2)), e[1]])
-      }
-    }
-
     return a;
   }, []);
-
-  const x = next.map(x => JSON.stringify(x));
-  const y = [...new Set(x)];
-  return y.map(x => JSON.parse(x));
+  const a = horz ? next : next.map(([a,b]) => [b,a]);
+  return aoc.dedupObj(a);
 };
 
 const p1 = fold(dots, folds[0]);
