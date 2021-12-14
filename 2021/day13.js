@@ -29,7 +29,7 @@ const p2 = folds.reduce((a,e) => fold(a, e), dots);
 // PRINT ANSWER
 // aoc.cls();
 // for (const i of p2) {
-//   aoc.p(i[0], i[1] + 4, '*')
+//   aoc.p(i[0], i[1] + 4, '#')
 // }
 // aoc.p(10, 12, '');
 
