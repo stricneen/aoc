@@ -1,0 +1,88 @@
+NNCB
+
+
+
+NN        NCB
+
+
+
+
+NC    CNBCHB
+
+
+Template:     NN   NCB
+After step 1: NCN  BCHB
+After step 2: NBCCN  BBBCBHCB
+After step 3: NBBBCNCCN  BBNBNBBCHBHHBCHB
+After step 4: NBBNBNBBCCNBCNCCN 
+
+ BBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB
+
+
+NCN
+NC CN 10
+ 
+NxCxN
+
+
+NN CB
+
+NCN    CB
+NC    NCB
+
+NBC    NCB
+NB    CNCB
+
+
+NBB    CNCB
+NB    BCNCB
+
+NBB    BCNCB
+NB     BBCNCB
+
+
+
+NNCB
+
+[NN, 10] [NC,10] [CB,10]
+NN -> C
+[]
+
+
+NNCB
+CH -> B
+HH -> N
+CB -> H
+NH -> C
+HB -> C
+HC -> B
+HN -> C
+NN -> C
+BH -> H
+NC -> B
+NB -> B
+BN -> B
+BB -> N
+BC -> B
+CC -> N
+CN -> C
+
+
+
+Template:     NNCB
+
+N
+    B
+    C
+N
+    B
+C
+    H
+B
+
+After step 1: NCNBCHB
+After step 2: NB CCNBBBCBHCB
+After step 3: NB BBCNCCNBBNBNBBCHBHHBCHB
+After step 4: NB BNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB
+
+N=1
