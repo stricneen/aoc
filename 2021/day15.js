@@ -2,69 +2,27 @@ const aoc = require('./aoc');
 const buffer = aoc.readfile('day15.txt');
 const text = buffer.split(/\n/);
 const points = text.map(x => x.split('')).map(y => y.map(z => parseInt(z)));
+const map = text.map(x => x.split('')).map(y => y.map(z => 1000000));
+map[0][0] = 0;
+const len = points[0].length;
 
-const len =  (points[0].length -1);
-const dist = (points[0].length -1) * 2;
 
-const start = (Math.pow(2,len)) -1;
-console.log(len);
-console.log((start >>> 0).toString(2).padStart(dist ,'0'));
 
-const stop = '1'.repeat(dist);
-
-let lowest = 100000000;
-let counter = start;
-while(true) {
-
-    const path = (counter >>> 0).toString(2).padStart(dist ,'0');
-
-    const l = path.split('').filter(x => x === 0).length;
-    const d = path.split('').filter(x => x === 1).length;
-    if (l !== d) break;
-    
-
-    let score = 0;
-    let x = 0;
-    let y = 0;
-    let valid = true;
-    let go = '';
-    for (const dir of path.split('')) {
-        if (dir === '0') x++;
-        if (dir === '1') y++;
-        if (x > len || y > len) {
-            valid = false;
-            break;
-        }
-        go = go + dir // points[x][y].toString();
-        //console.log(x,y)
-        score += points[x][y];
-       
+for (let i = 1; i < len; i++) {
+    map[0][i] = map[0][i-1] + points[0][i];
+    map[i][0] = map[i-1][0] + points[i][0];
+}
+for (let x = 1; x < len; x++) {
+    for (let y = 1; y < len; y++) {
+        const pos = points[x][y];
+        let above = (x > 0 ? map[x-1][y] : 100000) + pos;
+        let left = (y > 0 ? map[x][y-1] : 100000) + pos ;
+        const best = Math.min(above,left);
+        map[x][y] = best;
     }
-    
-// 1163751742
-// 1381373672
-// 2136511328
-// 3694931569
-// 7463417111
-// 1319128137
-// 1359912421
-// 3125421639
-// 1293138521
-// 2311944581
-
-    if (score < lowest && valid) {
-     console.log(score, go)
-        lowest = score;
-    }
-    if (path === stop) break;
-    counter ++;
 }
 
+console.log(map);
 
-
-
-
-
-
-console.log('Part 1 : ', lowest);
+console.log('Part 1 : ', 0);
 console.log('Part 2 : ', 0);
