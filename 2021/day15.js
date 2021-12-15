@@ -20,12 +20,60 @@ const path = (points) => {
             map[x][y] = best;
         }
     }
-    return map[len - 1][len - 1]
+    return map;
 }
-console.log('Part 1 : ', path(points));
+
+const x = (map, points, change) => {
+
+    const len = map[0].length;
+    for (let x = 0; x < len; x++) {
+        for (let y = 0; y < len; y++) {
+
+            if (x > 0) {
+                const above = map[x-1][y];
+                if (map[x][y] + points[x-1][y] < above) 
+                {
+                    change = true;
+                    map[x-1][y] = map[x][y] + points[x-1][y];
+                }
+            }
+            if (y > 0) {
+                const above = map[x][y-1];
+                if (map[x][y] + points[x][y-1] < above) 
+                {
+                    change = true;
+                    map[x][y-1] = map[x][y] + points[x][y-1];
+                }
+            }
 
 
-// th 2905
+            if (x < len-1) {
+                const above = map[x+1][y];
+                if (map[x][y] + points[x+1][y] < above) 
+                {
+                    change = true;
+                    map[x+1][y] = map[x][y] + points[x+1][y];
+                }
+            }
+            if (y < len-1) {
+                const above = map[x][y+1];
+                if (map[x][y] + points[x][y+1] < above) 
+                {
+                    change = true;
+                    map[x][y+1] = map[x][y] + points[x][y+1];
+                }
+            }
+
+
+        }
+    }
+    if (change) {
+        return x(map,points,false);
+    }
+    return map;
+}
+
+console.log('Part 1 : ', path(points)[points.length-1][points.length-1]);
 
 const expand = (points) => {
     const sqr = points.length;
@@ -45,4 +93,8 @@ const expand = (points) => {
     return points;
 };
 
-console.log('Part 2 : ', path(expand(points)));
+const firstpass = path(expand(points));
+const f = x(firstpass, points, false);
+const p2 = f[f.length-1][f.length-1]
+
+console.log('Part 2 : ', p2);
