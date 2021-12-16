@@ -8,45 +8,44 @@ const hextobin = (code) => {
 }
 
 const bintodec = (code) => {
-    return parseInt(code.toString(), 2).toString(10);
+    return parseInt(parseInt(code.toString(), 2).toString(10));
 }
 
 const bin = (code) => {
     return code.split('').map(x => hextobin(x)).reduce((a, e) => [...a, ...e.split('').map(x => parseInt(x))], []);
 }
 
-const decode = (packet, cmds = []) => {
-    if (packet.length === 0) return cmds;
-    const version = parseInt(bintodec(packet.splice(0, 3).join('')));
-    const type = parseInt(bintodec(packet.splice(0, 3).join('')));
+const decode = (packet) => {
+    const version = bintodec(packet.splice(0, 3).join(''));
+    const type = bintodec(packet.splice(0, 3).join(''));
 
-    if (type === 4) { 
+    if (type === 4) {
         let first = packet.splice(0, 5);
         let c = [first.slice(1)];
         while (first[0] !== 0) {
             first = packet.splice(0, 5);
             c.push(first.slice(1))
         }
-        const val = parseInt(bintodec(c.flat().join('')))
+        const val = bintodec(c.flat().join(''));
         return { v: version, t: type, val };
     }
 
     const id = packet.splice(0, 1)[0];
-    
+
     if (id === 0) {
         const num = packet.splice(0, 15).join('');
-        const len = parseInt(bintodec(num));
+        const len = bintodec(num);
         const sub = packet.splice(0, len);
         const s = [];
-        while(sub.length > 0) {
+        while (sub.length > 0) {
             s.push(decode(sub));
         }
-        return { v: version, t: type, val:s };
+        return { v: version, t: type, val: s };
     }
 
     if (id === 1) {
         const num = packet.splice(0, 11).join('');
-        const len = parseInt(bintodec(num));
+        const len = bintodec(num);
         const sub = [];
         for (let i = 0; i < len; i++) {
             sub.push(decode(packet));
@@ -66,7 +65,7 @@ const sumVersions = (ops) => {
 }
 
 const calc = (struct) => {
-    if (struct.t === 4) return struct.val;    
+    if (struct.t === 4) return struct.val;
     const subs = struct.val.map(x => calc(x));
     if (struct.t === 0) return aoc.sum(subs); // sum
     if (struct.t === 1) return aoc.product(subs); // product
@@ -84,7 +83,7 @@ const structure = decode(bin(text));
 const p1 = sumVersions(structure);
 console.log('Part 1 : ', p1);
 
-const p2 =  calc(structure);
+const p2 = calc(structure);
 console.log('Part 2 : ', p2);
 
 // console.assert(3 === calc(decode(bin('C200B40A82'))));
