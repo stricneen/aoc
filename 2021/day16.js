@@ -1,4 +1,3 @@
-const { access } = require('fs');
 const aoc = require('./aoc');
 const buffer = aoc.readfile('day16.txt');
 const text = buffer.split(/\n/)[0];
@@ -6,7 +5,6 @@ const text = buffer.split(/\n/)[0];
 
 const hextobin = (code) => {
     return parseInt(code.toString(), 16).toString(2).padStart(4, '0');
-
 }
 
 const bintodec = (code) => {
@@ -17,16 +15,11 @@ const bin = (code) => {
     return code.split('').map(x => hextobin(x)).reduce((a, e) => [...a, ...e.split('').map(x => parseInt(x))], []);
 }
 
-
 const decode = (packet, cmds = []) => {
 
     if (packet.length === 0) return cmds;
-
-   // console.log('packet', packet)
     const version = parseInt(bintodec(packet.splice(0, 3).join('')));
     const type = parseInt(bintodec(packet.splice(0, 3).join('')));
-
-   // console.log('v', version, 't', type);
 
     if (type === 4) { // literal
         let first = packet.splice(0, 5);
@@ -65,38 +58,23 @@ const decode = (packet, cmds = []) => {
 
 
 
-const sum = (ops) => {
-    //console.log(ops);
+const sumVersions = (ops) => {
     if (Array.isArray(ops.val)) {
-        return ops.v + aoc.sum(ops.val.map(sum))
+        return ops.v + aoc.sum(ops.val.map(sumVersions))
     } else if (Number.isInteger(ops.val)) {
         return ops.v;
     } else {
-        return ops.v + sum(ops.val);
+        return ops.v + sumVersions(ops.val);
     }
 }
 
-const clean = (ops) => {
-   // console.log(ops)
-    if (Number.isInteger(ops)) return ops;
-    ops = Array.isArray(ops) ? ops.filter(x => x) : ops;
-    if (Array.isArray(ops) && ops.length === 1) return clean(ops[0])
-    if (Array.isArray(ops) && ops.length === 2 && ops[1] === undefined) {
-        return ops[0];
-    }
-    if (Array.isArray(ops)) return ops.map(clean);
-    return { ...ops, val: clean(ops.val) };
-}
 
-
-const sumVersions = (code) => {
-    const a = clean(decode(bin(code)))
-    return sum(a);
-}
 
 // console.log('sum (16)', sumVersions('8A004A801A8002F478'));
 // console.log('sum (12)', sumVersions('620080001611562C8802118E34'));
 // console.log('sum (23)', sumVersions('C0015000016115A2E0802F182340'));
 // console.log('sum (31)', sumVersions('A0016C880162017C3686B18A3D4780'));
 
-console.log('Part 1 : ', sumVersions(text));
+const structure = decode(bin(text));
+const p1 = sumVersions(structure);
+console.log('Part 1 : ', p1);
