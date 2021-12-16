@@ -2,18 +2,9 @@ const aoc = require('./aoc');
 const buffer = aoc.readfile('day16.txt');
 const text = buffer.split(/\n/)[0];
 
-
-const hextobin = (code) => {
-    return parseInt(code.toString(), 16).toString(2).padStart(4, '0');
-}
-
-const bintodec = (code) => {
-    return parseInt(parseInt(code.toString(), 2).toString(10));
-}
-
-const bin = (code) => {
-    return code.split('').map(x => hextobin(x)).reduce((a, e) => [...a, ...e.split('').map(x => parseInt(x))], []);
-}
+const hextobin = (code) => parseInt(code.toString(), 16).toString(2).padStart(4, '0');
+const bintodec = (code) => parseInt(parseInt(code.toString(), 2).toString(10));
+const bin = (code) => code.split('').map(x => hextobin(x)).reduce((a, e) => [...a, ...e.split('').map(x => parseInt(x))], []);
 
 const decode = (packet) => {
     const version = bintodec(packet.splice(0, 3).join(''));
