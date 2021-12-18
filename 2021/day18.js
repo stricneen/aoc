@@ -30,7 +30,6 @@ const numsplit = (s) => {
     return x;
 }
 
-
 const explode = (t) => {
 
     const str = JSON.stringify(t);
@@ -105,7 +104,7 @@ const split = (f) => {
 
 }
 
-const magitude = (f) => {
+const magnitude = (f) => {
     const o = JSON.parse(f);
     const sum = ([x, y]) => {
         if (Number.isInteger(x) && Number.isInteger(y)) { return (3 * x) + (2 * y) }
@@ -119,7 +118,7 @@ const reduce = (f) => {
 
     const e = explode(f);
     if (JSON.stringify(e) !== JSON.stringify(f)) {
-       console.log('exploded', JSON.stringify(e))
+      // console.log('exploded', JSON.stringify(e))
         return reduce(e);
     }
 
@@ -127,7 +126,7 @@ const reduce = (f) => {
     const s = split(JSON.stringify(f));
     // console.log('---------',s)
     if (s !== JSON.stringify(f)) {
-        console.log('split   ', s)
+       // console.log('split   ', s)
         return reduce(JSON.parse(s));
     }
     return JSON.stringify(f);
@@ -135,7 +134,6 @@ const reduce = (f) => {
 
 const add = (f1, f2) => {
     const sum = [JSON.parse(f1), JSON.parse(f2)];
-    console.log(JSON.stringify(sum))
     return reduce(sum);
 }
 
@@ -145,32 +143,15 @@ console.assert(explode('[[6,[5,[4,[3,2]]]],1]') === '[[6,[5,[7,0]]],3]')
 console.assert(explode('[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]') === '[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]')
 console.assert(explode('[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]') === '[[3,[2,[8,0]]],[9,[5,[7,0]]]]')
 
-// console.assert(explode('[[[[8,7],[7,7]],[[8,6],[7,0]]],[[[[7,7],0],12],[8,7]]]') === '[[3,[2,[8,0]]],[9,[5,[7,0]]]]')
-
-// [[[[8,7],[7,7]],[[8,6],[7,0]]],[[[[7,7],0],12],[8,7]]]
-
-//console.assert(add('[[[[4,3],4],4],[7,[[8,4],9]]]', '[1,1]') === '[[[[0,7],4],[[7,8],[6,0]]],[8,1]]')
-
-console.assert(magitude('[[1,2],[[3,4],5]]') === 143);
-console.assert(magitude('[[[[0,7],4],[[7,8],[6,0]]],[8,1]]') === 1384);
-console.assert(magitude('[[[[1,1],[2,2]],[3,3]],[4,4]]') === 445);
-console.assert(magitude('[[[[3,0],[5,3]],[4,4]],[5,5]]') === 791);
-console.assert(magitude('[[[[5,0],[7,4]],[5,5]],[6,6]]') === 1137);
-console.assert(magitude('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]') === 3488);
+console.assert(magnitude('[[1,2],[[3,4],5]]') === 143);
+console.assert(magnitude('[[[[0,7],4],[[7,8],[6,0]]],[8,1]]') === 1384);
+console.assert(magnitude('[[[[1,1],[2,2]],[3,3]],[4,4]]') === 445);
+console.assert(magnitude('[[[[3,0],[5,3]],[4,4]],[5,5]]') === 791);
+console.assert(magnitude('[[[[5,0],[7,4]],[5,5]],[6,6]]') === 1137);
+console.assert(magnitude('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]') === 3488);
 
 console.assert(split('[[11,0],[10,0]]') === '[[[5,6],0],[10,0]]')
 console.assert(split('[[[[4,0],[5,4]],[[7,7],[6,0]]],[[[11,0],[11,5]],[[5,0],[10,0]]]]') === '[[[[4,0],[5,4]],[[7,7],[6,0]]],[[[[5,6],0],[11,5]],[[5,0],[10,0]]]]')
-
-//  console.assert((add('[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]', '[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]')) === '[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]');
-// console.assert((add('[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]', '[[2,[[0,8],[3,4]]],[[[6,7],1],[7,[1,6]]]]')) === '[[[[6,7],[6,7]],[[7,7],[0,7]]],[[[8,7],[7,7]],[[8,8],[8,0]]]]');
-
-
-//console.assert((add('[[[[7,7],[7,7]],[[8,7],[8,7]]],[[[7,0],[7,7]],9]]', '[[[[4,2],2],6],[8,7]]')) === '[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]');
-
-// console.assert((add('[[[[7,7],[7,7]],[[8,7],[8,7]]],[[[7,0],[7,7]],9]]', '[[[[4,2],2],6],[8,7]]')) === '[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]');
-
-// console.log('[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]')
-// [[[[6,6],[6,6]],[[6,0],[6,7]]],[[[7,7],[8,9]],[8,[8,1]]]]
 
 
 
@@ -184,15 +165,29 @@ const p1 = 0;
 const p2 = 0;
 
 let s = add(text[0], text[1]);
-console.log(s)
+// console.log(s)
 for (let i = 2; i < text.length ; i++) {
     s = add(s, text[i])
-    console.log(s)
-
+    // console.log(s)
 }
-console.log(JSON.stringify(s))
-console.log(magitude(s))
+// console.log(JSON.stringify(s))
+// console.log(magitude(s))
 
-// console.log('Part 1 : ', p1)
+console.log('Part 1 : ', magnitude(s));
 // console.log('Part 2 : ', p2);
 
+for (let i = 2; i < text.length ; i++) {
+    s = add(s, text[i])
+    // console.log(s)
+}
+
+const totals = [];
+for (const num1 of text) {
+    for (const num2 of text) {
+        if (num1 !== num2) {
+            totals.push(magnitude(add(num1,num2)));
+        }
+    }
+}
+
+console.log('Part 2 : ', Math.max(...totals));
