@@ -1,75 +1,121 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day.txt');
+const buffer = aoc.readfile('day20.txt');
 const text = buffer.split(/\n/);
+const algo = text.shift();
+text.shift();
+const image = text.map(x => x.split(''));
 
-const scanners = text.reduce((a,e) => {
-    if (e.indexOf('---') > -1) a.push({ scanner: e, beacons: []});
-    if (e.indexOf(',') > -1)  a[a.length-1].beacons.push(e.split(',').map(x => parseInt(x)));
-    return a;
-}, []);
+//console.log(text)/
 
-const dist = (x,y) => {
-    return Math.sqrt(Math.pow(x[0]-y[0],2) + Math.pow(x[1]-y[1],2) + Math.pow(x[2]-y[2],2))
-}
-
-function* rotate3d([x,y,z]) {
-    yield [x, y, z];
-    yield [x, z, -y];
-    yield [x, -y, -z];
-    yield [x, -z, y];
-    yield [y, x, -z];
-    yield [y, z, x];
-    yield [y, -x, z];
-    yield [y, -z, -x];
-    yield [z, x, y];
-    yield [z, y, -x];
-    yield  [z, -x, -y];
-    yield  [z, -y, x];
-    yield  [-x, y, -z];
-    yield  [-x, z, y];
-    yield  [-x, -y, z];
-    yield  [-x, -z, -y];
-    yield  [-y, x, z];
-    yield  [-y, z, -x];
-    yield  [-y, -x, -z];
-    yield  [-y, -z, x];
-    yield  [-z, x, -y];
-    yield  [-z, y, x];
-    yield  [-z, -x, y];
-    yield  [-z, -y, -x];
-}
-
-const pj = (m) => console.dir(m, { depth: null, colors: true },2);
-
-const intersect = (a,b) => {
-    return [...new Set(a.filter(value => b.includes(value)))];
-}
-
-
-const dists = scanners.map(scanner => {
-    const dists = [];
-    const set = []
-    for (const x of scanner.beacons) {
-        const a = [];
-        for (const y of scanner.beacons) {
-            a.push(dist(x,y));
-            set.push(dist(x,y))
-        }
-        dists.push({pos: x, set: [...new Set(set)],dists: a.filter(x => x !== 0)})
+const loc = (x, y, img) => {
+    if (x >= 0 && y >= 0 && x < img.length && y < img[0].length){
+        return img[x][y];
     }
-    return { ...scanner, beacons: dists };
-});
+    return '.';
+}
 
-console.log(dists)
-// console.dir(scanners, { depth: null, colors: true });
+const pa = (a) => {
+    for (const l of a) {
+        console.log(l.join(''));
+    }
+}
 
-const d1 = dists[0]
-const d2 = dists[1]
+const addBorder = (image) => {
+    const next = [];
+    next.push('.'.repeat(image[0].length + 2).split(''));
+    for (const line of image) {
+        next.push(`.${line.join('')}.`.split(''))
+    }
+    next.push('.'.repeat(image[0].length + 2).split(''));
+    return next;
+}
 
-// x = aoc.sort_ints(d1);
- pj(d1)
+const lit = (n) => n.reduce((a, e) => {
+    return a + e.filter(x => x === '#').length;
+}, 0)
 
-// for (const bob of rotate3d([1,2,3])) {
-//     console.log(bob);
-// }
+const val = (x, y, img) => {
+
+    const out = [];
+    out.push(loc(x - 1, y - 1, img));
+    out.push(loc(x - 1, y, img));
+    out.push(loc(x - 1, y + 1, img));
+    out.push(loc(x, y - 1, img));
+    out.push(loc(x, y, img));
+    out.push(loc(x, y + 1, img));
+    out.push(loc(x + 1, y - 1, img));
+    out.push(loc(x + 1, y, img));
+    out.push(loc(x + 1, y + 1, img));
+
+    const o = out.reduce((a, e) => {
+        if (e === '.') a = a + '0';
+        if (e === '#') a = a + '1';
+        return a;
+    }, '');
+    const pos = parseInt(o, 2);
+    // console.log('out', out)
+
+    // console.log('o', o)
+    // console.log('pos', pos)
+    return pos;
+
+}
+
+const flip = (x) => {
+    return x.map(y=>y.map(z => z === '#' ? '.' : '#'))
+
+}
+
+
+const enhance = (image, algo, c) => {
+    if (c === 0) return image;
+    // console.log(c)
+
+    const border = addBorder(image);
+    const next = [];
+
+// pa(border)
+
+    for (let x = 0; x < border.length; x++) {
+
+        let l = ''
+        for (let y = 0; y < border[0].length; y++) {
+            const algoPos = val(x, y, border);
+            const nn = algo[algoPos];
+            l = l + nn;
+
+        }
+        next.push(l.split(''))
+    }
+    // console.log(next)
+   // pa(next);
+  //  console.log('')
+    pa(next);
+
+    console.log(lit(next))
+
+    
+
+    return enhance(flip(next), algo, c - 1);
+}
+
+
+// console.log(image);
+console.log(lit(image))
+const n = enhance(image, algo.split(''), 2);
+
+// pa(n);
+
+
+
+
+console.log(lit(n));
+
+
+ /// 5097 - 17987
+
+//  mine  theirs
+//  5047  5047
+//  5028  5028
+//  5186  5097
 
