@@ -38,6 +38,9 @@ exports.dedupObj = (a) => {
     return y.map(x => JSON.parse(x));
 }
 
+// Print JSON
+exports.pj = (m) => console.dir(m, { depth: null, colors: true }, 2);
+
 exports.group = (l, f) => {
     const def = x => x.length == 0;
     const fn = f || def;
