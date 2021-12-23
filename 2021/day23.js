@@ -1,19 +1,5 @@
 const aoc = require('./aoc');
 
-// #############
-// #...........#
-// ###C#B#A#D###
-//   #B#C#D#A#
-//   #########
-
-// #############
-// #.........A.#
-// ###.#B#C#D###
-//   #A#B#C#D#
-//   #########
-
-// 5320
-
 const p1 = [{
     A: ['B', 'C'],
     B: ['C', 'B'],
@@ -47,9 +33,29 @@ const test2 = [{
     B: ['D', 'B', 'C', 'C'],
     C: ['C', 'A', 'B', 'B'],
     D: ['A', 'C', 'A', 'D'],
-    corr: Array(11).fill(null),
+    corr: [
+        null, null, null,
+        null, null, null,
+        null, null, null,
+        null, null
+    ],
     energy: 0
 }]
+
+const test2x = [{
+        A: [ 'A', 'A', '', '' ],
+        B: [ 'B', 'B', 'B', 'B' ],
+        C: [ 'C', 'C', 'C', '' ],
+        D: [ 'A', '', '', '' ],
+        corr: [
+          'D',  'D',  null,
+          null, null, 'A',
+          null, 'C',  null,
+          'D',  'D'
+        ],
+        energy: 23267
+      }]
+
 
 const test1 = [{
     A: ['A', 'B'],
@@ -74,8 +80,8 @@ const isClearPath = (corr, s, e) => {
 
 const tick = (states, c) => {
     if (c === 0) { return states }
-    if (states.length === 0) return { states }
-    console.log(states.length);
+    if (states.length === 0) return min;
+    // console.log(states.length);
     //  console.log(states)
     const next = [];
 
@@ -83,8 +89,8 @@ const tick = (states, c) => {
         const state = states[cx];
 
         if (state.energy > min) continue;
-        if (isDone(state)) {
-            console.log('done - ', state.energy)
+        if (isDone(state) && state.energy < min) {
+            // console.log('done - ', state.energy)
             // aoc.pj(state)
             if (state.energy < min) min = state.energy;
             continue;
@@ -93,23 +99,6 @@ const tick = (states, c) => {
         const canMoveOut = (state, home) => {
             const house = state[home];
             if (house.every(x => x === home)) return [null, 0]
-            const full = house.filter(x => x !== '');
-            const rem = [...state[home]];
-            rem[full.length - 1] = '';
-            if (full.some(x => x !== home)) {
-                return [
-                    full[full.length - 1],
-                    rem,
-                    house.filter(x => x === '').length + 1
-                ];
-            }
-            return [null, 0];
-        }
-
-        const canMoveIn = (state, home) => {
-            const house = state[home];
-            if (house.every(x => x === home)) return [null, 0];
-
             const full = house.filter(x => x !== '');
             const rem = [...state[home]];
             rem[full.length - 1] = '';
@@ -132,7 +121,8 @@ const tick = (states, c) => {
             const [tomove, rem, count] = canMoveOut(state, home);
             if (tomove !== null) {
                 for (const move of moves) {
-                    if (isClearPath(state.corr, out, move)) {
+
+                    if (state.corr[move] === null && isClearPath(state.corr, out, move)) {
                         const c = [...state.corr];
                         c[move] = tomove;
                         next.push({
@@ -149,9 +139,7 @@ const tick = (states, c) => {
         // move into first room
         // [['A', 2], ['B', 4], ['C', 6], ['D', 8]];
         for (const [home, out] of u) {
-
             const house = state[home];
-            // const athome = house.filter(x => x === home);
 
             const occ = house.filter(x => x !== '');
             const empty = house.filter(x => x === '');
@@ -176,8 +164,6 @@ const tick = (states, c) => {
                                 [home]: entered,
                                 energy: state.energy + (energy[moving] * (Math.abs(out - i) + empty.length)),
                                 corr: tempcorr,
-                                //  r: [...state.r, state]
-                                // parent: JSON.stringify(state)
                             })
 
                         }
@@ -185,56 +171,30 @@ const tick = (states, c) => {
                 }
             }
         }
-    
+  }
 
-    // move into second room
-    // for (const [home, out] of u) {
-    //     if (state[home][0] === ''
-    //         && state[home][1] === '') {
-    //         for (let i = 0; i < state.corr.length; i++) {
-    //             const move = state.corr[i];
-    //             if (move === home) {
-    //                 const tempcorr = [...state.corr];
-    //                 tempcorr[i] = null;
-    //                 if (isclearPath(tempcorr, out, i)) {
-    //                     const moving = home;
-    //                     next.push({
-    //                         ...state,
-    //                         [home]: [home, ''],
-    //                         energy: state.energy + (energy[moving] * (Math.abs(out - i) + 2)),
-    //                         corr: tempcorr,
-    //                         // r: [...state.r, state]
-    //                     })
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-}
-
-const map = new Map();
-for (const n of next) {
-    const key = JSON.stringify([n.A, n.B, n.C, n.D, n.corr]);
-    if (map.has(key)) {
-        map.set(key, Math.min(n.energy, map.get(key)));
-    } else {
-        map.set(key, n.energy);
+    const map = new Map();
+    for (const n of next) {
+        const key = JSON.stringify([n.A, n.B, n.C, n.D, n.corr]);
+        if (map.has(key)) {
+            map.set(key, Math.min(n.energy, map.get(key)));
+        } else {
+            map.set(key, n.energy);
+        }
     }
-}
-
-const n = [];
-map.forEach((v, k) => {
-    const x = JSON.parse(k);
-    n.push({
-        A: x[0], B: x[1], C: x[2], D: x[3],
-        corr: x[4], energy: v
+    const n = [];
+    map.forEach((v, k) => {
+        const x = JSON.parse(k);
+        n.push({
+            A: x[0], B: x[1], C: x[2], D: x[3],
+            corr: x[4], energy: v
+        })
     })
-})
 
-// console.log(n)
-return tick(n, c - 1)
+    return tick(n, c - 1);
+
 }
 
-tick(p1, 20)
-// console.log(tick(start, 5));
-console.log('Part 1 : ', min);
+console.log('Part 1 : ', tick(p1));
+min = Number.MAX_VALUE;
+console.log('Part 2 : ', tick(p2));
