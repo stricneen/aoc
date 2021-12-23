@@ -14,35 +14,58 @@ const aoc = require('./aoc');
 
 // 5320
 
-  const p1 = [{
-    a: ['B', 'C'],
-    b: ['C', 'B'],
-    c: ['D', 'A'],
-    d: ['A', 'D'],
-    corr: [null,null,null,null,null,null,null,null,null,null,null],
+const p1 = [{
+    A: ['B', 'C'],
+    B: ['C', 'B'],
+    C: ['D', 'A'],
+    D: ['A', 'D'],
+    corr: [null, null, null, null, null, null, null, null, null, null, null],
+    energy: 0
+}];
+
+
+const p2 = [{
+    A: ['B', 'D', 'D', 'C'],
+    B: ['C', 'B', 'C', 'B'],
+    C: ['D', 'A', 'B', 'A'],
+    D: ['A', 'C', 'A', 'D'],
+    corr: [null, null, null, null, null, null, null, null, null, null, null],
     energy: 0
 }];
 
 const moves = [0, 1, 3, 5, 7, 9, 10];
 
+// #############
+// #...........#
+// ###B#C#B#D###
+//   #D#C#B#A#
+//   #D#B#A#C#
+//   #A#D#C#A#
+//   #########
+
 const test = [{
-    a: ['A', 'B'],
-    b: ['D', 'C'],
-    c: ['C', 'B'],
-    d: ['A', 'D'],
+    A: ['A', 'D', 'D', 'B'],
+    B: ['D', 'B', 'C', 'C'],
+    C: ['C', 'A', 'B', 'B'],
+    D: ['A', 'C', 'A', 'D'],
+    corr: Array(11).fill(null),
+    energy: 0
+}]
+
+const test1 = [{
+    A: ['A', 'B'],
+    B: ['D', 'C'],
+    C: ['C', 'B'],
+    D: ['A', 'D'],
     corr: Array(11).fill(null),
     energy: 0
 }]
 
 const isDone = state =>
-    state.a[0] === 'A' &&
-    state.a[1] === 'A' &&
-    state.b[0] === 'B' &&
-    state.b[1] === 'B' &&
-    state.c[0] === 'C' &&
-    state.c[1] === 'C' &&
-    state.d[0] === 'D' &&
-    state.d[1] === 'D';
+    state.A.every(x => x === 'A') &&
+    state.B.every(x => x === 'B') &&
+    state.C.every(x => x === 'C') &&
+    state.D.every(x => x === 'D');
 
 let min = Number.MAX_VALUE;
 
@@ -73,18 +96,21 @@ const tick = (states, c) => {
             continue;
         }
 
+        // const canMove = () => {
+
+        // }
 
         // Move out of first room
         for (const [home, out] of u) {
-            if ((state[home.toLowerCase()][1] !== home || state[home.toLowerCase()][0] !== home) && state[home.toLowerCase()][1] !== '') {
+            if ((state[home][1] !== home || state[home][0] !== home) && state[home][1] !== '') {
                 for (const move of moves) {
                     if (isclearPath(state.corr, out, move)) {
-                        const moving = state[home.toLowerCase()][1];
+                        const moving = state[home][1];
                         const c = [...state.corr];
-                        c[move] = state[home.toLowerCase()][1];
+                        c[move] = state[home][1];
                         next.push({
                             ...state,
-                            [home.toLowerCase()]: [state[home.toLowerCase()][0], ''],
+                            [home]: [state[home][0], ''],
                             energy: state.energy + (energy[moving] * (Math.abs(out - move) + 1)),
                             corr: c,
                             // r: [...state.r, state]
@@ -96,17 +122,17 @@ const tick = (states, c) => {
 
         //Move out of second room
         for (const [home, out] of u) {
-            if ((state[home.toLowerCase()][0] !== home)
-                && state[home.toLowerCase()][0] !== ''
-                && state[home.toLowerCase()][1] === '') {
+            if ((state[home][0] !== home)
+                && state[home][0] !== ''
+                && state[home][1] === '') {
                 for (const move of moves) {
                     if (isclearPath(state.corr, out, move)) {
-                        const moving = state[home.toLowerCase()][0];
+                        const moving = state[home][0];
                         const c = [...state.corr];
-                        c[move] = state[home.toLowerCase()][0];
+                        c[move] = state[home][0];
                         next.push({
                             ...state,
-                            [home.toLowerCase()]: ['', ''],
+                            [home]: ['', ''],
                             energy: state.energy + (energy[moving] * (Math.abs(out - move) + 2)),
                             corr: c,
                             //r: [...state.r, state]
@@ -121,8 +147,8 @@ const tick = (states, c) => {
         // move into first room
         // [['A', 2], ['B', 4], ['C', 6], ['D', 8]];
         for (const [home, out] of u) {
-            if ((state[home.toLowerCase()][0] === home)
-                && state[home.toLowerCase()][1] === '') {
+            if ((state[home][0] === home)
+                && state[home][1] === '') {
                 for (let i = 0; i < state.corr.length; i++) {
                     const move = state.corr[i];
                     if (move === home) {
@@ -133,7 +159,7 @@ const tick = (states, c) => {
                             const moving = home;
                             next.push({
                                 ...state,
-                                [home.toLowerCase()]: [home, home],
+                                [home]: [home, home],
                                 energy: state.energy + (energy[moving] * (Math.abs(out - i) + 1)),
                                 corr: tempcorr,
                                 //  r: [...state.r, state]
@@ -148,8 +174,8 @@ const tick = (states, c) => {
 
         // move into second room
         for (const [home, out] of u) {
-            if (state[home.toLowerCase()][0] === ''
-                && state[home.toLowerCase()][1] === '') {
+            if (state[home][0] === ''
+                && state[home][1] === '') {
                 for (let i = 0; i < state.corr.length; i++) {
                     const move = state.corr[i];
                     if (move === home) {
@@ -159,7 +185,7 @@ const tick = (states, c) => {
                             const moving = home;
                             next.push({
                                 ...state,
-                                [home.toLowerCase()]: [home, ''],
+                                [home]: [home, ''],
                                 energy: state.energy + (energy[moving] * (Math.abs(out - i) + 2)),
                                 corr: tempcorr,
                                 // r: [...state.r, state]
@@ -184,7 +210,7 @@ const tick = (states, c) => {
     const map = new Map();
 
     for (const n of next) {
-        const key = JSON.stringify([n.a, n.b, n.c, n.d, n.corr]);
+        const key = JSON.stringify([n.A, n.B, n.C, n.D, n.corr]);
 
         if (map.has(key)) {
             map.set(key, Math.min(n.energy, map.get(key)));
@@ -199,10 +225,10 @@ const tick = (states, c) => {
         const x = JSON.parse(k);
         //  console.log(x)
         n.push({
-            a: x[0],
-            b: x[1],
-            c: x[2],
-            d: x[3],
+            A: x[0],
+            B: x[1],
+            C: x[2],
+            D: x[3],
             corr: x[4],
             energy: v
         })
@@ -213,6 +239,6 @@ const tick = (states, c) => {
     return tick(n, c - 1)
 }
 
-tick(p1, 20)
+tick(test1, 20)
 // console.log(tick(start, 5));
 console.log('Part 1 : ', min);
