@@ -43,39 +43,7 @@ const p1_old = (ops) => {
     return map.size;
 }
 
-const p1 = (ops) => {
-
-    for (const op of ops) {
-        aoc.pj(ops)
-        
-    }
-
-}
-
-console.log('Part 1 : (old)', p1_old(initialization(ops)));
-console.log('Part 1 : (new)', p1(initialization(ops)));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const bounds = ops.reduce((a, e) => {
+const bounds = ops => ops.reduce((a, e) => {
     if (a.length === 0) {
         return e.coords;
     }
@@ -86,7 +54,54 @@ const bounds = ops.reduce((a, e) => {
     ];
 }, []);
 
-// console.log(bounds)
+// {
+//     on: true,
+//     coords: [ [ -52752, 22273 ], [ -49450, 9096 ], [ 54442, 119054 ] ]
+//   }
+
+const flip = ()
+
+const slice = ops => {
+    const vals = ops.reduce((a,e) => {
+        const area = Math.abs(e.coords[0][0] - e.coords[0][1]) * Math.abs(e.coords[1][0] - e.coords[1][1])
+        return a + area;
+    }, 0);
+    return vals;
+}
+
+const p1 = (ops) => {
+    const b = bounds(ops);
+    let sum = 0;
+    for (let z = b[2][0]; z <= b[2][1]; z++) {
+       const layer = ops.filter(x => x.coords[2][0] <= z && x.coords[2][1] >= z) ;
+       sum += slice(layer);
+    }
+    return sum;
+}
+
+const ans = p1(ops);
+console.log('Part 1 : (new)', ans);
+console.assert(ans === 2758514936282235)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

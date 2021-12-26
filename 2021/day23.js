@@ -196,5 +196,5 @@ const tick = (states, c) => {
 }
 
 console.log('Part 1 : ', tick(p1));
-min = Number.MAX_VALUE;
+min = Number.MAX_VALUE
 console.log('Part 2 : ', tick(p2));
