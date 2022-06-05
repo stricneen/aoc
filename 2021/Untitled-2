@@ -1,0 +1,22 @@
+
+w
+x  -
+y  -
+z
+
+
+function (w)
+
+x = (z % 26) + 10
+
+
+x = x === w ? 1 : 0
+
+x = x === 0 ? 1 : 0
+
+y = (25 * x) + 1
+
+z = z * y
+y = (w + 2) * x
+z = z + y
+return z
