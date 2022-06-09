@@ -21,11 +21,12 @@ defmodule IntComp do
   def parse(ptr, prog) do
     full = String.pad_leading(Integer.to_string(Enum.at(prog, ptr)), 5, "0")
 
-    print(full)
+    # print(full)
+    # print(prog)
 
     cmd = String.to_integer(String.slice(full, 3..4))
 
-    IO.puts(cmd)
+    # IO.puts(cmd)
 
     first =
       if String.slice(full, 2..2) === "0" && cmd != 99,
@@ -43,6 +44,8 @@ defmodule IntComp do
         else: Enum.at(prog, ptr + 3)
 
         # 4880388 low
+        # 5000972
+        # 5064712 high
 
     # instr =
     if cmd === 99,
@@ -66,7 +69,7 @@ defmodule IntComp do
     # p(ptr, prog)
     instr = parse(ptr, prog)
     print(instr)
-    IO.puts("")
+    # IO.puts("")
 
     next =
       case instr do
@@ -106,7 +109,7 @@ defmodule IntComp do
               do: 1,
               else: 0
 
-          {ptr + 4, List.replace_at(prog, a3, out), output}
+          {ptr + 4, List.replace_at(prog, c, out), output}
 
         {8, r1, r2, c, a1, a2, a3} ->
           out =
@@ -114,7 +117,7 @@ defmodule IntComp do
               do: 1,
               else: 0
 
-          {ptr + 4, List.replace_at(prog, a3, out), output}
+          {ptr + 4, List.replace_at(prog, c, out), output}
 
         {99, _, _, _, _, _, _} ->
           {:done, prog, output}
