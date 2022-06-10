@@ -17,7 +17,6 @@ defmodule IntComp do
     IO.puts("#{inspect(ptr)} ->  #{inspect(prog)}")
   end
 
-  # cmd, r1,r1,r3, a1,a2
   def parse(ptr, prog) do
     full = String.pad_leading(Integer.to_string(Enum.at(prog, ptr)), 5, "0")
 
@@ -43,10 +42,6 @@ defmodule IntComp do
         do: Enum.at(prog, Enum.at(prog, ptr + 3)),
         else: Enum.at(prog, ptr + 3)
 
-        # 4880388 low
-        # 5000972
-        # 5064712 high
-
     # instr =
     if cmd === 99,
       do: {cmd, 0, 0, 0, 0, 0, 0},
@@ -54,7 +49,6 @@ defmodule IntComp do
         {cmd, Enum.at(prog, ptr + 1), Enum.at(prog, ptr + 2), Enum.at(prog, ptr + 3), first,
          second, third}
 
-    # {cmd, Enum.at(prog, ptr + 1), Enum.at(prog, ptr + 2), Enum.at(prog, ptr + 3), first, second, third}
   end
 
   def tick({:done, prog, output}) do
@@ -69,7 +63,7 @@ defmodule IntComp do
     # p(ptr, prog)
     instr = parse(ptr, prog)
     print(instr)
-    # IO.puts("")
+
 
     next =
       case instr do
