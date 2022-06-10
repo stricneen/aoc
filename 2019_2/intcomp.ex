@@ -51,73 +51,79 @@ defmodule IntComp do
 
   end
 
-  def tick({:done, prog, output}) do
+  def tick({:done, _, _, output}) do
     output
   end
 
-  def tick({ptr, prog}) do
-    tick({ptr, prog, []})
+  def tick({input, prog}) do
+    tick({0, prog, input, []})
   end
 
-  def tick({ptr, prog, output}) do
-    # p(ptr, prog)
+  def tick({ptr, prog, input, output}) do
+
+     p(ptr, prog)
     instr = parse(ptr, prog)
     print(instr)
 
 
+    print(input)
+    # print(output)
+
     next =
       case instr do
         # add
-        {1, _, _, c, a1, a2, a3} ->
-          {ptr + 4, List.replace_at(prog, c, a1 + a2), output}
+        {1, _, _, c, a1, a2, _} ->
+          {ptr + 4, List.replace_at(prog, c, a1 + a2), input, output}
 
         # mult
-        {2, _, _, c, a1, a2, a3} ->
-          {ptr + 4, List.replace_at(prog, c, a1 * a2), output}
+        {2, _, _, c, a1, a2, _} ->
+          {ptr + 4, List.replace_at(prog, c, a1 * a2), input, output}
 
-        {3, _, _, c, _, _, _} ->
-          # hard coded input
-          {ptr + 2, List.replace_at(prog, c, 5), output}
+        # input
+        {3, c, _, _, _, _, _} ->
+          [h|t] = input
+          {ptr + 2, List.replace_at(prog, c, h), t, output}
 
+        # ouput
         {4, _, _, _, a1, _, _} ->
-          {ptr + 2, prog, [a1 | output]}
+          {ptr + 2, prog, input, [a1 | output]}
 
         # jump-if-true
         {5, _, _, _, 0, _, _} ->
-          {ptr + 3, prog, output}
+          {ptr + 3, prog, input, output}
 
         {5, _, _, _, _, a, _} ->
-          {a, prog, output}
+          {a, prog, input, output}
 
         # jump-if-false
         {6, _, _, _, 0, a, _} ->
-          {a, prog, output}
+          {a, prog, input, output}
 
         {6, _, _, _, _, _, _} ->
-          {ptr + 3, prog, output}
+          {ptr + 3, prog, input, output}
 
         # less than
-        {7, r1, r2, c, a1, a2, a3} ->
+        {7, _, _, c, a1, a2, _} ->
           out =
             if a1 < a2,
               do: 1,
               else: 0
 
-          {ptr + 4, List.replace_at(prog, c, out), output}
+          {ptr + 4, List.replace_at(prog, c, out), input, output}
 
-        {8, r1, r2, c, a1, a2, a3} ->
+        {8, _, _, c, a1, a2, _} ->
           out =
             if a1 === a2,
               do: 1,
               else: 0
 
-          {ptr + 4, List.replace_at(prog, c, out), output}
+          {ptr + 4, List.replace_at(prog, c, out), input, output}
 
         {99, _, _, _, _, _, _} ->
-          {:done, prog, output}
+          {:done, prog, input, output}
 
         _ ->
-          {:done, prog, ['FAIL' | output]}
+          {:done, prog, input, [0 | output]}
       end
 
     IntComp.tick(next)
