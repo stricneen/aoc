@@ -1,21 +1,16 @@
 defmodule IntComp do
-  def load(day) do
-    path = "data/day#{day}.txt"
-    # IO.puts("loading #{path}...")
-    {:ok, file} = File.read(path)
 
-    file
-    |> String.split(",", trim: true)
-    |> Enum.map(&String.to_integer/1)
+  def init() do
+    IO.puts('init')
+    receive do
+      {:start, prog, output} ->
+        tick({0, prog, output})
+    end
   end
 
-  def print(prog) do
-    IO.puts("   ->  #{inspect(prog)}")
-  end
-
-  def p(ptr, prog) do
-    IO.puts("#{inspect(ptr)} ->  #{inspect(prog)}")
-  end
+  # def tick({input, prog}) do
+  #   tick({0, prog, input, []})
+  # end
 
   def parse(ptr, prog) do
     full = String.pad_leading(Integer.to_string(Enum.at(prog, ptr)), 5, "0")
@@ -48,59 +43,64 @@ defmodule IntComp do
       else:
         {cmd, Enum.at(prog, ptr + 1), Enum.at(prog, ptr + 2), Enum.at(prog, ptr + 3), first,
          second, third}
-
   end
 
-  def tick({:done, _, _, output}) do
+  def tick({:done, _, output}) do
     output
   end
 
-  def tick({input, prog}) do
-    tick({0, prog, input, []})
-  end
-
-  def tick({ptr, prog, input, output}) do
-
-     p(ptr, prog)
+  def tick({ptr, prog, output}) do
+    # p(ptr, prog)
     instr = parse(ptr, prog)
-    print(instr)
+    # print(instr)
 
+    # input
+    input =
+      if elem(instr, 0) == 3 do
+        IO.puts('waiting .... ')
+        receive do
+          {:input, value} ->
+            value
+        end
+      end
+      IO.puts(input)
 
-    print(input)
-    # print(output)
+    # output
+    if elem(instr, 0) == 4 do
+      send(output, {:input, elem(instr, 4)})
+    end
 
-    next =
+    {nptr, nprog} =
       case instr do
         # add
         {1, _, _, c, a1, a2, _} ->
-          {ptr + 4, List.replace_at(prog, c, a1 + a2), input, output}
+          {ptr + 4, List.replace_at(prog, c, a1 + a2)}
 
         # mult
         {2, _, _, c, a1, a2, _} ->
-          {ptr + 4, List.replace_at(prog, c, a1 * a2), input, output}
+          {ptr + 4, List.replace_at(prog, c, a1 * a2)}
 
         # input
         {3, c, _, _, _, _, _} ->
-          [h|t] = input
-          {ptr + 2, List.replace_at(prog, c, h), t, output}
+          {ptr + 2, List.replace_at(prog, c, input)}
 
         # ouput
         {4, _, _, _, a1, _, _} ->
-          {ptr + 2, prog, input, [a1 | output]}
+          {ptr + 2, prog}
 
         # jump-if-true
         {5, _, _, _, 0, _, _} ->
-          {ptr + 3, prog, input, output}
+          {ptr + 3, prog}
 
         {5, _, _, _, _, a, _} ->
-          {a, prog, input, output}
+          {a, prog}
 
         # jump-if-false
         {6, _, _, _, 0, a, _} ->
-          {a, prog, input, output}
+          {a, prog}
 
         {6, _, _, _, _, _, _} ->
-          {ptr + 3, prog, input, output}
+          {ptr + 3, prog}
 
         # less than
         {7, _, _, c, a1, a2, _} ->
@@ -109,7 +109,7 @@ defmodule IntComp do
               do: 1,
               else: 0
 
-          {ptr + 4, List.replace_at(prog, c, out), input, output}
+          {ptr + 4, List.replace_at(prog, c, out)}
 
         {8, _, _, c, a1, a2, _} ->
           out =
@@ -117,15 +117,35 @@ defmodule IntComp do
               do: 1,
               else: 0
 
-          {ptr + 4, List.replace_at(prog, c, out), input, output}
+          {ptr + 4, List.replace_at(prog, c, out)}
 
         {99, _, _, _, _, _, _} ->
-          {:done, prog, input, output}
+          {:done, prog}
 
         _ ->
-          {:done, prog, input, [0 | output]}
+          {:done, prog}
       end
 
-    IntComp.tick(next)
+    IntComp.tick({nptr, nprog, output})
+  end
+
+  # Utils
+
+  def load(day) do
+    path = "data/day#{day}.txt"
+    # IO.puts("loading #{path}...")
+    {:ok, file} = File.read(path)
+
+    file
+    |> String.split(",", trim: true)
+    |> Enum.map(&String.to_integer/1)
+  end
+
+  def print(prog) do
+    IO.puts("   ->  #{inspect(prog)}")
+  end
+
+  def p(ptr, prog) do
+    IO.puts("#{inspect(ptr)} ->  #{inspect(prog)}")
   end
 end
