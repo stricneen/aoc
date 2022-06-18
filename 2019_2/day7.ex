@@ -30,11 +30,11 @@ defmodule Day7 do
     ampd = spawn(fn -> IntComp.init() end)
     ampe = spawn(fn -> IntComp.init() end)
 
-    send(ampa, {:start, prog, ampb})
-    send(ampb, {:start, prog, ampc})
-    send(ampc, {:start, prog, ampd})
-    send(ampd, {:start, prog, ampe})
-    send(ampe, {:start, prog, ampa})
+    send(ampa, {:start, prog, ampb, nil})
+    send(ampb, {:start, prog, ampc, nil})
+    send(ampc, {:start, prog, ampd, nil})
+    send(ampd, {:start, prog, ampe, nil})
+    send(ampe, {:start, prog, ampa, self()})
 
     send(ampa, {:input, a})
     send(ampb, {:input, b})
@@ -45,13 +45,15 @@ defmodule Day7 do
     send(ampa, {:input, 0})
 
 
-    ref = Process.monitor(ampe)
-    receive do
-      {:DOWN, ^ref, _, _, _} ->
+    # ref = Process.monitor(ampe)
+    res = receive do
+      {:result,r} ->
         #IO.puts("Process #{inspect(ampe)} is down")
-        IO.puts('Complete')
+        IO.puts(r)
+        r
     end
 
+    res
     # Task.async(fn -> :timer.sleep(10000) end)
     # |> Task.await
   end
@@ -71,5 +73,5 @@ prog = IntComp.load("7")
 
 r = Day7.run2(prog)
 IO.inspect(Enum.max(r), charlists: :as_lists)
-
+IO.inspect(Enum.max(r))
 # Process.sleep(60000)

@@ -3,14 +3,10 @@ defmodule IntComp do
   def init() do
     IO.puts('init')
     receive do
-      {:start, prog, output} ->
-        tick({0, prog, output})
+      {:start, prog, output, result} ->
+        tick({0, prog, output, result})
     end
   end
-
-  # def tick({input, prog}) do
-  #   tick({0, prog, input, []})
-  # end
 
   def parse(ptr, prog) do
     full = String.pad_leading(Integer.to_string(Enum.at(prog, ptr)), 5, "0")
@@ -49,7 +45,7 @@ defmodule IntComp do
     output
   end
 
-  def tick({ptr, prog, output}) do
+  def tick({ptr, prog, outputPid, resultPid}) do
     # p(ptr, prog)
     instr = parse(ptr, prog)
     # print(instr)
@@ -63,11 +59,17 @@ defmodule IntComp do
             value
         end
       end
-      IO.puts(input)
+      # IO.puts(input)
 
     # output
     if elem(instr, 0) == 4 do
-      send(output, {:input, elem(instr, 4)})
+      send(outputPid, {:input, elem(instr, 4)})
+      IO.puts(elem(instr, 4))
+    end
+
+    # result
+    if elem(instr, 0) == 99 do
+      send(resultPid, {:result, 'final'})
     end
 
     {nptr, nprog} =
@@ -122,11 +124,9 @@ defmodule IntComp do
         {99, _, _, _, _, _, _} ->
           {:done, prog}
 
-        _ ->
-          {:done, prog}
       end
 
-    IntComp.tick({nptr, nprog, output})
+    IntComp.tick({nptr, nprog, outputPid, resultPid})
   end
 
   # Utils
