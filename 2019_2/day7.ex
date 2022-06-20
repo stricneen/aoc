@@ -6,21 +6,28 @@ defmodule Day7 do
   def permutations(list),
     do: for(elem <- list, rest <- permutations(list -- [elem]), do: [elem | rest])
 
-  def amplify([a, b, c, d, e], prog) do
-    res1 = IntComp.tick({[a, 0], prog})
-    res2 = IntComp.tick({[b, Enum.at(res1, 0)], prog})
-    res3 = IntComp.tick({[c, Enum.at(res2, 0)], prog})
-    res4 = IntComp.tick({[d, Enum.at(res3, 0)], prog})
-    res5 = IntComp.tick({[e, Enum.at(res4, 0)], prog})
-    res5
+  def step(prog, a, b) do
+    amp = spawn(fn -> IntComp.init() end)
+    send(amp, {:start, prog, nil, self()})
+    send(amp, {:input, a})
+    send(amp, {:input, b})
+
+    receive do
+      {:result, r} -> r
+    end
   end
 
-  # 38834
+  def amplify([a, b, c, d, e], prog) do
+    r1 = step(prog, a, 0)
+    r2 = step(prog, b, r1)
+    r3 = step(prog, c, r2)
+    r4 = step(prog, d, r3)
+    step(prog, e, r4)
+  end
 
   def run(prog) do
-    results =
-      Day7.permutations([0, 1, 2, 3, 4])
-      |> Enum.map(fn x -> amplify(x, prog) end)
+    Day7.permutations([0, 1, 2, 3, 4])
+    |> Enum.map(fn x -> amplify(x, prog) end)
   end
 
   def feedback([a, b, c, d, e], prog) do
@@ -44,34 +51,23 @@ defmodule Day7 do
 
     send(ampa, {:input, 0})
 
-
-    # ref = Process.monitor(ampe)
-    res = receive do
-      {:result,r} ->
-        #IO.puts("Process #{inspect(ampe)} is down")
-        IO.puts(r)
+    receive do
+      {:result, r} ->
         r
     end
-
-    res
-    # Task.async(fn -> :timer.sleep(10000) end)
-    # |> Task.await
   end
 
   def run2(prog) do
-    #      Day7.permutations([5,6,7,8,9])
-    results =
-      [[9, 8, 7, 6, 5]]
-      |> Enum.map(fn x -> feedback(x, prog) end)
+    Day7.permutations([5, 6, 7, 8, 9])
+    |> Enum.map(fn x -> feedback(x, prog) end)
   end
 end
 
 # Part 1
 prog = IntComp.load("7")
-# r = Day7.run(prog)
-# IO.inspect(Enum.max(r), charlists: :as_lists)
+r1 = Day7.run(prog)
+IO.inspect(Enum.max(r1), charlists: :as_lists)
 
-r = Day7.run2(prog)
-IO.inspect(Enum.max(r), charlists: :as_lists)
-IO.inspect(Enum.max(r))
-# Process.sleep(60000)
+# Part 2
+r2 = Day7.run2(prog)
+IO.inspect(Enum.max(r2))

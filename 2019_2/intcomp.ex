@@ -1,22 +1,16 @@
 defmodule IntComp do
-
   def init() do
-    IO.puts('init')
+    # IO.puts('init')
+
     receive do
       {:start, prog, output, result} ->
-        tick({0, prog, output, result})
+        tick({0, prog, output, result, nil})
     end
   end
 
   def parse(ptr, prog) do
     full = String.pad_leading(Integer.to_string(Enum.at(prog, ptr)), 5, "0")
-
-    # print(full)
-    # print(prog)
-
     cmd = String.to_integer(String.slice(full, 3..4))
-
-    # IO.puts(cmd)
 
     first =
       if String.slice(full, 2..2) === "0" && cmd != 99,
@@ -24,12 +18,12 @@ defmodule IntComp do
         else: Enum.at(prog, ptr + 1)
 
     second =
-      if String.slice(full, 1..1) === "0" && cmd != 99,
+      if String.slice(full, 1..1) === "0" && cmd != 99 and cmd != 4,
         do: Enum.at(prog, Enum.at(prog, ptr + 2)),
         else: Enum.at(prog, ptr + 2)
 
     third =
-      if String.slice(full, 0..0) === "0" && cmd != 99,
+      if String.slice(full, 0..0) === "0" && cmd != 99 and cmd != 4,
         do: Enum.at(prog, Enum.at(prog, ptr + 3)),
         else: Enum.at(prog, ptr + 3)
 
@@ -41,35 +35,41 @@ defmodule IntComp do
          second, third}
   end
 
-  def tick({:done, _, output}) do
-    output
+  def tick({:done, _,_,_,_}) do
   end
 
-  def tick({ptr, prog, outputPid, resultPid}) do
+  def tick({ptr, prog, outputPid, resultPid, out}) do
     # p(ptr, prog)
     instr = parse(ptr, prog)
     # print(instr)
+    # print(resultPid)
 
     # input
     input =
       if elem(instr, 0) == 3 do
-        IO.puts('waiting .... ')
+        # IO.puts('waiting .... ')
+
         receive do
           {:input, value} ->
             value
         end
       end
-      # IO.puts(input)
 
     # output
-    if elem(instr, 0) == 4 do
-      send(outputPid, {:input, elem(instr, 4)})
-      IO.puts(elem(instr, 4))
-    end
+    nout =
+      if elem(instr, 0) == 4 do
+        if (outputPid != nil) do
+          send(outputPid, {:input, elem(instr, 4)})
+        end
+        # IO.puts(elem(instr, 4))
+        elem(instr, 4)
+      else
+        out
+      end
 
     # result
-    if elem(instr, 0) == 99 do
-      send(resultPid, {:result, 'final'})
+    if elem(instr, 0) == 99 and resultPid != nil do
+      send(resultPid, {:result, nout})
     end
 
     {nptr, nprog} =
@@ -87,7 +87,7 @@ defmodule IntComp do
           {ptr + 2, List.replace_at(prog, c, input)}
 
         # ouput
-        {4, _, _, _, a1, _, _} ->
+        {4, _, _, _, _, _, _} ->
           {ptr + 2, prog}
 
         # jump-if-true
@@ -122,11 +122,10 @@ defmodule IntComp do
           {ptr + 4, List.replace_at(prog, c, out)}
 
         {99, _, _, _, _, _, _} ->
-          {:done, prog}
-
+          {:done, nout}
       end
 
-    IntComp.tick({nptr, nprog, outputPid, resultPid})
+    IntComp.tick({nptr, nprog, outputPid, resultPid, nout})
   end
 
   # Utils
