@@ -4,12 +4,14 @@ defmodule IntComp do
 
     receive do
       {:start, prog, output, result} ->
-        tick({0, prog, output, result, nil})
+        tick({0, prog, output, result, nil, 0})
     end
   end
 
-  def parse(ptr, prog) do
+  def parse(ptr, prog, base) do
+
     full = String.pad_leading(Integer.to_string(Enum.at(prog, ptr)), 5, "0")
+
     cmd = String.to_integer(String.slice(full, 3..4))
 
     first =
@@ -35,14 +37,23 @@ defmodule IntComp do
          second, third}
   end
 
-  def tick({:done, _,_,_,_}) do
+  def tick({:done, _,_,_,_,_}) do
   end
 
-  def tick({ptr, prog, outputPid, resultPid, out}) do
+  def tick({ptr, prog, outputPid, resultPid, out, base}) do
     # p(ptr, prog)
-    instr = parse(ptr, prog)
+    instr = parse(ptr, prog, base)
     # print(instr)
     # print(resultPid)
+
+    nbase =
+      if elem(instr, 0) == 9 do
+        IO.puts('base')
+        IO.puts( base + elem(instr, 4))
+        base + elem(instr, 4)
+      else
+        base
+      end
 
     # input
     input =
@@ -61,8 +72,7 @@ defmodule IntComp do
         if (outputPid != nil) do
           send(outputPid, {:input, elem(instr, 4)})
         end
-        # IO.puts(elem(instr, 4))
-        elem(instr, 4)
+          elem(instr, 4)
       else
         out
       end
@@ -115,17 +125,18 @@ defmodule IntComp do
 
         {8, _, _, c, a1, a2, _} ->
           out =
-            if a1 === a2,
-              do: 1,
-              else: 0
+            if a1 === a2, do: 1, else: 0
 
           {ptr + 4, List.replace_at(prog, c, out)}
+
+        {9, _, _, _, _, _, _} ->
+            {ptr + 2, prog}
 
         {99, _, _, _, _, _, _} ->
           {:done, nout}
       end
 
-    IntComp.tick({nptr, nprog, outputPid, resultPid, nout})
+    IntComp.tick({nptr, nprog, outputPid, resultPid, nout, nbase})
   end
 
   # Utils
