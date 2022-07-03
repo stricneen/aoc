@@ -6,6 +6,8 @@ defmodule Day9 do
     comp = spawn(fn -> IntComp.init() end)
     send(comp, {:start, prog, nil, self()})
 
+    send(comp, {:input, 1})
+
     receive do
       {:result, r} -> r
     end
