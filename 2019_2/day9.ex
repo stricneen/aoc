@@ -3,6 +3,7 @@ Code.require_file("intcomp.ex")
 defmodule Day9 do
 
   def run(prog) do
+
     comp = spawn(fn -> IntComp.init() end)
     send(comp, {:start, prog, nil, self()})
 
@@ -11,10 +12,8 @@ defmodule Day9 do
     receive do
       {:result, r} -> r
     end
+
   end
-
-
-
 end
 
 # Part 1

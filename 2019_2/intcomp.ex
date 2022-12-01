@@ -11,6 +11,8 @@ defmodule IntComp do
   def tick({:done, _, _, _, _, _}) do
   end
 
+
+
   def tick({ptr, prog, outputPid, resultPid, out, base}) do
     # p(ptr, prog)
     # IO.puts('')
@@ -48,6 +50,8 @@ defmodule IntComp do
         out
       end
 
+
+
     # result
     if elem(instr, 0) == 99 and resultPid != nil do
       send(resultPid, {:result, nout})
@@ -64,8 +68,8 @@ defmodule IntComp do
           {ptr + 4, List.replace_at(prog, c, a1 * a2)}
 
         # input
-        {3, a1, _, _, a, _, _} ->
-          {ptr + 2, List.replace_at(prog, a1 + base, input)}
+        {3, a1, _, _, a, _, t} ->
+          {ptr + 2, List.replace_at(prog, t, input)}
 
         # ouput
         {4, _, _, _, _, _, _} ->
@@ -99,11 +103,17 @@ defmodule IntComp do
 
           {ptr + 4, List.replace_at(prog, c, out)}
 
+        # Base
         {9, _, _, _, _, _, _} ->
           {ptr + 2, prog}
 
         {99, _, _, _, _, _, _} ->
           {:done, nout}
+      end
+
+      if elem(instr, 0) == 2  do
+        {2, _, _, c, a1, a2, _} = instr
+        p('', a1 * a2)
       end
 
     IntComp.tick({nptr, nprog, outputPid, resultPid, nout, nbase})
@@ -146,10 +156,10 @@ defmodule IntComp do
     a3 = Enum.at(prog, ptr + 3)
 
     third =
-      case String.to_integer(String.slice(full, 0..0)) do
-        0 -> Enum.at(prog, a3)
-        1 -> a3
-        2 -> Enum.at(prog, a3 + base)
+      case String.to_integer(String.slice(full, 2..2)) do
+        0 -> a1
+        1 -> a1
+        2 -> a1 + base
         _ -> 0
       end
 
