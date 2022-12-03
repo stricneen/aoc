@@ -19,13 +19,13 @@ exports.header = (s) => {
 exports.isNumber = (s) => /^\d+$/.test(s);
 
 // Sum a list
-exports.sum = (l) => l.reduce((a,x) => x+a, 0);
+exports.sum = (l) => l.reduce((a, x) => x + a, 0);
 
 // Product of list
-exports.product = (l) => l.reduce((a,x) => x*a, 1);
+exports.product = (l) => l.reduce((a, x) => x * a, 1);
 
 // Create array range
-exports.range = (s,e) => [...Array(Math.abs((e||0)-s)).keys()].map(x => x + (e?s:0));
+exports.range = (s, e) => [...Array(Math.abs((e || 0) - s)).keys()].map(x => x + (e ? s : 0));
 
 // aoc.p(10,10,"Text");
 exports.p = (x, y, t) => {
@@ -53,12 +53,12 @@ exports.pj = (m) => console.dir(m, { depth: null, colors: true }, 2); console.lo
 exports.group = (l, f) => {
     const def = x => x.length == 0;
     const fn = f || def;
-    return l.reduce((a,x) => {
+    return l.reduce((a, x) => {
         if (fn(x)) {
             a.push([]);
             return a;
         } else {
-            a[a.length-1].push(x);
+            a[a.length - 1].push(x);
             return a;
         }
     }, [[]]);
@@ -74,5 +74,20 @@ exports.denBin = (s) => (s >>> 0).toString(2);
 exports.revStr = (s) => s.split('').reverse().join('');
 
 
-exports.between = (data, s, e) =>   data.split(s)[1].split(e)[0];
+exports.between = (data, s, e) => data.split(s)[1].split(e)[0];
 
+// Intersect on array or string
+exports.intersect = (a, b) => {
+    const x = (typeof a === 'string') ? a.split('') : a;
+    const y = (typeof b === 'string') ? b.split('') : b;
+    return x.filter(v => y.includes(v))
+}
+
+exports.chunk = (array, chunkSize) => {
+    const x = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+        const chunk = array.slice(i, i + chunkSize);
+        x.push(chunk)
+    }
+    return x;
+}
