@@ -7,14 +7,10 @@ const pairs = text.map(t => t.split(','))
     .map(([[a,b],[c,d]]) => ([[parseInt(a),parseInt(b)],[parseInt(c), parseInt(d)]]) )
     
 const p1 = pairs.filter(([[a,b],[c,d]]) => 
-     (a <= c && b >= d) || 
-     (c <= a && d >= b))
+    (a <= c && b >= d) || (c <= a && d >= b))
 
 const p2 = pairs.filter(([[a,b],[c,d]]) => 
-    (a >= c && a <= d) ||
-    (b <= c && b >= d) ||
-    (c >= a && c <= b) ||
-    (d <= a && d >= b))
+    (c <= a && a <= d) || (a <= c && c <= b))
 
 console.log("Part 1 : ", (p1.length)) // 431
 console.log("Part 2 : ", (p2.length)) // 823
