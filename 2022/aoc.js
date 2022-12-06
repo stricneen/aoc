@@ -83,6 +83,7 @@ exports.intersect = (a, b) => {
     return x.filter(v => y.includes(v))
 }
 
+// Chunks an array into chunkSize
 exports.chunk = (array, chunkSize) => {
     const x = [];
     for (let i = 0; i < array.length; i += chunkSize) {
@@ -90,4 +91,13 @@ exports.chunk = (array, chunkSize) => {
         x.push(chunk)
     }
     return x;
+}
+
+// Generator for window over array
+exports.window = function*(array, size) {
+    let c = 0;
+    while(c < array.length - size) {
+        yield array.slice(c, c+size);
+        c+=1;
+    }
 }
