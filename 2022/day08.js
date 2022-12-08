@@ -17,10 +17,10 @@ for (let x = 0; x < trees.length; x++) {
 
         const tree = element[y];
            
-        up = aoc.ia_up(x,y,trees).slice(1);
-        down = aoc.ia_down(x,y,trees).slice(1);
-        left = aoc.ia_left(x,y,trees).slice(1);
-        right = aoc.ia_right(x,y,trees).slice(1);
+        const up = aoc.ia_up(x,y,trees).slice(1);
+        const down = aoc.ia_down(x,y,trees).slice(1);
+        const left = aoc.ia_left(x,y,trees).slice(1);
+        const right = aoc.ia_right(x,y,trees).slice(1);
         
         const vis = [up, down, left, right]
             .map(d => tree > Math.max(...d));
