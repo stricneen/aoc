@@ -35,6 +35,7 @@ const buildTree = () => {
     }
 
     calc(root)
+    console.log(JSON.stringify(root))
     return root;
 }
 
