@@ -5,122 +5,35 @@ const nums = text.map(x => x.toString().split(''))
 
 const trees = nums.map(x => x.map(y => parseInt(y)))
 
-console.log(trees);
-
-// process.exit()
-  // 1539
-  // 2286
-s = 0;
-max =0 
-
-const f = (t, a) => {
-    s = 0
-
-    p = a.findIndex(x => t <= x)
-    if (p === -1) {s= a.length} else {s = p+1}
-    // for (let i = 0; i < a.length; i++) {
-    //     if (t <= a[i]) return s
-    //     s++
-        
-    // }
-console.log(s)
-    return s
-}
+let p1 = 0
+let p2 = 0 
 
 for (let x = 0; x < trees.length; x++) {
     const element = trees[x];
-    
     for (let y = 0; y < element.length; y++) {
-        curr = []
-        console.log()
-        const t = element[y];
-   
+
+        // ignore the edges
+        if (x === 0 || y === 0 || x === trees.length -1 || y === element.length - 1)  {p1+=1; continue;}
+
+        const tree = element[y];
+           
+        up = aoc.ia_up(x,y,trees).slice(1);
+        down = aoc.ia_down(x,y,trees).slice(1);
+        left = aoc.ia_left(x,y,trees).slice(1);
+        right = aoc.ia_right(x,y,trees).slice(1);
         
-        if (x === 0 || y === 0 || x === trees.length -1 || y === element.length - 1)  {s+=1; continue;}
-        
-        // console.log(t,x,y)
+        const vis = [up, down, left, right]
+            .map(d => tree > Math.max(...d));
+        if (vis.some(x => x)) p1 += 1;
 
-        // check up
-        c = []
-        for (let up = y-1; up >=0 ; up--) {
-            c.push(trees[x][up])
-        }
-        curr.push( f(t,c))
-        console.log('up',t,c)
-        console.log(curr)
-        // console.log(Math.max(...c))
-        //if (t > Math.max(...c)) { s+=1; continue}
-
-
-
-// console.log('no')
-        // check down
-        c = []
-        for (let up = y+1; up <=trees.length-1 ; up++) {
-            c.push(trees[x][up])
-        }
-        console.log('down',t,c)
-        
-        curr.push( f(t,c))
-
-
-     
-        // if (t > Math.max(...c)) { s+=1; continue}
-
-
-        // check left
-        c = []
-        for (let up = x-1; up >=0 ; up--) {
-            c.push(trees[up][y])
-        }
-        console.log('left', t,c)
-        curr.push( f(t,c))
-
-
-        // if (t > Math.max(...c)) { s+=1; continue}
-
-        // check right
-        c = []
-        for (let up = x+1; up <= element.length-1 ; up++) {
-            c.push(trees[up][y])
-        }
-        console.log('right',t,c)
-        // if (t > Math.max(...c)) { s+=1; continue}
-        curr.push( f(t,c))
-
-
-        // console.log('hidden')
-        console.log('curr',curr)
-        if (aoc.product(curr) > max) max= aoc.product(curr)
+        const scenic = [up, down, left, right]
+            .map(d => {
+                bigger = d.findIndex(t => t >= tree)
+                return bigger === -1 ? d.length : bigger + 1 
+            })
+        p2 = Math.max(p2, aoc.product(scenic))
     }
-
-
 }
 
-// 30373
-// 25512
-// 65332
-// 33549
-// 35390
-
-// console.log(s)
-console.log(max)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-p1 = p2 = 0
 console.log("Part 1 : ", (p1)) // 1715
 console.log("Part 2 : ", (p2)) // 374400

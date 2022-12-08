@@ -106,25 +106,31 @@ exports.window = function*(array, size) {
 // ##### INT ARRAY FUNCS
 
 // return all values 'up' from x,y (inc x,y)
-exports.ia_up = (x, y, arr) => {
+exports.ia_left = (x, y, arr) => {
+    c = []
     for (let i = y; i >=0 ; i--) {
         c.push(arr[x][i]);
     }
-}
-
-exports.ia_down = (x, y, arr) => {
-    for (let i = y; i < arr.length ; i++) {
-        c.push(arr[x][i]);
-    }
-}
-
-exports.ia_left = (x, y, arr) => {
-    for (let i = x; i >=0 ; i--) {
-        c.push(arr[i][y]);
-    }
+    return c
 }
 
 exports.ia_right = (x, y, arr) => {
+    c = []
+    for (let i = y; i < arr.length ; i++) {
+        c.push(arr[x][i]);
+    }
+    return c
+}
+
+exports.ia_up = (x, y, arr) => {
+    c = []
+    for (let i = x; i >=0 ; i--) {
+        c.push(arr[i][y]);
+    }
+    return c
+}
+
+exports.ia_down = (x, y, arr) => {
     c = [];
     for (let i = x; i < arr[0].length ; i++) {
         c.push(arr[i][y]);
