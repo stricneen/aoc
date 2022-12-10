@@ -1,5 +1,5 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day09.txt');
+const buffer = aoc.readfile('day.txt');
 const text = buffer.split(/\n/);
 const steps = text.map(x => x.split(' ')).map((x) => [x[0], parseInt(x[1])])
 
@@ -45,6 +45,7 @@ const simulate = (rope) => {
         visited = [...new Set(visited.map(JSON.stringify))].map(JSON.parse)
 
     }
+    console.log(visited)
     return visited.length
 }
 
