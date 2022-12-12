@@ -3,28 +3,27 @@ const buffer = aoc.readfile('day12.txt');
 const m = buffer.split(/\n/).map(x => x.split(''));
 const map = m.map(x => x.map(y => y.charCodeAt(0)))
 
-S = 83
-E = 69
-console.log(map)
 start = []
 end = []
-paths = []
-dists = []
 
-for (let x = 0; x < map.length; x++) {
-    dists.push([])
-    for (let y = 0; y < map[0].length; y++) {
-        const pos = map[x][y];
-        dists[x].push(Infinity)
-        if (pos === 83) {
-            start = [x, y]
-            map[x][y] = 97
-        }
-        if (pos === 69) {
-            end = [x, y]
-            map[x][y] = 122
+const buildDists = () => {
+    dists = []
+    for (let x = 0; x < map.length; x++) {
+        dists.push([])
+        for (let y = 0; y < map[0].length; y++) {
+            const pos = map[x][y];
+            dists[x].push(Infinity)
+            if (pos === 83) {
+                start = [x, y]
+                map[x][y] = 97
+            }
+            if (pos === 69) {
+                end = [x, y]
+                map[x][y] = 122
+            }
         }
     }
+    return dists;
 }
 
 const surround = ([x, y]) => {
@@ -35,22 +34,55 @@ const surround = ([x, y]) => {
     return [up, down, left, right];
 }
 
-pos = [[...end]]
-dists[end[0]][end[1]] = 0
+const p1 = () => {
 
+    dists = buildDists();
+    pos = [[...start]]
+    dists[start[0]][start[1]] = 0
 
-
-
-count = 0
-// process.exit()
-const p2 = () => {
     while (true) {
         np = []
         for (const [x, y] of pos) {
             const dist = dists[x][y]
             const curr = map[x][y]
 
-            if (curr === 97) {
+            const s = surround([x, y]);
+
+            if ((s[0] - curr <= 1) && dists[x - 1][y] > dist + 1) {
+                dists[x - 1][y] = dist + 1
+                np.push([x - 1, y])
+            }
+            if ((s[1] - curr <= 1) && dists[x + 1][y] > dist + 1) {
+                dists[x + 1][y] = dist + 1
+                np.push([x + 1, y])
+            }
+            if ((s[2] - curr <= 1) && dists[x][y - 1] > dist + 1) {
+                dists[x][y - 1] = dist + 1
+                np.push([x, y - 1])
+            }
+            if ((s[3] - curr <= 1) && dists[x][y + 1] > dist + 1) {
+                dists[x][y + 1] = dist + 1
+                np.push([x, y + 1])
+            }
+        }
+        pos = np
+        if (pos.length === 0) break;
+    }
+    return dists[end[0]][end[1]]
+
+}
+
+const p2 = () => {
+    dists = buildDists();
+    pos = [[...end]]
+    dists[end[0]][end[1]] = 0
+    while (true) {
+        np = []
+        for (const [x, y] of pos) {
+            const dist = dists[x][y]
+            const curr = map[x][y]
+
+            if (curr === 97) { // first 'a'
                 return dist
             }
 
@@ -74,16 +106,9 @@ const p2 = () => {
             }
         }
         pos = np
-        count++
         if (pos.length === 0) break;
     }
-
 }
 
-p2()
-
-console.log(start, end)
+console.log('Part 1', p1());
 console.log('Part 2', p2());
-
-//420
-//414
