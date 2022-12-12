@@ -115,8 +115,9 @@ const realmonkeys = [
     },
 ];
 
+const realmonkeys2 = realmonkeys.map(x => ({...x, items: [...x.items]}))
 
-const solve = (m, rounds, worried) => {
+const solve = (m, rounds, worryFn) => {
 
     const monkeys = m.map(x => ({ ...x, inspected: 0 }))
     const mod = aoc.product(monkeys.map(m => m.key))
@@ -126,7 +127,8 @@ const solve = (m, rounds, worried) => {
         for (const monkey of monkeys) {
             monkey.inspected += monkey.items.length
             for (const item of monkey.items) {
-                const newWorry = (Math.trunc(monkey.op(item) / worried)) //% (mod )
+                // const newWorry = worryFn(monkey.op(item)) //  (Math.trunc(monkey.op(item) / worried)) //% (mod )
+                const newWorry = worryFn(monkey.op(item)) // % mod
                 const toMonkey = monkey.test(newWorry) ? monkey.tt : monkey.tf;
                 monkeys[toMonkey].items.push((newWorry))
             }
@@ -138,5 +140,6 @@ const solve = (m, rounds, worried) => {
 }
 
 
-console.log("Part 1 : ", solve(realmonkeys, 20, 3)) // 120384
-// console.log("Part 2 : ", solve(realmonkeys, 20, 3)) // 32059801242
+const mod = aoc.product(realmonkeys.map(m => m.key))
+console.log("Part 1 : ", solve(realmonkeys, 20, worry => Math.trunc(worry / 3))) // 120384
+console.log("Part 2 : ", solve(realmonkeys2, 10000, worry => worry % mod)) // 32059801242
