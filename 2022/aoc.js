@@ -96,7 +96,7 @@ exports.chunk = (array, chunkSize) => {
 // Generator for window over array
 exports.window = function*(array, size) {
     let c = 0;
-    while(c < array.length - size) {
+    while(c < array.length - size + 1) {
         yield array.slice(c, c+size);
         c+=1;
     }
