@@ -1,5 +1,5 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day.txt');
+const buffer = aoc.readfile('day13.txt');
 const data = buffer.split(/\n\n/)
     .map(x => x.split(/\n/).map( y => JSON.parse(y)));
 
