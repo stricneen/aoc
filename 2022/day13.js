@@ -1,5 +1,5 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day13.txt');
+const buffer = aoc.readfile('day.txt');
 const data = buffer.split(/\n\n/)
     .map(x => x.split(/\n/).map( y => JSON.parse(y)));
 
@@ -28,10 +28,21 @@ const compare = (a, b) => {
     const compareLists = (a,b) => {
 console.log('-------', a,b)
 
-        if (a.length > 0 && b.length === 0)  return 1
-        if (a.length === 0 && b.length > 0) return -1;
+        if (Array.isArray(a[0]) && Array.isArray(b[0])){
+            return compareLists(a[0], b[0])
+        }
+
 
         if (a.length === 0 && b.length === 0) return 0;
+
+        if (a.length > 0 && b.length > 0) {
+            if (a[0] < b[0]) return  1;
+        }
+
+        // if (b.length === 0) return -1;
+        if (a.length > 0 && b.length === 0)  return -1
+        // if (a.length === 0 && b.length > 0) return 1;
+
     
         
 
