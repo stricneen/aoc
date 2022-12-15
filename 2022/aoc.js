@@ -102,6 +102,11 @@ exports.window = function*(array, size) {
     }
 }
 
+// Returns all numbers from a string
+exports.extractNums = (l) => {
+    return t = [...l.matchAll(/[-+]?\d+/g)]
+        .map(x => parseInt(x[0]))
+}
 
 // ##### INT ARRAY FUNCS
 

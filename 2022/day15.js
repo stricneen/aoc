@@ -1,14 +1,8 @@
 const aoc = require('./aoc');
 const buffer = aoc.readfile('day15.txt');
 
-const parse = (l) => {
-    let regex = /[-+]?\d+/g
-    return t = [...l.matchAll(regex)]
-        .map(x => parseInt(x[0]))
-}
-
 const data = buffer.split(/\n/)
-    .map(x => parse(x))
+    .map(aoc.extractNums)
     .map(x => [...x, Math.abs(x[0] - x[2]) + Math.abs(x[1] - x[3])])
 
 const max = 4000000
@@ -70,14 +64,6 @@ const p2 = () => {
         }
     }
 }
-
-// console.log([...new Set(t)])
-
-// console.log([...new Set(t)].length - [...new Set(onrow)].length)
-// console.log(ground)
-// qq = ground[0].split(',')
-// p2 = (parseInt(qq[0]) * 4000000) + parseInt(qq[1])
-
 
 console.log('Part 1 : ', p1()); //  4582667   
 console.log('Part 2 : ', p2()); // 10961118625406

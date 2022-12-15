@@ -106,5 +106,5 @@ const simulate = (cave) => {
 }
 // print(cave)
 // console.log('🪨')
-console.log('Part 1', simulate(buildCave(false))); // 578
-console.log('Part 2', simulate(buildCave(true))); // 24377
+console.log('Part 1 : ', simulate(buildCave(false))); // 578
+console.log('Part 2 : ', simulate(buildCave(true))); // 24377

@@ -110,5 +110,5 @@ const p2 = () => {
     }
 }
 
-console.log('Part 1', p1());
-console.log('Part 2', p2());
+console.log('Part 1 : ', p1());
+console.log('Part 2 : ', p2());
