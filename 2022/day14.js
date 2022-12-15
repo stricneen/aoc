@@ -6,11 +6,14 @@ const data = buffer.split(/\n/)
     .map(z => z.map(([x, y]) => [parseInt(x), parseInt(y)]))
 
     // print('\b'*len(old_buffer)+buffer)
-aoc.cls();
-// const rock = '🪨 ';
-// const sand = '🟡';
-const rock = '#'
-const sand = 'O'
+// aoc.cls();
+// const rock = '🪨';
+const rock = '⚪️';
+// const sand = '';
+const sand = '🟡';
+
+// const rock = '#'
+// const sand = 'O'
 const space = ' '
 const dim = 1000
 const buildCave = (withFloor) => {
@@ -54,7 +57,7 @@ let printbase = 0
 let ob = ''
 let sb = ''
 const print = (c, base) => {
-    printbase = Math.max(40, printbase , base)
+    printbase = Math.max(40, printbase , base + 4)
     // printbase = Math.max(40, printbase)
     // ob = sb
     // sb = ''
@@ -96,12 +99,12 @@ const simulate = (cave) => {
         c += 1
 
         
-        print(cave, pos[0])
-        var waitTill = new Date(new Date().getTime() + 0.1 * 1000);
-        while(waitTill > new Date()){}
+        // print(cave, pos[0])
+        // var waitTill = new Date(new Date().getTime() + 0.05 * 1000);
+        // while(waitTill > new Date()){}
     }
 }
 // print(cave)
 // console.log('🪨')
-// console.log('Part 1', simulate(buildCave(false))); // 578
+console.log('Part 1', simulate(buildCave(false))); // 578
 console.log('Part 2', simulate(buildCave(true))); // 24377
