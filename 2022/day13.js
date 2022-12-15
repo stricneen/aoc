@@ -61,7 +61,7 @@ const compare = (a, b, tab) => {
 
     // TWO LISTS
     min = Math.min(a.length, b.length)
-console.log('min', min)
+console.log('min')
     for (let i = 0; i <= min; i++) {
         console.log(' '.repeat(tab * 2), i, a, b)
         n = compare(a[i], b[i], tab + 1)
