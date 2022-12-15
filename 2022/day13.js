@@ -7,7 +7,7 @@ const data = buffer.split(/\n\n/)
 // console .log(data)§
 
 const compare = (left, right) => {
-    if (typeof left === 'number' && typeof right === 'number') {
+    if (Number.isInteger(left) && Number.isInteger(right)) {
       if (left < right) return 1;
       if (left > right) return -1;
       return 0;
@@ -21,22 +21,30 @@ const compare = (left, right) => {
       if (left.length < right.length) return 1;
       else return 0;
     }
-    if (typeof left === 'number') return compare([left], right);
-    if (typeof right === 'number') return compare(left, [right]);
+    if (Number.isInteger(left)) return compare([left], right);
+    if (Number.isInteger(right)) return compare(left, [right]);
   };
   
 
 const index = []
+const packeta = [[2]]
+const packetb = [[6]]
+const list = [packeta, packetb]
 for (let i = 0; i < data.length; i++) {
+    list.push(data[i][0])
+    list.push(data[i][1])
     c = compare(data[i][0], data[i][1] ,0)
-    console.log('----------->',c)
     if (c === 1) {
         index.push(i+1)
     }
 }
 
-// console.log(index)
-console.log('Part 1 : ', aoc.sum(index)); // 5623
-// console.log('Part 2', p2());   // 20570
 
- // [1,2,4,6]
+list.sort(compare).reverse()
+
+const apos = list.findIndex(x => x === packeta) + 1
+const bpos = list.findIndex(x => x === packetb) + 1
+
+console.log('Part 1 : ', aoc.sum(index)); // 5623
+console.log('Part 2 : ', apos * bpos);    // 20570
+
