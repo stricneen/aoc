@@ -1,79 +1,30 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day.txt');
+const buffer = aoc.readfile('day13.txt');
 const data = buffer.split(/\n\n/)
     .map(x => x.split(/\n/).map( y => JSON.parse(y)));
 
 
-// const compare2 = (a, b) => {
-//     console.log(a,'<>',b)
-//     if (Number.isInteger(a) && Array.isArray(b)) {
-//         a = [a]
-//     }
-    
-//     if (Array.isArray(a) && Number.isInteger(b)) {
-//         b = [b]
-//     }
-    
-//     if (Number.isInteger(a) && Number.isInteger(b)) {
-//         if (a<b) return 1
-//         if (a===b) return 0
-//         return -1
-//     }
-    
-    
-//     if (Array.isArray(a) && Array.isArray(b)) {
-    
-//         i=0
-//         while (i < a.length && i < b.length){
-//             t = compare(a[i],b[i])
-//             console.log(i,a,b)
-//             if (t === 1) return 1
-//             if (t === -1) return -1
-//             i++
-//         }
+// console .log(data)§
 
-//         if (i === a.length) {
-//             if (a.length === b.length) {
-//                 return 0
-//             }
-//             return 1
-//         }
-//         return -1
-
-//     }
-
-
-//     // Testing lists
-
-// }
-
-const compare = (a, b, tab) => {
-    console.log(' '.repeat(tab * 2), a,'<>',b)
-
-    if (Number.isInteger(a) && Number.isInteger(b)) {
-        if (a<b) return 1
-        if (a>b) return -1
-        return 0
+const compare = (left, right) => {
+    if (typeof left === 'number' && typeof right === 'number') {
+      if (left < right) return 1;
+      if (left > right) return -1;
+      return 0;
     }
-
-    if (Array.isArray(a) && Number.isInteger(b)) b = [b]
-    if (Array.isArray(b) && Number.isInteger(a)) a = [a]
-
-    // TWO LISTS
-    min = Math.min(a.length, b.length)
-console.log('min')
-    for (let i = 0; i <= min; i++) {
-        console.log(' '.repeat(tab * 2), i, a, b)
-        n = compare(a[i], b[i], tab + 1)
-
-        if (n === 1) return 1
-        if (n === -1) return -1
+    if (Array.isArray(left) && Array.isArray(right)) {
+      for (let i = 0; i < left.length; i++) {
+        if (!right[i]) return -1;
+        const result = compare(left[i], right[i]);
+        if (result) return result;
+      }
+      if (left.length < right.length) return 1;
+      else return 0;
     }
-
-    console.log('wtf')
-
-}
-
+    if (typeof left === 'number') return compare([left], right);
+    if (typeof right === 'number') return compare(left, [right]);
+  };
+  
 
 const index = []
 for (let i = 0; i < data.length; i++) {
@@ -84,7 +35,7 @@ for (let i = 0; i < data.length; i++) {
     }
 }
 
-console.log(index)
+// console.log(index)
 console.log('Part 1 : ', aoc.sum(index)); // 5623
 // console.log('Part 2', p2());   // 20570
 
