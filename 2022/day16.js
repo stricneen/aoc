@@ -13,10 +13,11 @@ const map = buffer.split(/\n/)
 
 // 1786 l
 pairing = 1
-let robots = [{who: 'me', p: 0,at: 'AA', total: 0, open:[]},{who: 'nelly',p: 0,at: 'AA', total: 0, open:[]}]
-for (let min = 0; min <= 5; min++) {
+// let robots = [{who: 'me', p: 0,at: 'AA', total: 0, open:[]},{who: 'nelly',p: 0,at: 'AA', total: 0, open:[]}]
+let robots = [{who: 'me', p: 0,at: 'AA', total: 0, open:[]}]
+for (let min = 0; min <= 30; min++) {
     console.log(`--- Minute ${min}`)
-    console.log(robots)
+    // console.log(robots)
     console.log()
     
     const next = []
@@ -30,9 +31,7 @@ for (let min = 0; min <= 5; min++) {
         const loc = map.find(x => x.valve === robot.at);
 
         if (!robot.open.includes(loc.valve) && loc.flow > 0) { // worth opening
-
             next.push({...robot, open: robot.open.concat(loc.valve)})
-
         } else { //move
             for (const n of loc.paths) {
                 next.push({...robot, at: n})
@@ -59,9 +58,6 @@ for (let min = 0; min <= 5; min++) {
     
     console.log(robots)
     // console.log()
-
-   
-    
 }
 
 // console.log(robots.length)
