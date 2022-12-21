@@ -1,12 +1,13 @@
 const fs = require('fs'),
     path = require('path');
-const { exit } = require('process');
 
 // Read file contents
 exports.readfile = (fn) => {
     const fp = path.join(__dirname, `./data/${fn}`);
     return fs.readFileSync(fp).toString();
 }
+
+exports.objClone = (o) => JSON.parse(JSON.stringify(o))
 
 // Write header
 exports.header = (s) => {
