@@ -2,8 +2,6 @@ const aoc = require('./aoc');
 const buffer = aoc.readfile('day22.txt');
 const data = buffer.split(/\n/)
 
-const map = data.filter(x => x.includes('.')).map(x => x.split(''))
-
 const moves = data[data.length - 1].split('').reduce((a, e) => {
     if (isNaN(e)) {
         a.push(e)
@@ -14,164 +12,111 @@ const moves = data[data.length - 1].split('').reduce((a, e) => {
     return a
 }, ['']).filter(x => x !== '').map(x => isNaN(x) ? x : parseInt(x))
 
-console.log(moves)
-
-// start point 
-pos = [0, map[0].findIndex(x => x === '.')]
-dir = [0, 1]
-
+const UP = '-1,0'
+const DOWN = '1,0'
+const LEFT = '0,-1'
+const RIGHT = '0,1'
 
 
-for (const move of moves) {
-   
-    sdir = dir.toString()
+const mov1 = ([x, y], [dx, dy], [xa, xb]) => {
+    max = 200
+    npx = (x + dx + max) % max
+    npy = (y + dy + max) % max
 
-    if (Number.isInteger(move)) { // move
+    while (true) {
+        next = map[npx][npy]
 
-        console.log('move', move)
-        console.log(pos)
-
-        // get the path (row or col)
-        if (dir[0] === 0) { /// moving lr
-            path = map[pos[0]]
-        } else {
-            path = []
-            for (let cx = 0; cx < map.length; cx++) {
-                path.push(map[cx][pos[1]])
-            }
-        }
-        // console.log(path)
-        path = path.filter(x => x !== ' ' && x != null)
-        // console.log(path)/
-
-
-        console.log(path.join(''), sdir)
-
-        for (let i = 0; i < move; i++) {
-
-            nextpos = [pos[0] + dir[0], pos[1] + dir[1]]
-
-
-            // next = map[nextpos[0]][nextpos[1]]
-            if (nextpos[0] >= map.length || nextpos[0] < 0) {
-                next = undefined
-            } else {
-                next = map[nextpos[0]][nextpos[1]]
-            }
-
-
-
-            if (next === undefined || next === ' ') { // edge of map
-
-                if (sdir === '0,1') { // right
-                    if (path[0] === '.') {
-                        nextpos = [pos[0], map[pos[0]].findIndex(x => x === '.')]
-                    }
-                }
-
-                else if (sdir === '1,0') { // down
-                    if (path[0] === '.') {
-                        for (let cx = 0; cx < map.length; cx++) {
-                            if (map[cx][pos[1]] === '.') {
-                                nextpos = [cx, pos[1]]
-                                break
-                            }
-                        }
-                    }
-                }
-
-                else if (sdir === '0,-1') {
-                    // console.log('bob')
-                    // console.log(path)
-                    // console.log(map[pos[0]].lastIndexOf('.'))
-                    if (path[path.length - 1] === '.') {
-                        nextpos = [pos[0], map[pos[0]].lastIndexOf('.')]
-                        console.log('bob2', nextpos)
-
-                    }
-                }
-
-                else if (sdir === '-1,0') { // up
-                    console.log('x')
-                    console.log(JSON.stringify(path))
-                    console.log('xxxx',path[path.length - 1])
-                    
-                    if (path[path.length - 1] === '#') {
-                        break;
-                    }
-
-                    if (path[path.length - 1] === '.') {
-                        console.log('xx')
-                        for (let cx = map.length - 1; cx >= 0; cx--) {
-                            console.log(cx)
-                            if (map[cx][pos[1]] === '.') {
-                                nextpos = [cx, pos[1]]
-                                break
-                            }
-                        }
-                    }
-                }
-
-                console.log(sdir ,nextpos)
-
-                next = map[nextpos[0]][nextpos[1]]
-
-            }
-
-
-
-            if (next === '.' || next === 'o') {
-                pos = nextpos
-                // map[pos[0]][pos[1]] = 'o' /// remove
-            }
-
-            if (next === '#') {
-                break;
-            }
-            // next = map[nextpos[0]][nextpos[1]]
-            // if (nextpos[0] >= map.length || nextpos[0] < 0) {
-            //     next = undefined
-            // } else {
-            //     next = map[nextpos[0]][nextpos[1]]
-            // }
-
-            // console.log(next)
-
-  
-
-
+        if (next === '.' || next === 'o') { 
+            return [npx, npy, dx, dy]
         }
 
-
-    } else { // turn
-        console.log('turn', move)
-
-        if (move === 'R') {
-            if (sdir === '0,1') { dir = [1, 0] }
-            else if (sdir === '1,0') { dir = [0, -1] }
-            else if (sdir === '0,-1') { dir = [-1, 0] }
-            else if (sdir === '-1,0') { dir = [0, 1] }
-        } else {
-            if (sdir === '0,1') { dir = [-1, 0] }
-            else if (sdir === '1,0') { dir = [0, 1] }
-            else if (sdir === '0,-1') { dir = [1, 0] }
-            else if (sdir === '-1,0') { dir = [0, -1] }
+        if (next === '#') {
+            if (x < 0 || y < 0 || x > 199) return [xa, xb, dx, dy]
+            return [x, y, dx, dy]
         }
-        sdir = dir.toString()
+
+        npx = (npx + dx + max) % max
+        npy = (npy + dy + max) % max
     }
-    console.log()
-    map.map(x => console.log(x.join('')))
-
 }
 
-dirs =['0,1','1,0','0,-1','-1,0']
-console.log(sdir)
-console.log(pos[0]+1,pos[1]+1, dirs.indexOf(sdir))
+const mov2 = ([x, y], [dx, dy]) => {
 
-p1 = ((pos[0]+1) * 1000) + ((pos[1]+1)*4) + dirs.indexOf(sdir)
+    if (dx === -1) { // up
+        if (y < 50) return mov1([y + 50, 49], [0, 1], [x,y])
+        if (y < 100) return mov1([y + 100, -1], [0, 1], [x,y]) // *
+        if (y < 150) return mov1([200, y - 100], [-1, 0], [x,y])
+    }
 
-console.log('Part 1 : ', p1); //  165094
-console.log('Part 2 : ', 0); // 
+    if (dx === 1) { // down
+        if (y < 50) return mov1([-1, y + 100], [1, 0], [x,y])
+        if (y < 100) return mov1([y + 100, 51], [0, -1], [x,y])
+        if (y < 150) return mov1([y - 50, 102], [0, -1], [x,y])
+    }
 
+    if (dy === -1) { // left
+        if (x < 50) return mov1([149 - x, -1], [0, 1], [x,y])
+        if (x < 100) return mov1([99, x - 50], [1, 0], [x,y])
+        if (x < 150) return mov1([149 - x , 49], [0, 1], [x,y]) // *
+        if (x < 200) return mov1([-1, x - 100], [1, 0], [x,y]) // *
+    }
 
-/// 88278 l
+    if (dy === 1) { // right
+        if (x < 50) return mov1([149 - x, 100], [0, -1], [x,y]) // *
+        if (x < 100) return mov1([50, x + 50], [-1, 0], [x,y])
+        if (x < 150) return mov1([149 - x, 150], [0, -1], [x,y])
+        if (x < 200) return mov1([150, x - 100], [-1, 0], [x,y])
+
+    }
+    throw new Error('Bad data')
+}
+
+const solve = (fn) => {
+    // start point 
+    map = data.filter(x => x.includes('.')).map(x => x.split(''))
+    pos = [0, map[0].findIndex(x => x === '.')]
+    dir = [0, 1]
+
+    for (const move of moves) {
+        sdir = dir.toString()
+        
+        if (Number.isInteger(move)) { // move
+
+            for (let i = 0; i < move; i++) {
+
+                nextpos = [pos[0] + dir[0], pos[1] + dir[1]]
+                next = (map[nextpos[0]] || {})[nextpos[1]]
+                if (next === undefined || next === ' ') { // edge of map
+                    
+                    nextpos = fn(pos, dir, pos)
+                    next = map[nextpos[0]][nextpos[1]]
+                    dir = [nextpos[2], nextpos[3]]
+                }
+
+                if (next === '.' || next === 'o') {
+                    pos = nextpos;
+                    map[pos[0]][pos[1]] = 'o'
+                }
+                if (next === '#') break;
+
+            }
+        } else { // turn
+            if (move === 'R') {
+                if (sdir === RIGHT) { dir = [1, 0] }
+                if (sdir === DOWN) { dir = [0, -1] }
+                if (sdir === LEFT) { dir = [-1, 0] }
+                if (sdir === UP) { dir = [0, 1] }
+            } else {
+                if (sdir === RIGHT) { dir = [-1, 0] }
+                if (sdir === DOWN) { dir = [0, 1] }
+                if (sdir === LEFT) { dir = [1, 0] }
+                if (sdir === UP) { dir = [0, -1] }
+            }
+            sdir = dir.toString()
+        }
+    }
+    return ((pos[0] + 1) * 1000) + ((pos[1] + 1) * 4) + [RIGHT, DOWN, LEFT, UP].indexOf(sdir)
+}
+
+console.log('Part 1 : ', solve(mov1)); //  165094
+console.log('Part 2 : ', solve(mov2)); // 95316
