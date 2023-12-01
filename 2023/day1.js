@@ -1,22 +1,53 @@
+const { assert } = require('console');
 const aoc = require('./aoc');
 const buffer = aoc.readfile('day1.txt');
 
 const text = buffer.split(/\n/);
-const nums = text.map(x => aoc.extractNums(x));
 
-const x = nums.map(x => parseInt(x[0].toString()[0]) * 10 +  parseInt(x[x.length-1].toString()[x[x.length-1].toString().length -1]))
-// const x = nums.map(x => parseInt(x[x.length-1].toString()[x[x.length-1].toString().length -1]))
+const t = text.map(aoc.extractNums);
+const x = t.map(x => (parseInt(x[0].toString()[0])) * 10 + parseInt(x[x.length - 1].toString()[x[x.length - 1].toString().length - 1]))
+const p1 = x.reduce((a, e) => a + e, 0)
 
 
-const y = x.reduce((a,e) => a+e, 0)
-// const calories = nums.reduce((a,e) => {
-//   isNaN(e) ? a.push(0) : a[a.length-1]+=e;
-//   return a;
-// }, [0])
+const nums = {
+    'one': 1,
+    'two': 2,
+    'three': 3,
+    'four': 4,
+    'five': 5,
+    'six': 6,
+    'seven': 7,
+    'eight': 8,
+    'nine': 9,
+}
 
-// aoc.sort_ints(calories).reverse();
+const f = (s) => {
+    const o = [];
+    for (let i = 0; i <= s.length; i++) {
+        if (isNaN(parseInt((s[i]))) === false) {
+            o.push(parseInt(s[i]));
+        } else {
+            Object.keys(nums).forEach(k => {
+                if (s.startsWith(k, i)) {
+                    o.push(nums[k])
+                }
+            })
+        }
 
-// console.log("Part 1 : ", calories[0]);
-// console.log("Part 2 : ", aoc.sum(calories.slice(0,3)));
+    }
+    return o;
+}
 
-console.log(y)
+const p2 = text
+            .map(f)
+            .map(x => x[0] * 10 + x[x.length-1])
+            .reduce((a, e) => a + e, 0)
+
+assert(p1 === 54450, 'p1')
+assert(p2 === 54265, 'p2')
+console.log("Part 1 : ", p1);
+console.log("Part 2 : ", p2);2
+
+
+//54450
+//54265
