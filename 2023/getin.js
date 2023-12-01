@@ -1,12 +1,10 @@
+// https://adventofcode.com/2022/day/1/input
+
 const https = require('https');
 const fs = require('node:fs');
 
-// https://adventofcode.com/2022/day/1/input
-
-const args = process.argv;
-// console.log(args)
-
 const cookie = fs.readFileSync('../cookie.txt');
+const args = process.argv;
 const day = args[2] || new Date().getDate(); // default to today
 
 const options = {
@@ -17,11 +15,7 @@ const options = {
     headers: { 'Cookie': cookie }
 };
 
-// console.log(options)
-// process.exit();
-
 https.get(options, res => {
-
     const data = [];
     console.log(res.statusCode);
 
@@ -37,8 +31,6 @@ https.get(options, res => {
 
         console.log(`Input written: ./data/day${day}.txt`);
     });
-
-
 }).on('error', err => {
     console.log('Error: ', err.message);
 });
