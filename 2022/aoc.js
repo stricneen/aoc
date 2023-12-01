@@ -30,11 +30,11 @@ exports.range = (s, e) => [...Array(Math.abs((e || 0) - s)).keys()].map(x => x +
 
 // aoc.p(10,10,"Text");
 exports.p = (x, y, t) => {
-    console.log("\033[" + y + ";" + x + "H" + t);
+    console.log("\0o33[" + y + ";" + x + "H" + t);
 }
 
 // clear screen
-exports.cls = () => console.log('\033[2J');
+exports.cls = () => console.log('\0o33[2J');
 
 // Distinct string
 exports.dedup_str = (s) => [...new Set(s.split(''))].join('');
