@@ -109,6 +109,25 @@ exports.extractNums = (l) => {
         .map(x => parseInt(x[0]))
 }
 
+// Same as above - no negatives
+exports.extractStrictNums = (l) => {
+    return t = [...l.matchAll(/\d+/g)]
+        .map(x => parseInt(x[0]))
+}
+
+
+// Returns all numbers from a string
+exports.extractNumericDigits = (l) => {
+    return t = [...l.matchAll(/[-+]?\d+/g)]
+        .map(x => x[0])
+        // .map(x => console.log(typeof(x)))
+        // .map(x => x.join())
+        // .map(x => parseInt(x))
+        // .map(x => x.join())
+        // .flat()
+}
+
+
 // ##### INT ARRAY FUNCS
 
 // return all values 'up' from x,y (inc x,y)

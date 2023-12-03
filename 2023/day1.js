@@ -4,10 +4,11 @@ const buffer = aoc.readfile('day1.txt');
 
 const text = buffer.split(/\n/);
 
-const t = text.map(aoc.extractNums);
+const t = text.map(aoc.extractNumericDigits)
+t.forEach(x => console.log(x))
+// console.log(JSON.stringify(t))
 const x = t.map(x => (parseInt(x[0].toString()[0])) * 10 + parseInt(x[x.length - 1].toString()[x[x.length - 1].toString().length - 1]))
 const p1 = x.reduce((a, e) => a + e, 0)
-
 
 const nums = {
     'one': 1,
@@ -46,7 +47,7 @@ const p2 = text
 assert(p1 === 54450, 'p1')
 assert(p2 === 54265, 'p2')
 console.log("Part 1 : ", p1);
-console.log("Part 2 : ", p2);2
+console.log("Part 2 : ", p2);
 
 
 //54450
