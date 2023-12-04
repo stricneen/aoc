@@ -115,17 +115,32 @@ exports.extractStrictNums = (l) => {
         .map(x => parseInt(x[0]))
 }
 
+exports.createMapArray = () => {
+    const imap = new Map();   
 
-// Returns all numbers from a string
-exports.extractNumericDigits = (l) => {
-    return t = [...l.matchAll(/[-+]?\d+/g)]
-        .map(x => x[0])
-        // .map(x => console.log(typeof(x)))
-        // .map(x => x.join())
-        // .map(x => parseInt(x))
-        // .map(x => x.join())
-        // .flat()
-}
+    return {
+        add: (key, val) => {
+            if (imap.has(key)) { 
+                imap.set(key, [...imap.get(key), val])
+            } else { 
+                imap.set(key, [val]); 
+            }
+        },
+        map: () => imap
+
+    }
+};
+
+// // Returns all numbers from a string
+// exports.extractNumericDigits = (l) => {
+//     return t = [...l.matchAll(/[-+]?\d+/g)]
+//         .map(x => x[0])
+//         // .map(x => console.log(typeof(x)))
+//         // .map(x => x.join())
+//         // .map(x => parseInt(x))
+//         // .map(x => x.join())
+//         // .flat()
+// }
 
 
 // ##### INT ARRAY FUNCS
