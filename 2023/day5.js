@@ -2,16 +2,6 @@ const aoc = require('./aoc');
 const buffer = aoc.readfile('day5.txt');
 const textraw = buffer.split(/\n/);
 
-// console.log(textraw)
-
-function range(begin, end){
-    var arr = [];
-    for(var i=begin; i<=end; i++){
-        arr.push(i);
-    }
-    return arr;
- }
-
 let seeds = []
 let maps = []
 let locations  =[]
@@ -39,8 +29,9 @@ textraw.forEach(l => {
     }
 });
 
+let p1a = Number.MAX_SAFE_INTEGER
 let phaseNumber = 0
-for (let s = 0; s < seeds.length; s++) {
+for (let s = 0; s < seeds.length / 2; s++) {
     let phaseName = 'seed'
     phaseNumber = seeds[s];
 
@@ -53,6 +44,7 @@ for (let s = 0; s < seeds.length; s++) {
         //done
         console.log(phaseNumber)
         console.log()
+        if (phaseNumber < p1a) p1a = phaseNumber;
         locations.push(phaseNumber)
         break;
     }
