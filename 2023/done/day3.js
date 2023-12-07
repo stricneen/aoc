@@ -1,4 +1,4 @@
-const aoc = require('./aoc');
+const aoc = require('../aoc');
 const buffer = aoc.readfile('day3.txt');
 const textraw = buffer.split(/\n/);
 const text = ['.'.repeat(textraw[0].length),

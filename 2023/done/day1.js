@@ -1,5 +1,5 @@
 const { assert } = require('console');
-const aoc = require('./aoc');
+const aoc = require('../aoc');
 const buffer = aoc.readfile('day1.txt');
 
 const text = buffer.split(/\n/);
