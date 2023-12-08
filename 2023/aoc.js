@@ -131,17 +131,23 @@ exports.createMapArray = () => {
     }
 };
 
-// // Returns all numbers from a string
-// exports.extractNumericDigits = (l) => {
-//     return t = [...l.matchAll(/[-+]?\d+/g)]
-//         .map(x => x[0])
-//         // .map(x => console.log(typeof(x)))
-//         // .map(x => x.join())
-//         // .map(x => parseInt(x))
-//         // .map(x => x.join())
-//         // .flat()
-// }
 
+//recursive implementation
+exports.lcm = (arr, idx = 0) => {
+    const gcd = (a, b) =>
+    {
+        if (a == 0)
+            return b;
+        return gcd(b % a, a);
+    }
+
+    if (idx == arr.length-1){
+        return arr[idx];
+    }
+    let a = arr[idx];
+    let b = this.lcm(arr, idx+1);
+    return (a*b/gcd(a,b));
+}
 
 // ##### INT ARRAY FUNCS
 
