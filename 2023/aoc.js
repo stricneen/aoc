@@ -95,11 +95,11 @@ exports.chunk = (array, chunkSize) => {
 }
 
 // Generator for window over array
-exports.window = function*(array, size) {
+exports.window = function* (array, size) {
     let c = 0;
-    while(c < array.length - size + 1) {
-        yield array.slice(c, c+size);
-        c+=1;
+    while (c < array.length - size + 1) {
+        yield array.slice(c, c + size);
+        c += 1;
     }
 }
 
@@ -116,14 +116,14 @@ exports.extractStrictNums = (l) => {
 }
 
 exports.createMapArray = () => {
-    const imap = new Map();   
+    const imap = new Map();
 
     return {
         add: (key, val) => {
-            if (imap.has(key)) { 
+            if (imap.has(key)) {
                 imap.set(key, [...imap.get(key), val])
-            } else { 
-                imap.set(key, [val]); 
+            } else {
+                imap.set(key, [val]);
             }
         },
         map: () => imap
@@ -134,19 +134,26 @@ exports.createMapArray = () => {
 
 //recursive implementation
 exports.lcm = (arr, idx = 0) => {
-    const gcd = (a, b) =>
-    {
+    const gcd = (a, b) => {
         if (a == 0)
             return b;
         return gcd(b % a, a);
     }
 
-    if (idx == arr.length-1){
+    if (idx == arr.length - 1) {
         return arr[idx];
     }
     let a = arr[idx];
-    let b = this.lcm(arr, idx+1);
-    return (a*b/gcd(a,b));
+    let b = this.lcm(arr, idx + 1);
+    return (a * b / gcd(a, b));
+}
+
+exports.eqArr = (a1, a2) => {
+    var i = a1.length;
+    while (i--) {
+        if (a1[i] !== a2[i]) return false;
+    }
+    return true
 }
 
 // ##### INT ARRAY FUNCS
@@ -154,7 +161,7 @@ exports.lcm = (arr, idx = 0) => {
 // return all values 'up' from x,y (inc x,y)
 exports.ia_left = (x, y, arr) => {
     c = []
-    for (let i = y; i >=0 ; i--) {
+    for (let i = y; i >= 0; i--) {
         c.push(arr[x][i]);
     }
     return c
@@ -162,7 +169,7 @@ exports.ia_left = (x, y, arr) => {
 
 exports.ia_right = (x, y, arr) => {
     c = []
-    for (let i = y; i < arr.length ; i++) {
+    for (let i = y; i < arr.length; i++) {
         c.push(arr[x][i]);
     }
     return c
@@ -170,7 +177,7 @@ exports.ia_right = (x, y, arr) => {
 
 exports.ia_up = (x, y, arr) => {
     c = []
-    for (let i = x; i >=0 ; i--) {
+    for (let i = x; i >= 0; i--) {
         c.push(arr[i][y]);
     }
     return c
@@ -178,7 +185,7 @@ exports.ia_up = (x, y, arr) => {
 
 exports.ia_down = (x, y, arr) => {
     c = [];
-    for (let i = x; i < arr[0].length ; i++) {
+    for (let i = x; i < arr[0].length; i++) {
         c.push(arr[i][y]);
     }
     return c;
