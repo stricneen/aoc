@@ -149,6 +149,7 @@ exports.lcm = (arr, idx = 0) => {
 }
 
 exports.eqArr = (a1, a2) => {
+    if (a1.length !== a2.length) return false;
     var i = a1.length;
     while (i--) {
         if (a1[i] !== a2[i]) return false;
