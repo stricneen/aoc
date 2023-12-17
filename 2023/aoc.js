@@ -65,6 +65,52 @@ exports.group = (l, f) => {
     }, [[]]);
 }
 
+exports.replaceAt = (str, index, replacement) => {
+    return str.substring(0, index) + replacement + str.substring(index + replacement.length);
+}
+
+exports.getCol = (sqr, n) => {
+    t = ''
+    // console.log(sqr.length)
+    for (let i = 0; i < sqr.length; i++) {
+        const element = sqr[i][n];
+        // console.log(element)
+        t += element
+    }
+    // console.log(t)\
+    // console.log()
+    return t
+}
+
+// .N.
+// W.E
+// .S.
+
+// .E.
+// N.S
+// .W.
+
+exports.rotateCounter = (a) => {
+    const r = []
+    for (let i = a[0].length -1; i >= 0; i--) {
+        // console.log(i, this.getCol(a, i))
+        r.push(this.getCol(a, i));
+    }
+    return r;
+}
+
+exports.rotate = (a) => {
+    const r = []
+
+    for (let i = 0; i < a[0].length; i++) {
+        // console.log(i)
+        r.push(this.revStr(this.getCol(a, i)));
+        
+    }
+
+    return r;
+}
+
 // Sort array of numbers
 exports.sort_ints = (a) => a.sort((a, b) => a - b);
 
@@ -131,6 +177,12 @@ exports.createMapArray = () => {
     }
 };
 
+exports.printGrid = (a) => {
+    console.log()
+    a.forEach(element => {
+        console.log(element);
+    });
+}
 
 //recursive implementation
 exports.lcm = (arr, idx = 0) => {
