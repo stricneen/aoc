@@ -1,17 +1,18 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day18.txt');
+const buffer = aoc.readfile('day.txt');
 const textraw = buffer.split(/\n/);
 
 aoc.printGrid(textraw)
 
-const size = 700
+const size = 1_000_000
 const m = []
 for (let i = 0; i < size; i++) {
     m.push('.'.repeat(size))
 }
 
 
-s = [350, 350]
+// s = [350, 350]
+s = [2, 2]
 
 const set = ([x, y]) => {
     m[y] = aoc.replaceAt(m[y], x, '#')
@@ -45,8 +46,12 @@ fill = (x, y) => {
 
 textraw.forEach(inst => {
     t = inst.split(' ')
-    d = t[0], f = parseInt(t[1])
-    // console.log(d,f)
+    
+    console.log(t[2],t[2].slice(2,7))
+    
+    console.log(Number(`0x${t[2].slice(2,7)}`), 'RDLU'[parseInt(t[2].slice(7,8))])
+    // d = t[0], f = parseInt(t[1])
+    d = 'RDLU'[parseInt(t[2].slice(7,8))], f = Number(`0x${t[2].slice(2,7)}`)
 
     if (d === 'R') {
         for (let i = 0; i < f; i++) {
@@ -79,7 +84,7 @@ inside = false
 
 
 // aoc.printGrid(m)
-fill(350,350)
+fill(s[0]+1,s[1]+1)
 // aoc.printGrid(m)
 for (let i = 0; i < m.length; i++) {
 
