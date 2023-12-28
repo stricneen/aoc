@@ -16,6 +16,13 @@ exports.header = (s) => {
     console.log('-'.repeat(s.length));
 }
 
+exports.dirs = {
+    R: [0, 1],
+    D: [1, 0],
+    L: [0, -1],
+    U: [-1, 0],
+}
+
 // Check if input is a number
 exports.isNumber = (s) => /^\d+$/.test(s);
 
@@ -92,7 +99,7 @@ exports.getCol = (sqr, n) => {
 
 exports.rotateCounter = (a) => {
     const r = []
-    for (let i = a[0].length -1; i >= 0; i--) {
+    for (let i = a[0].length - 1; i >= 0; i--) {
         // console.log(i, this.getCol(a, i))
         r.push(this.getCol(a, i));
     }
@@ -105,7 +112,7 @@ exports.rotate = (a) => {
     for (let i = 0; i < a[0].length; i++) {
         // console.log(i)
         r.push(this.revStr(this.getCol(a, i)));
-        
+
     }
 
     return r;
