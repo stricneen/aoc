@@ -1,103 +1,60 @@
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day.txt');
+const buffer = aoc.readfile('day17.txt');
 const textraw = buffer.split(/\n/);
 
-aoc.printGrid(textraw)
+seen = new Set()
+pq = [[0, 0, 0, 0, 0, 0]]
 
-const w = [-1, 0], e = [1, 0], n = [0, -1], s = [0, 1]
+while (pq.length) {
+    // console.log(pq.length)
+    pq.sort((x,y) => y[0] - x[0])
+    let [hl, x, y, dx, dy, n] = pq.pop()
 
-//      0,0         12,0  
-//       2413432311323
-//       3215453535623
-//       3255245654254
-//       3446585845452
-//       4546657867536
-//       1438598798454
-//       4457876987766
-// 0,12  3637877979653  12,12
-
-const heatAt = (x, y) => {
-    return parseInt(textraw[y][x])
-}
-
-const valid = (x, y) => x >= 0 && y >= 0 && x < textraw[0].length && y < textraw.length
-
-const shortest = []
-for (let i = 0; i < textraw.length; i++) {
-    l = []
-    for (let j = 0; j < textraw[0].length; j++) {
-        l.push(Number.MAX_SAFE_INTEGER)
+    if (x === textraw[0].length-1 && y === textraw.length-1 && n <= 10) {
+        console.log( [hl, x, y, dx, dy, n])
+        
+        console.log(hl)
+        break
     }
-    shortest.push(l)    
-}
+    // if (pq.length > 2) break
 
-// console.log(shortest)
+    if (seen.has(JSON.stringify([x, y, dx, dy, n]))) continue
+    seen.add(JSON.stringify([x, y, dx, dy, n]))
 
-const r = (least, most) => {
+    // console.log( [hl, x, y, dx, dy, n],textraw[x][y])
 
-    // x , y , heat, dir
-     q = [[0, 0, 0, s], [0, 0, 0, e]]
 
-    while (q.length) {
+    if (n < 10 && !aoc.eqArr([dx, dy], [0, 0])) {
+        nx = x + dx
+        ny = y + dy
+        if (nx >= 0 && nx < textraw[0].length && ny >= 0 && ny < textraw.length) {
+            pq.push([hl + parseInt(textraw[ny][nx]), nx, ny, dx, dy, n + 1])
+        }
+    }
 
-        const [x, y, heat, dir] = q.shift()
+    if (n >= 4 || aoc.eqArr([dx, dy], [0, 0]))
+        for (k of Object.keys(aoc.dirs)) {
+            let [ndx, ndy] = aoc.dirs[k]
+            // console.log(dx, dy, ndx, ndy)
+            if (!aoc.eqArr([ndx, ndy], [dx, dy]) && !aoc.eqArr([ndx, ndy], [-dx, -dy])) {
+                nx = x + ndx
+                ny = y + ndy
+                // console.log(dx, dy, ndx, ndy)
+                if (nx >= 0 && nx < textraw[0].length && ny >= 0 && ny < textraw.length) {
 
-        dh = heat
-        for (let i = least; i <= most; i++) {
-
-            dx = x + (dir[0] * i)
-            dy = y + (dir[1] * i)
-
-            if (!valid(dx, dy)) continue
-
-            // console.log(dx, dy)
-            dh += heatAt(dx, dy)
-            if (isNaN(dh)) continue
-
-            next = [dx, dy, dh, dir]
-            console.log(next)
-
-            if (aoc.eqArr(dir, e) || aoc.eqArr(dir, w)) {
-                q.push([dx, dy, dh, s])
-                q.push([dx, dy, dh, n])
-            }
-            if (aoc.eqArr(dir, n) || aoc.eqArr(dir, s)) {
-                q.push([dx, dy, dh, e])
-                q.push([dx, dy, dh, w])
+                    // console.log('adding ', nx,ny,textraw[ny][nx], [hl ,parseInt(textraw[ny][nx]), nx, ny, ndx, ndy, 1])
+                    pq.push([hl + parseInt(textraw[ny][nx]), nx, ny, ndx, ndy, 1])
+                }
             }
         }
-        
-        console.log('>>>>>', q.length)
-        console.log(q)
-        q.forEach(([x,y,d,p]) => {
-            if (d < shortest[y][x]) {
-                shortest[y][x] = d
-            }
-        })
-
-        q = q.reduce((a, [x,y,d,p]) => {
-            if (d <= shortest[y][x]) {
-                a.push([x,y,d,p])
-            }
-            return a
-        }, [])
-
-        
-        // console.log(shortest)
-        
-        
-        // if (q.length> 3)  { 
-            //     console.log(q)
-            //     process.exit()
-            // }
-        }
-        q.sort(([x1,y1,h1,p1], [x2,y2,h2,p2]) => {
-            return h1 - h2
-        })
 }
-p1 = r(1, 3)
+
+
+
+
+p1 = 0
 p2 = 0
-console.log(shortest)
+
 console.log()
 console.log('Part 1:', p1); // 
 console.log('Part 2:', p2); // 
