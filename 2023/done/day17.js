@@ -1,4 +1,4 @@
-const aoc = require('./aoc');
+const aoc = require('../aoc');
 const buffer = aoc.readfile('day17.txt');
 const textraw = buffer.split(/\n/);
 
@@ -10,7 +10,7 @@ while (pq.length) {
     pq.sort((x,y) => y[0] - x[0])
     let [hl, x, y, dx, dy, n] = pq.pop()
 
-    if (x === textraw[0].length-1 && y === textraw.length-1 && n <= 10) {
+    if (x === textraw[0].length-1 && y === textraw.length-1 && n >= 4) {
         console.log( [hl, x, y, dx, dy, n])
         
         console.log(hl)
