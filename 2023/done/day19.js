@@ -1,4 +1,4 @@
-const aoc = require('./aoc');
+const aoc = require('../aoc');
 const buffer = aoc.readfile('day19.txt');
 const textraw = buffer.split(/\n/);
 
@@ -72,6 +72,7 @@ while (q.length) {
         for (key of Object.keys(state)) {
             p2a *= state[key][1] - state[key][0] + 1
         }
+        // console.log('accepted > ', p2a)
         p2 += p2a
         continue
     }
@@ -116,7 +117,7 @@ while (q.length) {
             
         }
     }
-    // console.log(q.lengthr)
+    // console.log(q.length)
 }
 
 
