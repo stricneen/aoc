@@ -1,6 +1,6 @@
 
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day.txt');
+const buffer = aoc.readfile('day23.txt');
 const maze = buffer.split(/\n/);
 
 
@@ -26,9 +26,9 @@ for (let dx = 0; dx < maze.length; dx++) {
             .map(([d, x, y]) => [d, x, y, maze[x][y]])
             .filter(([d, x, y, p]) => p !== '#')
 
-        
+
         if (n.length > 2) {
-            juncs.push([dx,dy])
+            juncs.push([dx, dy])
             // console.log(n)
         }
     }
@@ -38,16 +38,16 @@ console.log(juncs, juncs.length)
 
 x = {
     '0,1': {
-        '22,21' : 4
+        '22,21': 4
     }
 }
 
 dists = {}
-for([x,y] of juncs) {
+for ([x, y] of juncs) {
 
-    key = js([x,y])
+    key = js([x, y])
     dists[key] = {}
-    q = [[[x,y],0]]
+    q = [[[x, y], 0]]
 
     seen = [key]
 
@@ -59,25 +59,26 @@ for([x,y] of juncs) {
             .map(k => [k, x + aoc.dirs[k][0], y + aoc.dirs[k][1]])
             .filter(([d, x, y]) => x >= 0 && y >= 0 && x < maze.length && y < maze[0].length)
             .map(([d, x, y]) => [d, x, y, maze[x][y]])
-            .filter(([d, x, y, p]) => p === '.' || aoc.eqArr([d, p], ['D', 'v']) || aoc.eqArr([d, p], ['U', '^']) || aoc.eqArr([d, p], ['L', '<']) || aoc.eqArr([d, p], ['R', '>']))
+            .filter(([d, x, y, p]) => p !== '#') //p === '.' || aoc.eqArr([d, p], ['D', 'v']) || aoc.eqArr([d, p], ['U', '^']) || aoc.eqArr([d, p], ['L', '<']) || aoc.eqArr([d, p], ['R', '>']))
+        //    .filter(([d, x, y, p]) => p === '.' || aoc.eqArr([d, p], ['D', 'v']) || aoc.eqArr([d, p], ['U', '^']) || aoc.eqArr([d, p], ['L', '<']) || aoc.eqArr([d, p], ['R', '>']))
 
-            // console.log(n)
-    
+        // console.log(n)
+
         n.forEach(([_, nx, ny, __]) => {
 
             k = js([nx, ny])
 
             if (!seen.includes(k)) {
-                
-                
+
+
                 // is it a junc ?
                 j = juncs.find((p) => aoc.eqArr(p, [nx, ny]))
                 if (j) {
                     // console.log(j)
-                    dists[key] = {...dists[key] , [js(j)]: v+1}
+                    dists[key] = { ...dists[key], [js(j)]: v + 1 }
                 } else {
-                    q.push([[nx, ny], v+1])
-                    
+                    q.push([[nx, ny], v + 1])
+
                 }
                 seen.push(k)
 
@@ -88,32 +89,54 @@ for([x,y] of juncs) {
 }
 console.log(dists)
 
-q = [[js(start), 0]]
+// q = [[js(start), 0, []]]
+// //2661
+// p1 = 0
 
-p1 = 0
-
-while (q.length) {
+// while (q.length) {
 
 
-    [node, distance] = q.shift()
-console.log([node, distance])
-    routes = dists[node]
-    console.log('>',routes)
+//     [node, distance, seen] = q.shift()
+//     if (seen.includes(node)) continue
+//     // console.log([node, distance,seen])
+//     routes = dists[node]
+//     // console.log('>', routes)
 
-    Object.keys(routes).forEach(k => {
-        q.push([k,distance + routes[k]])
-        p1 = Math.max(p1, distance + routes[k])
+//     Object.keys(routes).forEach(k => {
+
+
+
+//         q.push([k, distance + routes[k], [...seen, node]])
+//         p1 = Math.max(p1, distance)
+//     })
+
+//     // console.log(q.length)
+// }
+
+seen = new Set()
+dfs = (pt) => {
+
+    if (pt === js(end)) return 0
+
+    m = Number.MIN_SAFE_INTEGER
+
+    seen.add(pt)
+    // console.log(dists[pt])
+    Object.keys(dists[pt]).forEach(k => {
+        if (!seen.has(k)) {
+            m = Math.max(m, dfs(k) + dists[pt][k])
+        }
     })
+    seen.delete(pt)
+    return m
 }
 
 
 
 
 
-
-
-    // p1 = 0
-    p2 = 0
-    console.log()
-    console.log('Part 1:', p1); // 
-    console.log('Part 2:', p2); // 
+p1 = dfs(js(start))
+p2 = 0
+console.log()
+console.log('Part 1:', p1); // 
+console.log('Part 2:', p2); // 
