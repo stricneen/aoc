@@ -1,4 +1,4 @@
-const aoc = require('../aoc');
+const aoc = require('./aoc');
 
 const time = [46, 82, 84, 79]
 const distance = [347, 1522, 1406, 1471]

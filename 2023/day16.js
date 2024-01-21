@@ -1,4 +1,4 @@
-const aoc = require('../aoc');
+const aoc = require('./aoc');
 const buffer = aoc.readfile('day16.txt');
 const map = buffer.split(/\n/);
 const mapV = buffer.split(/\n/);

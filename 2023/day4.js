@@ -1,5 +1,5 @@
 const { match } = require('assert');
-const aoc = require('../aoc');
+const aoc = require('./aoc');
 const buffer = aoc.readfile('day4.txt');
 const textraw = buffer.split(/\n/);
 

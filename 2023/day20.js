@@ -1,12 +1,11 @@
 const aoc = require('./aoc');
 const buffer = aoc.readfile('day20.txt');
 const raw = buffer.split(/\n/);
+
 const net = new Map()
 
 net.set('output', [(s, d, p) => console.log('output > ', p), []])
-// net.set('rx', [(s, d, p) => console.log('rx > ', p), []])
-net.set('rx', [(s, d, p) => {}, []])
-
+net.set('rx', [(s, d, p) => console.log('rx > ', p), []])
 
 const flipFlop = () => {
     let state = 0;
@@ -22,8 +21,10 @@ const flipFlop = () => {
 }
 
 const conjunction = (inps) => {
+
     const inputs = {}
     inps.forEach(x => inputs[x.replace('%', '').replace('&', '')] = 0)
+
     const pulse = (source, dest, pulse) => {
         c = inputs[source]
         inputs[source] = pulse
@@ -47,7 +48,7 @@ raw.forEach(l => {
 
 raw.forEach(l => {
     let [a, b] = l.split(' -> ')
-    // console.log('> ', a, b)
+    console.log('> ', a, b)
     dests = b.split(', ')
 
     if (a.startsWith('%')) {
@@ -60,17 +61,12 @@ raw.forEach(l => {
 
 })
 
-// console.log(incoming)
-// console.log(net)
 
-feed = Array.from(net.entries()).find(([n,[_,x]]) => aoc.eqArr(x, ['rx']))[0]
-cycles_names = Array.from(net.entries()).filter(([n,[_,x]]) => aoc.eqArr(x, [feed])).map(([x,_]) => x)
-cycles = Object.fromEntries(cycles_names.map(x => [x,0]))
-seen = {...cycles}
-// console.log(feed)
-// console.log(cycles)
 
-presses = 0
+console.log(incoming)
+
+
+console.log(net)
 
 const button = () => {
     
@@ -78,24 +74,17 @@ const button = () => {
     high = 0
     low = 1
 
-    presses += 1
+    console.log()
+
+// tl 876979246
+//    876979246
+
     while (q.length) {
+    
+        console.log(q[0])
     
         let [source, dest, pulse] = q.shift()
 
-        if (dest === feed) {
-
-            if (cycles_names.includes(source) && pulse === 1) {
-                
-                // cycles_names = cycles_names.filter(z => z !== dest)
-                if (cycles[source] === 0) {
-                    cycles[source] = presses
-                }
-                seen[source] += 1
-
-            }
-        }
-            
         high += pulse === 1 ? 1 : 0
         low += pulse === 0 ? 1 : 0
 
@@ -110,15 +99,6 @@ const button = () => {
             })
         }
     }
-
-    // console.log(seen)
-    if (Array.from(Object.values(seen)).every(x=> x>3)) {
-        return [-1,-1]
-    }
-    // if (cycles_names.length === 0) {
-    //     return [-1,-1]
-    // }
-
     return [low,high]
 }
 
@@ -130,21 +110,10 @@ for (let i = 0; i < 1000; i++) {
     h += dh
 }
 
-// // console.log(l,h, l * h)
-// console.log('Part 1:', l * h); // 980457412
 
+console.log(l,h, l * h)
 
-
-
-while (true) {
-    [dl, dh] = button()
-    if (dl === -1 && dh === -1) {
-        // console.log(dl,dh)
-        // console.log(cycles)
-        break
-    }
-}
-
-
-console.log('Part 1:', l * h); // 980457412
-console.log('Part 2:', aoc.lcm([...Object.values(cycles)])); // 232774988886497
+p1 = p2 = 0
+console.log()
+console.log('Part 1:', p1); // 287054
+console.log('Part 2:', p2); // 

@@ -1,5 +1,5 @@
 const { assert } = require('console');
-const aoc = require('../aoc');
+const aoc = require('./aoc');
 const buffer = aoc.readfile('day7.txt');
 const textraw = buffer.split(/\n/);
 const hands = textraw.map(x => ({ hand: x.split(' ')[0], bid: parseInt(x.split(' ')[1])}))
