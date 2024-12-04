@@ -95,6 +95,27 @@ exports.getCol = (sqr, n) => {
     return t
 }
 
+
+exports.getDiagNE = (a, i) => {
+    let t = ''
+    for (let j = 0; j <= i; j++) {
+        if (a[i - j] && a[i - j][j]) {
+            t += a[i - j][j]
+        }
+    }
+    return t
+}
+
+exports.getDiagNW = (a, i) => {
+    let t = ''
+    for (let j = 0; j <= i; j++) {
+        if (a[j] && a[j][a.length - i + j]) {
+            t += a[j][a.length - i + j]
+        }
+    }
+    return t
+}
+
 // .N.
 // W.E
 // .S.
