@@ -82,6 +82,24 @@ exports.replaceAt = (str, index, replacement) => {
     return str.substring(0, index) + replacement + str.substring(index + replacement.length);
 }
 
+exports.findInGrid = (g, f) => {
+    for (let i = 0; i < g.length; i++) {
+        for (let j = 0; j < g[i].length; j++) {
+            if (f(g[i][j])) {
+                return [i, j]
+            }
+        }
+    }
+}
+
+exports.copyGrid = (g) => {
+    n = []
+    for (let i = 0; i < g.length; i++) {
+        n.push(g[i])
+    }
+    return n
+}
+
 exports.getCol = (sqr, n) => {
     t = ''
     // console.log(sqr.length)
@@ -150,6 +168,15 @@ exports.sort_ints = (a) => a.sort((a, b) => a - b);
 
 // Denary to binary
 exports.denBin = (s) => (s >>> 0).toString(2);
+
+exports.countBase = function*(base, to=-1) {
+    upto = to < 0 ? base : to   
+    for (let i = 0; i < Math.pow(base, base); i++) {
+        // console.log(i)
+        f = i.toString(base).padStart(base, '0').split('')
+        yield f;
+    }
+}
 
 // Reverse string
 exports.revStr = (s) => s.split('').reverse().join('');
