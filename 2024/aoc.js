@@ -55,10 +55,20 @@ exports.dedup_str = (s) => [...new Set(s.split(''))].join('');
 // Distinct list
 exports.dedup = (a) => [...new Set(a)];
 
-exports.dedupObj = (a) => {
+// Remove duplicates from an array of objects
+exports.dedupArray = (a) => {
     const x = a.map(x => JSON.stringify(x));
     const y = [...new Set(x)];
     return y.map(x => JSON.parse(x));
+}
+
+// Returns all pairs of elements from an array
+exports.pairs = function* pairs(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = i + 1; j < arr.length; j++) {
+            yield [arr[i], arr[j]]
+        }
+    }
 }
 
 // Print JSON
