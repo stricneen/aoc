@@ -102,6 +102,18 @@ exports.findInGrid = (g, f) => {
     }
 }
 
+exports.findAllInGrid = (g, f) => {
+    const r = []
+    for (let i = 0; i < g.length; i++) {
+        for (let j = 0; j < g[i].length; j++) {
+            if (f(g[i][j])) {
+                r.push([i, j])
+            }
+        }
+    }
+    return r
+}
+
 exports.copyGrid = (g) => {
     n = []
     for (let i = 0; i < g.length; i++) {
