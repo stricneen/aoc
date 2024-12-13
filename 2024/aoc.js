@@ -213,6 +213,10 @@ exports.intersect = (a, b) => {
     return x.filter(v => y.includes(v))
 }
 
+exports.union = (a,b) => {
+    return [...new Set([...a, ...b])]
+}
+
 // Chunks an array into chunkSize
 exports.chunk = (array, chunkSize) => {
     const x = [];
@@ -295,6 +299,18 @@ exports.eqArr = (a1, a2) => {
 // ##### INT ARRAY FUNCS
 
 // return all values 'up' from x,y (inc x,y)
+exports.surrounding = (x, y, grid) => {
+    const r = [[x+1, y], [x-1, y], [x, y+1], [x, y-1]]
+    const s = []
+    for (const [x1, y1] of r) {
+        if (x1 >= 0 && x1 < grid.length && y1 >= 0 && y1 < grid[0].length) {
+            s.push([grid[x1][y1], x1, y1])
+        }
+    }
+    return s;
+}
+
+
 exports.ia_left = (x, y, arr) => {
     c = []
     for (let i = y; i >= 0; i--) {
