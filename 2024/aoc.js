@@ -298,9 +298,9 @@ exports.eqArr = (a1, a2) => {
 
 // ##### INT ARRAY FUNCS
 
-// return all values 'up' from x,y (inc x,y)
+
 exports.surrounding = (x, y, grid) => {
-    const r = [[x+1, y], [x-1, y], [x, y+1], [x, y-1]]
+    const r = [[x-1, y], [x+1, y], [x, y+1], [x, y-1]]
     const s = []
     for (const [x1, y1] of r) {
         if (x1 >= 0 && x1 < grid.length && y1 >= 0 && y1 < grid[0].length) {
@@ -319,9 +319,10 @@ exports.ia_left = (x, y, arr) => {
     return c
 }
 
+
 exports.ia_right = (x, y, arr) => {
     c = []
-    for (let i = y; i < arr.length; i++) {
+    for (let i = y; i < arr[x].length; i++) {
         c.push(arr[x][i]);
     }
     return c
