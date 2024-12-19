@@ -29,6 +29,8 @@ exports.dirs = {
     U: [-1, 0],
 }
 
+exports.dirsArr = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+
 // Check if input is a number
 exports.isNumber = (s) => /^\d+$/.test(s);
 
