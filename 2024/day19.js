@@ -26,15 +26,35 @@ const part1 = (towels, pattern) => {
     return 0;
 }
 
+const memoize = (func) => {
+
+    const memo = new Map()
+
+    return (arg) => {
+        
+        // const key = `${arguments[0]}`
+        // console.log(JSON.stringify(arguments))
+        if (memo.has(arg)) {
+            return memo.get(arg)
+        }
+
+        const result = func(arg)
+        memo.set(arg, result)
+        return result;
+
+
+    }
+
+}
+
 
 const memo = new Map()
 const part2 = (pattern) => {
 
-    if (memo.has(`${pattern}`)) {
-        return memo.get(`${pattern}`)
-   }
+//     if (memo.has(`${pattern}`)) {
+//         return memo.get(`${pattern}`)
+//    }
 
-   
    if (pattern === '') {
        return 1
     }
@@ -43,7 +63,7 @@ const part2 = (pattern) => {
     for (const towel of towels) {
         if (pattern.startsWith(towel)) {
             count += part2(pattern.slice(towel.length))
-            memo.set(`${pattern}`, count)
+            // memo.set(`${pattern}`, count)
         }
     }
     return count
@@ -53,12 +73,13 @@ const part2 = (pattern) => {
 
 
 for (const pattern of patterns) {
-    const r = part2(pattern)
+    console.log(pattern)
+    const r = memoize(part2)(pattern);
     p1 += r > 0 ? 1 : 0
     p2 += r
 }
 
-assert(p1 === 238, 'p1')
-assert(p2 === 635018909726691, 'p2')
+assert(p1 === 238, 'p1');
+assert(p2 === 635018909726691, 'p2');
 console.log("Part 1 : ", p1);
 console.log("Part 2 : ", p2);
