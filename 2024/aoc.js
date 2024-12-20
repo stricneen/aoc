@@ -261,7 +261,9 @@ exports.createMapArray = () => {
                 imap.set(key, [val]);
             }
         },
-        map: () => imap
+        map: () => imap,
+        keys: () => imap.keys(),
+        get: (key) => imap.get(key),
 
     }
 };
