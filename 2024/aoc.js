@@ -275,7 +275,7 @@ exports.printGrid = (a) => {
     });
 }
 
-//recursive implementation
+//recursive 
 exports.lcm = (arr, idx = 0) => {
     const gcd = (a, b) => {
         if (a == 0)
