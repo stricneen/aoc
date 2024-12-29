@@ -1,87 +1,112 @@
+const { assert } = require('console');
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day.txt');
-const map = buffer.split(/\n/)
-    .map(x => [x.split(' '), aoc.extractNums(x)])
-    .map(x => ({
-        valve: x[0][1],
-        flow: x[1][0],
-        open: false,
-        paths: x[0].slice(x[0].findIndex(y => y.startsWith('valve')) + 1)
-            .map(x => x.replace(',', ''))
-    }))
-// console.log(map)
-//Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
+const buffer = aoc.readfilePro(16);
+const data = buffer.split('\n');
 
-// 1786 l
-// 2651 -- 
-// 2586
-// 2675 ****
-
-
-const dedup = (a) => {
-
-    s = a.map(x => JSON.stringify(x))
-    s1 = [...new Set(s)]
-    return s1.map(x => JSON.parse(x))
-
-
-}
-
-const p1 = () => {
-    let robots = [{ who: 'me', at: 'AA', total: 0, open: [] }]
-
-    for (let min = 1; min <= 30; min++) {
-        // console.log(`--- Minute ${min}`)
-        // console.log(robots)
-        // console.log()
-
-        const next = []
-        for (const robot of robots) {
-            robot.total += robot.open.reduce((a, e) => {
-                return a + map.find(x => x.valve === e).flow
-            }, 0)
-
-
-            const loc = map.find(x => x.valve === robot.at);
-
-            if (!robot.open.includes(loc.valve) && loc.flow > 0) { // worth opening
-                next.push({ ...robot, open: robot.open.concat(loc.valve) })
-            } else { //move
-                for (const n of loc.paths) {
-                    next.push({ ...robot, at: n })
-                }
-            }
-        }
-
-        robots = []
-        for (const loc of map) {
-            const robs = next.filter(x => x.at === loc.valve)
-            for (const v of robs) {
-                const n = robots.find(x =>
-                    x.at === v.at &&
-                    x.who === v.who &&
-                    x.p === v.p &&
-                    x.open.sort().join('') === v.open.sort().join(''))
-                if (n) {
-                    if (n.total < v.total) n.total = v.total
-                } else {
-                    robots.push(v)
-                }
-            }
-        }
-
-
-        robots.sort((a, b) => b.total - a.total)
-        if (robots.length > 1000) {
-            robots = robots.slice(0, robots.length / 10)
-        }
-        // console.log(robots)
+const nodes = data.map(x => {
+    const [a, b] = x.split('; ');
+    return {
+        valve: a.split(' ')[1],
+        rate: parseInt(aoc.extractStrictNums(a.split(' ')[4])),
+        tunnels: b.replaceAll(/,/g, '').split(' ').slice(4).map(x => [x, 1])
     }
-    return Math.max(...robots.map(x => x.total))
+})
+
+const zeroFlows = nodes.filter(x => x.rate === 0 && x.valve !== 'AA');
+
+for (const zeroFlow of zeroFlows) {
+    const t = nodes.findIndex(x => x.valve === zeroFlow.valve);
+    const r = nodes.splice(t, 1)[0]
+    for (const node of nodes) {
+        const connected = node.tunnels.findIndex(x => x[0] === r.valve);
+        if (connected > -1) {
+            // get the new destination
+            const [nd, v] = zeroFlow.tunnels.find(x => x[0] !== node.valve);
+            node.tunnels[connected][0] = nd;
+            node.tunnels[connected][1] = node.tunnels[connected][1] + v;
+        }
+    }
 }
 
-// 1788 l
-// 1798 l
+console.log(nodes)
+// location, mins remaining, flow rate, value
+let q = [['AA', 30, 0, 0, []]]
+
+let p1 = 0;
+let c = 0;
+
+const visited = new Set();
+
+const add = ([loc, mins, flow, total, open]) => {
+    const state = `${loc}-${mins}-${flow}-${total}-${open.sort()}`;
+    if (visited.has(state)) return;
+    visited.add(state)
+    q.push([loc, mins, flow, total, open.sort()])
+}
+
+while (q.length) {
+
+    const [loc, mins, flow, total, open] = q.shift();
+
+    // const state = `${loc}-${mins}-${flow}-${total}-${open}`;
+    // if (visited.has(state)) continue;
+    // visited.add(state)
+
+    // console.log('>>',loc, mins, flow, total, open)
+    assert(mins >= 0, 'mins is negative')
+
+    if (mins <= 0) {
+        if (p1 < total) console.log('max', p1, loc, mins, flow, total, open)
+        p1 = Math.max(p1, total);
+        continue;
+    }
+
+    // all valves are open
+    if (open.length === nodes.length - 1) {
+        add([loc, 0, flow, total + (flow*mins), open])
+    }
+
+    const location = nodes.find(x => x.valve === loc);
+    // current is not open
+    if (!open.includes(location.valve) && location.valve !== 'AA') {
+        // open valve
+        add([loc, mins - 1, flow + location.rate, total + flow, [...open, location.valve]])
+    }
+
+    // move to other valves
+    for (const [dest, cost] of nodes.find(x => x.valve === loc).tunnels) {
+        if (mins >= cost) { // has enough time to move
+            add([dest, mins - cost, flow, total + (flow * cost), open]);
+        } else {
+            add([dest, 0, flow, total + (flow * mins), open]);
+        }
+    }
+
+    q = aoc.dedupArray(q)
+    q.sort((a, b) => a[1] - b[1])
+    // console.log(q)
+    // console.log(q.length)
+    // console.log()
+    // if (c++ > 100000) {
+    //     console.log(q)
+    //     break;
+    // }
+}
+
+assert(p1 === 2330, 'Part 1')
+
+console.log('Part 1 : ', p1); // 5623
+console.log('Part 2 : ', p1);    // 20570
+
+// [
+//     {
+//       valve: "FF",
+//       rate: 0,
+//       tunnels: [
+//         [ "EE", 1 ], [ "GG", 1 ]
+//       ],
+
+
 
 // Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
 // Valve BB has flow rate=13; tunnels lead to valves CC, AA
@@ -94,128 +119,3 @@ const p1 = () => {
 // Valve II has flow rate=0; tunnels lead to valves AA, JJ
 // Valve JJ has flow rate=21; tunnel leads to valve II
 
-// { at1: 'II', at2: 'DD', total: 0, open: [] },
-// { at1: 'JJ', at2: 'DD', total: 0, open: [ 'DD' ] },
-// { at1: 'JJ', at2: 'EE', total: 20, open: [ 'DD', 'JJ' ] },
-
-
-
-
-
-
-const p2 = () => {
-    let robots = [{ at1: 'AA', at2: 'AA', total: 0, open: [] }]
-
-    for (let min = 1; min <= 26; min++) {
-        // console.log(`--- Minute ${min}`)
-        // // console.log(robots)
-        // console.log()
-
-        const next = []
-        for (const robot of robots) {
-
-            // add pressure
-            robot.total += robot.open.reduce((a, e) => {
-                return a + map.find(x => x.valve === e).flow
-            }, 0)
-
-            const loc1 = map.find(x => x.valve === robot.at1);
-            const loc2 = map.find(x => x.valve === robot.at2);
-     
-            r1open = undefined
-            r2open = undefined
-            // robot 1
-            if (!robot.open.includes(loc1.valve) && loc1.flow > 0) { // worth opening
-                next.push({ ...robot, open: robot.open.concat(loc1.valve) })
-                // r1open = loc1.valve
-            } 
-
-            // robot 2
-            if (!robot.open.includes(loc2.valve) && loc2.flow > 0) { // worth opening
-                next.push({ ...robot, open: robot.open.concat(loc2.valve) })
-                // r2open = loc2.valve
-            } 
-
-                    // robot 2
-            if (!robot.open.includes(loc1.valve) && loc1.flow > 0 && !robot.open.includes(loc2.valve) && loc2.flow > 0) { // worth opening
-                        next.push({ ...robot, open: [...new Set(robot.open.concat([loc1.valve, loc2.valve]))] })
-                        // r2open = loc2.valve
-                    } 
-            
-            // r1paths = r1open ? [robot.at1] : loc1.paths
-            // r2paths = r2open ? [robot.at2] : loc2.paths
-
-            // for (const n1 of r1paths) {
-            //     for (const n2 of r2paths) {
-            //         next.push({ ...robot, at1: n1, at2: n2,  open: [... new Set(robot.open.concat([r1open, r2open]).filter(x => !!x))] })
-            //         // next.push({ ...robot, at1: n1, at2: n2})
-            //     }
-            // }
-            
-            // add all moves (no opens)
-            for (const n1 of loc1.paths) {
-                for (const n2 of loc2.paths) {
-                    // next.push({ ...robot, at1: n1, at2: n2,  open: [... new Set(robot.open.concat([r1open, r2open]).filter(x => !!x))] })
-                    next.push({ ...robot, at1: n1, at2: n2})
-                }
-            }
-        }
-
-        robots = [...next]
-
-//        robots = []
-
-        // for (const loc of map) {
-        //     const robs = next.filter(x => x.at1 === loc.valve)
-        //     for (const v of robs) {
-        //         const n = robots.find(x =>
-        //             x.at1 === v.at1 &&
-        //             x.at2 === v.at2 &&
-        //             x.open.sort().join('') === v.open.sort().join(''))
-        //         if (n) {
-        //             if (n.total < v.total) n.total = v.total
-        //         } else {
-        //             robots.push(v)
-        //         }
-        //     }
-        // }
-
-        // for (const loc of map) {
-        //     const robs = next.filter(x => x.at2 === loc.valve)
-        //     for (const v of robs) {
-        //         const n = robots.find(x =>
-        //             x.at1 === v.at1 &&
-        //             x.at2 === v.at2 &&
-        //             x.open.sort().join('') === v.open.sort().join(''))
-        //         if (n) {
-        //             if (n.total < v.total) n.total = v.total
-        //         } else {
-        //             robots.push(v)
-        //         }
-        //     }
-        // }
-
-        robots = dedup(robots)
-        robots.sort((a, b) => b.total - a.total)
-// console.log('>', robots.length)
-        if (robots.length > 500000) {
-            robots = robots.slice(0, 500000)
-        }
-
-        console.log(`--- Minute ${min}`)
-        // console.log(robots)
-        // console.log(Math.max(...robots.map(x => x.total)))
-        console.log()
-        // console.log(robots)
-    }
-    robots.sort((a, b) => b.total - a.total)
-    robots = robots.slice(0, 100000)
-    return Math.max(...robots.map(x => x.total))
-}
-
-//          1707
-//          2586
-
-
-console.log('Part 1 : ', p1()); //
-console.log('Part 2 : ', p2()); //
