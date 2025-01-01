@@ -216,7 +216,7 @@ const part2 = (bitmask) => {
 //       tunnels: [
 //         [ "EE", 1 ], [ "GG", 1 ]
 //       ],
-console.log(nodes)
+// console.log(nodes)
 // console.log(indices)
 // process.exit(0)
 
