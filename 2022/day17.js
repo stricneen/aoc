@@ -1,28 +1,27 @@
+const { stat } = require('fs');
 const aoc = require('./aoc');
-const buffer = aoc.readfile('day17.txt');
-// const blow = buffer
+const { assert } = require('console');
+const [buffer, isTest] = aoc.readfilePro(17);
 
 function* block() {
     while (true) {
-        yield [[0, 0], [1, 0], [2, 0], [3, 0]]
-        yield [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]]
-        yield [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2]]
-        yield [[0, 0], [0, 1], [0, 2], [0, 3]]
-        yield [[0, 0], [1, 0], [0, 1], [1, 1]]
+        yield [[[0, 0], [1, 0], [2, 0], [3, 0]], 0]
+        yield [[[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]], 1]
+        yield [[[0, 0], [1, 0], [2, 0], [2, 1], [2, 2]], 2]
+        yield [[[0, 0], [0, 1], [0, 2], [0, 3]], 3]
+        yield [[[0, 0], [1, 0], [0, 1], [1, 1]], 4]
     }
 }
-
-// |......#|  3191
 
 function* blow(dirs) {
     while (true) {
         for (let i = 0; i < dirs.length; i++) {
-            yield dirs[i] === '<' ? -1 : 1
+            yield dirs[i] === '<' ? [-1,i] : [1,i]
         }
     }
 }
 
-const directions = blow(buffer);
+const blower = blow(buffer);
 const blocks = block();
 
 const cave = [
@@ -30,8 +29,7 @@ const cave = [
 ]
 
 const print = (c) => {
-    // console.log(c.length)
-    for (let i = c.length - 1; i >= Math.max(c.length - 20, 0); i--) {
+    for (let i = c.length - 1; i >= Math.max( 0); i--) {
         console.log(`|${c[i].map(x => x).join('')}|  ${i+1}` )
     }
     console.log('---------')
@@ -39,7 +37,7 @@ const print = (c) => {
 }
 
 const updateCave = (fn) => {
-    for (let i = 0; i < cave.length - 1; i++) {
+    for (let i = Math.max(0, cave.length - 50) ; i < cave.length - 1; i++) {
         for (let j = 0; j < 7; j++) {
             cave[i][j] = fn(i, j)
         }
@@ -47,7 +45,7 @@ const updateCave = (fn) => {
 }
 
 const updateCaveL = (fn) => {
-    for (let i = 0; i < cave.length - 1; i++) {
+    for (let i = Math.max(0, cave.length - 50) ; i < cave.length - 1; i++) {
         for (let j = 6; j >= 0; j--) {
             cave[i][j] = fn(i, j)
         }
@@ -56,7 +54,7 @@ const updateCaveL = (fn) => {
 
 const scan = (fn) => {
     const r = []
-    for (let i = 0; i < cave.length; i++) {
+    for (let i = Math.max(0, cave.length - 50) ; i < cave.length; i++) {
         for (let j = 0; j < 7; j++) {
             const x = fn(i, j);
             r.push(x)
@@ -66,24 +64,22 @@ const scan = (fn) => {
 }
 
 const canMoveRight = () => {
-    c = scan((x, y) => {
+    const c = scan((x, y) => {
         if (cave[x][y] === '@') {
             return cave[x][y + 1]
         }
         return false
     }).filter(x => x !== false)
-    // console.log(c)
     return c.every(x => x === '@' || x === '.')
 }
 
 const canMoveLeft = () => {
-    c = scan((x, y) => {
+    const c = scan((x, y) => {
         if (cave[x][y] === '@') {
             return cave[x][y - 1]
         }
         return false
     }).filter(x => x !== false)
-    // console.log(c)
     return c.every(x => x === '@' || x === '.')
 }
 
@@ -94,7 +90,6 @@ const canMoveDown = () => {
             return cave[x - 1][y]
         }
     })
-    // console.log(c)
     return c.every(x => x === undefined || x === '@' || x === '.')
 }
 
@@ -106,7 +101,6 @@ const moveDown = () => {
             if (above === '@') return '@'
             if (spc === '@' && above === '.') return '.'
             if (spc === '@' && above === '#') return '.'
-//            if (above === '#' && spc === '') return '.'
             return cave[x][y]
         })
     }
@@ -120,7 +114,6 @@ const moveLeft = () => {
             if (spc === '#') return '#'
             if (left === undefined || left === '#') return '.'
             if (left === '@') return '@'
-            // if (left === '|') return '.'
             if (spc === '@' && left === '.') return '.'
             return cave[x][y]
         })
@@ -139,7 +132,6 @@ const moveRight = () => {
             return cave[x][y]
         })
     }
-
 }
 
 const countBlocks = () => {
@@ -152,62 +144,63 @@ const caveHeight = () => {
     return Math.max(...t)
 }
 
-base = 0
-blockCount = 2022
+const topTwentyRows = () => {
 
-b = 0
-
-// blockCount = 13
-for (let i = 0; i < blockCount; i++) {
-console.log(i)
-    moving = true
-
-    base = caveHeight();
-
-    while (cave.length < base + 8) {
-        cave.push(Array(7).fill('.'))
-    }
-
-    
-    // Add block
-    const newBlock = blocks.next().value;
-    newBlock.forEach(x => cave[x[1] + base + 3][x[0] + 2] = '@')
-    
-    // if (b > 142) print(cave)
-// print(cave)
-
-    while (moving) {
-        const dir = directions.next().value
-        // console.log(dir)
-        if (dir === -1) {
-            moveLeft()
-        }
-        else {
-            moveRight()
-        }
-
-// if (b > 142) print(cave)
-// print(cave)
-
-        if (canMoveDown() === false) {
-            updateCave((x, y) => cave[x][y] === '@' ? '#' : cave[x][y])
-            moving = false
-
-
-            b += newBlock.length
-            if (b !== countBlocks()) {
-                throw Error('nooooo')
-            }
-        }
-        moveDown()
-        // if (b > 140) print(cave)
-        // print(cave)
-
-    }
 }
 
-print(cave)
+// base = 0
+const stateSet = new Set();
+const sim = () =>{
+    const p1blockCount = 2022
+    let statedir = 0;
+    let stateblock = 0;
+    for (let i = 0; i < p1blockCount; i++) {
 
-p1 = p2 = 0
-console.log('Part 1 : ', caveHeight()); //
-console.log('Part 2 : ', p2); //
+        // console.log(i)
+    
+        // Add extra rows to the cave
+        let base = caveHeight();
+        while(cave.length < base + 8) {
+            cave.push(Array(7).fill('.'))
+        }
+        
+        // Add new block to the cave
+        const [newBlock, sblock] = blocks.next().value;
+        stateblock = sblock;
+        newBlock.forEach(x => cave[x[1] + base + 3][x[0] + 2] = '@')
+        
+        // Drop
+        let moving = true;
+        while (moving) {
+            const [dir, sdir] = blower.next().value
+            statedir = sdir;
+            dir === -1 ? moveLeft() : moveRight()
+     
+            if (canMoveDown() === false) {
+                updateCave((x, y) => cave[x][y] === '@' ? '#' : cave[x][y])
+                moving = false
+            }
+            moveDown()
+        }
+
+        // get the state of block, dir * top 20 lines
+        // const state = `${stateblock}-${statedir}-${topTwentyRows()}`
+
+        // console.log(state)
+        // if (stateSet.has(state)) {
+        //     console.log('Found a loop')
+        //     break;
+        // }
+
+        // stateSet.add(state)
+    }
+    return caveHeight();
+}
+
+
+const p2Height = 1000000000000;
+
+const p1 = sim();
+assert(p1 === isTest ? 3068 : 3211, 'Part 1')
+console.log('Part 1 : ', p1); //
+// console.log('Part 2 : ', p2); //

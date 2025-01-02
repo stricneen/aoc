@@ -10,7 +10,7 @@ exports.readfile = (fn) => {
 exports.readfilePro = (num) => {
     const arg = process.argv[2];
     const fp = path.join(__dirname, `./data/day${arg === 't' ? '' : num}.txt`);
-    return fs.readFileSync(fp).toString();
+    return [fs.readFileSync(fp).toString(), arg === 't'];
 }
 
 exports.objClone = (o) => JSON.parse(JSON.stringify(o))
