@@ -1,272 +1,225 @@
-const { assert } = require('console');
 const aoc = require('./aoc');
-const buffer = aoc.readfilePro(16);
-const data = buffer.split('\n');
+const buffer = aoc.readfile('day19.txt');
+const data = buffer.split(/\n/).map(aoc.extractNums)
+    .map(x => ({ blueprint: x[0], ore: { ore: x[1] }, clay: { ore: x[2] }, obsidian: { ore: x[3], clay: x[4] }, geode: { ore: x[5], obsidian: x[6] } }))
 
-const nodes = data.map(x => {
-    const [a, b] = x.split('; ');
-    return {
-        valve: a.split(' ')[1],
-        rate: parseInt(aoc.extractStrictNums(a.split(' ')[4])),
-        tunnels: b.replaceAll(/,/g, '').split(' ').slice(4).map(x => [x, 1])
+const clone = (json) => JSON.parse(JSON.stringify(json));
+
+// console.log(data)
+
+// ore  -       cost x ore
+// clay  -      cost x ore
+// obsidian -   cost x ore && y clay
+// geode -      cost x ore && y obsidian
+
+// Blueprint 1:
+//   Each ore robot costs 4 ore.
+//   Each clay robot costs 2 ore.
+//   Each obsidian robot costs 3 ore and 14 clay.
+//   Each geode robot costs 2 ore and 7 obsidian.
+
+    // r = 4r
+    // c = 2r
+    // o = 3r + 14c
+    // g = 2r + 7o
+
+    // g = 2r + 7(3r + 14(2r))
+    // g = 2r + 7(3r + 28r)
+    // g = 2r + 7(31r)
+    // g = 2r + 217r
+    // g = 219r
+
+
+// Blueprint 2:
+//   Each ore robot costs 2 ore.
+//   Each clay robot costs 3 ore.
+//   Each obsidian robot costs 3 ore and 8 clay.
+//   Each geode robot costs 3 ore and 12 obsidian.
+const test1 = { blueprint: 1, ore: { ore: 4 }, clay: { ore: 2 }, obsidian: { ore: 3, clay: 14 }, geode: { ore: 2, obsidian: 7 } }
+const test2 = { blueprint: 2, ore: { ore: 2 }, clay: { ore: 3 }, obsidian: { ore: 3, clay: 8 }, geode: { ore: 3, obsidian: 12 } }
+
+const maxResource = (bp) => ({
+    ore: Math.max(bp.ore.ore, bp.clay.ore, bp.obsidian.ore, bp.geode.ore),
+    clay: bp.obsidian.clay,
+    obsidian: bp.geode.obsidian
+});
+
+
+
+const initState = [{
+    resources: { ore: 0, clay: 0, obsidian: 0, geode: 0 },
+    robots: { ore: 1, clay: 0, obsidian: 0, geode: 0 },
+    production: { ore: 0, clay: 0, obsidian: 0, geode: 0 },
+}]
+
+tt = [
+    {
+        resources: { ore: 2, clay: 1, obsidian: 0, geode: 0 },
+        robots: { ore: 1, clay: 1, obsidian: 0, geode: 0 },
+        production: { ore: 0, clay: 0, obsidian: 0, geode: 0 }
+    },
+    {
+        resources: { ore: 2, clay: 0, obsidian: 0, geode: 0 },
+        robots: { ore: 1, clay: 1, obsidian: 0, geode: 0 },
+        production: { ore: 0, clay: 0, obsidian: 0, geode: 0 }
+    },
+    {
+        resources: { ore: 4, clay: 0, obsidian: 0, geode: 0 },
+        robots: { ore: 1, clay: 0, obsidian: 0, geode: 0 },
+        production: { ore: 0, clay: 0, obsidian: 0, geode: 0 }
     }
-})
+]
 
+// const narrow = (space) => {
 
-for (const valve of nodes) {
+//     for (let i = 0; i < space.length; i++) {
+//         const element = space[i];
 
-    valve.dists = {};
-    const visited = new Set();
-    const q = [[valve.valve, 0]];
-    while (q.length) {
-        const [loc, dist] = q.shift();
-        if (visited.has(loc)) continue;
+//         const others = space.filter(x =>
+//             x.robots.ore === element.robots.ore &&
+//             x.robots.clay === element.robots.clay &&
+//             x.robots.obsidian === element.robots.obsidian &&
+//             x.robots.geode === element.robots.geode &&
 
-        if (valve.rate > 0 || valve.valve === 'AA') valve.dists[loc] = dist;
-        // console.log(loc, dist,visited)
+//             (x.resources.ore !== element.resources.ore ||
+//             x.resources.clay !== element.resources.clay ||
+//             x.resources.obsidian !== element.resources.obsidian ||
+//             x.resources.geode !== element.resources.geode)
+//         )
 
-        visited.add(loc);
+//         if (others.some(x => x.resources.ore >= element.resources.ore &&
+//             x.resources.clay >= element.resources.clay &&
+//             x.resources.obsidian >= element.resources.obsidian &&
+//             x.resources.geode >= element.resources.geode)) {
 
-        for (const [tunnel, _] of nodes.find(x => x.valve === loc).tunnels) {
-            q.push([tunnel, dist + 1]);
-        }
-        // console.log(q.length)
-    }
+//             element.delete = true
 
-    // console.log(valve.valve, valve.dists)
-}
-
-// console.log(nodes)
-// process.exit(0)
-
-
-
-const zeroFlows = nodes.filter(x => x.rate === 0 && x.valve !== 'AA');
-const nonZeroFlows = nodes.filter(x => x.rate !== 0 && x.valve !== 'AA');
-
-// for (const zeroFlow of zeroFlows) {
-//     const t = nodes.findIndex(x => x.valve === zeroFlow.valve);
-//     const r = nodes.splice(t, 1)[0]
-//     for (const node of nodes) {
-//         const connected = node.tunnels.findIndex(x => x[0] === r.valve);
-//         if (connected > -1) {
-//             // get the new destination
-//             const [nd, v] = zeroFlow.tunnels.find(x => x[0] !== node.valve);
-//             node.tunnels[connected][0] = nd;
-//             node.tunnels[connected][1] = node.tunnels[connected][1] + v;
 //         }
+
+
+//         // console.log(element, others)
+
 //     }
+
+
+// // console.log(space)
+
+//     return space.filter(x => x.delete !== true)
 // }
 
-
-
-let tt = 0;
-const indices = {};
-for (const iterator of nodes) {
-    // console.log(iterator)
-    indices[iterator.valve] = tt++;
-}
-
-
-
-const part1 = () => {
-
-    // location, mins remaining, flow rate, value
-    let q = [['AA', 30, 0, 0, []]]
-    let ans = 0;
-    const visited = new Set();
-
-    const add = ([loc, mins, flow, total, open]) => {
-        const state = `${loc}-${mins}-${flow}-${total}-${open.sort()}`;
-        if (visited.has(state)) return;
-        visited.add(state)
-        q.push([loc, mins, flow, total, open.sort()])
-    }
-
-    while (q.length) {
-
-        const [loc, mins, flow, total, open] = q.shift();
-
-        // const state = `${loc}-${mins}-${flow}-${total}-${open}`;
-        // if (visited.has(state)) continue;
-        // visited.add(state)
-
-        // console.log('>>',loc, mins, flow, total, open)
-        assert(mins >= 0, 'mins is negative')
-
-        if (mins <= 0) {
-            if (ans < total) console.log('max', ans, loc, mins, flow, total, open)
-            ans = Math.max(ans, total);
-            continue;
-        }
-
-        // all valves are open
-        if (open.length === nodes.length - 1) {
-            add([loc, 0, flow, total + (flow * mins), open])
-        }
-
-        const location = nodes.find(x => x.valve === loc);
-        // current is not open
-        if (!open.includes(location.valve) && location.valve !== 'AA') {
-            // open valve
-            add([loc, mins - 1, flow + location.rate, total + flow, [...open, location.valve]])
-        }
-
-        // move to other valves
-        for (const [dest, cost] of nodes.find(x => x.valve === loc).tunnels) {
-            if (mins >= cost) { // has enough time to move
-                add([dest, mins - cost, flow, total + (flow * cost), open]);
-            } else {
-                add([dest, 0, flow, total + (flow * mins), open]);
-            }
-        }
-
-        q = aoc.dedupArray(q)
-        q.sort((a, b) => a[1] - b[1])
-        // console.log(q)
-        // console.log(q.length)
-        // console.log()
-        // if (c++ > 100000) {
-        //     console.log(q)
-        //     break;
-        // }
-    }
-    return ans;
-}
-
-const part2 = (bitmask) => {
-
-    // location, mins remaining, flow rate, value
-    let q = [['AA', 26, 0, 0, []]]
-    let ans = 0;
-    const visited = new Set();
-
-    const add = ([loc, mins, flow, total, open]) => {
-        const state = `${loc}-${mins}-${flow}-${total}-${open.sort()}`;
-        if (visited.has(state)) return;
-        visited.add(state)
-        q.push([loc, mins, flow, total, open.sort()])
-    }
-
-    while (q.length) {
-
-        const [loc, mins, flow, total, open] = q.shift();
-
-        // const state = `${loc}-${mins}-${flow}-${total}-${open}`;
-        // if (visited.has(state)) continue;
-        // visited.add(state)
-
-        // console.log('>>',loc, mins, flow, total, open)
-        assert(mins >= 0, 'mins is negative')
-
-        if (mins <= 0) {
-            if (ans < total) console.log('max', ans, loc, mins, flow, total, open)
-            ans = Math.max(ans, total);
-            continue;
-        }
-
-        // all valves are open
-        if (open.length === nodes.length - 1) {
-            add([loc, 0, flow, total + (flow * mins), open])
-        }
-
-        const location = nodes.find(x => x.valve === loc);
-
-        const locationIndex = nodes.findIndex(x => x.valve === loc);
-        
-
-
-        // current is not open
-        if (!open.includes(location.valve) && location.valve !== 'AA') {
-            // open valve
-            add([loc, mins - 1, flow + location.rate, total + flow, [...open, location.valve]])
-        }
-
-        // move to other valves
-        for (const [dest, cost] of nodes.find(x => x.valve === loc).tunnels) {
-            if (mins >= cost) { // has enough time to move
-                add([dest, mins - cost, flow, total + (flow * cost), open]);
-            } else {
-                add([dest, 0, flow, total + (flow * mins), open]);
-            }
-        }
-
-        q = aoc.dedupArray(q)
-        q.sort((a, b) => a[1] - b[1])
-        // console.log(q)
-        // console.log(q.length)
-        // console.log()
-        // if (c++ > 100000) {
-        //     console.log(q)
-        //     break;
-        // }
-    }
-    return ans;
-}
-
-
-// const p2 = part2();
-// assert(p2 === 2330, 'Part 2')
-// console.log('Part 2 : ', p2);    // 20570
-
-// [
-//     {
-//       valve: "FF",
-//       rate: 0,
-//       tunnels: [
-//         [ "EE", 1 ], [ "GG", 1 ]
-//       ],
-// console.log(nodes)
-// console.log(indices)
-// process.exit(0)
-
-
-//    10000
-
-const memo = new Map();
-
-const dfs = (time, valve, bitmask) => {
-    const key = `${time}-${valve}-${bitmask}`;
-    // console.log(time, valve, bitmask, bitmask.toString(2))
-    if (memo.has(key)) return memo.get(key);
+const narrow = (space) => {
     
-    let max = 0
-    const node =  nodes.find(x => x.valve === valve);
-
-    // console.log('>>', valve, node)
-    for (const [tunnel, cost] of Object.entries(node.dists)) {
-        // console.log('  >>', tunnel, cost)
-        const bit = 1 << indices[tunnel];
-        
-        // console.log('  >>', tunnel, cost)
-        if (bitmask & bit) continue; // already opened ?
-        const remaining = time - cost - 1;
-
-        if (remaining <= 0) continue;
-        max = Math.max(max, dfs(remaining, tunnel, bitmask | bit) + (node.rate * remaining));
-    }
-
-    memo.set(key, max);
-    return max;
 }
 
-// 1651 // 2330
+const simulate = (bp, min = 1, state = clone(initState)) => {
+    if (min === 25) { //25) {
+        max = 0
+        for (const s of state) {
+            max = Math.max(max, s.resources.geode)
+        }
+        console.log(max * bp.blueprint)
+        return max * bp.blueprint
+    }
 
-const aa = dfs(30, 'AA', 0);
+    // console.log(state.filter(x => x.resources.geode > 0))
+    // console.log(maxResource(bp))
+    console.log('Minute', min)
 
-// console.log(memo)
+    next = []
 
-console.log(aa);
+    // Spend - can we buy a robot ?
+    for (const n of state) {
+
+        bought = false
+        // geode
+        if (n.resources.ore >= bp.geode.ore && n.resources.obsidian >= bp.geode.obsidian) {
+            branch = clone(n)
+            branch.production.geode = 1
+            branch.resources.ore -= bp.geode.ore
+            branch.resources.obsidian -= bp.geode.obsidian
+            next.push(branch)
+            bought = true
+        }
+
+        // obsidian
+        if (n.resources.ore >= bp.obsidian.ore && n.resources.clay >= bp.obsidian.clay) {
+            branch = clone(n)
+            branch.production.obsidian = 1
+            branch.resources.ore -= bp.obsidian.ore
+            branch.resources.clay -= bp.obsidian.clay
+            next.push(branch)
+            bought = true
+        }
+
+        // clay
+        if (n.resources.ore >= bp.clay.ore) {
+            branch = clone(n)
+            branch.production.clay = 1
+            branch.resources.ore -= bp.clay.ore
+            next.push(branch)
+            bought = true
+        }
+
+        // buy an ore ?
+        if (n.resources.ore >= bp.ore.ore) {
+            branch = clone(n)
+            branch.production.ore = 1
+            branch.resources.ore -= bp.ore.ore
+            next.push(branch)
+            bought = true
+        }
+
+        next.push(n)
+
+    }
 
 
-// Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
-// Valve BB has flow rate=13; tunnels lead to valves CC, AA
-// Valve CC has flow rate=2; tunnels lead to valves DD, BB
-// Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
-// Valve EE has flow rate=3; tunnels lead to valves FF, DD
-// Valve FF has flow rate=0; tunnels lead to valves EE, GG
-// Valve GG has flow rate=0; tunnels lead to valves FF, HH
-// Valve HH has flow rate=22; tunnel leads to valve GG
-// Valve II has flow rate=0; tunnels lead to valves AA, JJ
-// Valve JJ has flow rate=21; tunnel leads to valve II
+    // Collect
+    for (const n of next) {
+        n.resources.ore += n.robots.ore;
+        n.resources.clay += n.robots.clay;
+        n.resources.obsidian += n.robots.obsidian;
+        n.resources.geode += n.robots.geode;
+    }
 
+    // Add robots
+    for (const n of next) {
+        if (n.production.ore === 1) {
+            n.robots.ore += 1
+            n.production.ore = 0
+        }
+        if (n.production.clay === 1) {
+            n.robots.clay += 1
+            n.production.clay = 0
+        }
+        if (n.production.obsidian === 1) {
+            n.robots.obsidian += 1
+            n.production.obsidian = 0
+        }
+        if (n.production.geode === 1) {
+            n.robots.geode += 1
+            n.production.geode = 0
+        }
+    }
+
+
+    const dedup = [... new Set(next.map(JSON.stringify))].map(JSON.parse)
+
+    const n = narrow(dedup)
+    console.log(n)
+
+    return simulate(bp, min + 1, n)
+}
+
+// const t1 = simulate(test2);
+console.log('t1', simulate(test1))
+// console.log('t2', simulate(test2))
+
+
+// p1 = aoc.sum(data.map(t => simulate(t)))
+
+// console.log(narrow(tt))
+
+p1 = p2 = 0;
+console.log('Part 1 : ', p1); // 
+// console.log('Part 2 : ', p2); //x/
