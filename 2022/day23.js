@@ -1,4 +1,3 @@
-const { copyFileSync } = require('fs');
 const aoc = require('./aoc');
 const [buffer, test] = aoc.readfilePro(23);
 const data = buffer.split(/\n/)
